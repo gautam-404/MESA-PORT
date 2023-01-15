@@ -18,7 +18,7 @@ accessObject = MesaAccess
 ***Commands***
 
 * `opsObject.create(overwrite=False, clean=False)`
-* * `opsObject.clean()`
+* `opsObject.clean()`
 * `opsObject.make()`
 * `opsObject.run(silent=False)`
 * `opsObject.rerun("photo_number")`
