@@ -34,15 +34,26 @@ accessObject = MesaAccess()
   opsObject.create(overwrite=False, clean=False)
   opsObject.make()
   opsObject.run(silent=False)
-  opsObject.rerun("photo_number")
+  opsObject.rerun("photo_number")                   ## Searches photos folder inside the project dir
   opsObject.clean()
-  opsObject.loadProjInlist("/path/to/inlist")
-  opsObject.loadPGstarInlist("/path/to/inlist")
+  opsObject.loadProjInlist("/path/to/inlist")       ## Load custom inlist_project, reads absolute path
+  opsObject.loadPGstarInlist("/path/to/inlist")     ## Load custom inlist_pgstar, reads absolute path
   ```
 
 * Using a `MesaAccess` class object:
   ```python
-  accessObject["your_parameter"] = value    ## write
-  value = accessObject["your_parameter"]    ## read
-  accessObject.delitem("your_parameter")    ## delete
+  ## Write
+  accessObject["some_parameter"] = value    
+  # or
+  accessObject.set_various( ["some_parameter1", "some_parameter2"], [value1, value2])
+  
+  ## Read
+  value = accessObject["some_parameter"]    
+  # or
+  values_list = accessObject.get_various( ["some_parameter1", "some_parameter2"] )
+
+  ## Delete
+  accessObject.delitem("some_parameter")
+  # or
+  accessObject.del_various_( ["some_parameter1", "some_parameter2"] )
   ```
