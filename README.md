@@ -21,13 +21,33 @@ accessObject = MesaAccess
 
 ***Commands***
 
-* ```python opsObject.create(overwrite=False, clean=False)```
-* ```python opsObject.clean()```
-* ```python opsObject.make()```
-* ```python opsObject.run(silent=False)```
-* ```python opsObject.rerun("photo_number")```
-* ```python opsObject.loadProjInlist("/path/to/inlist")```
-* ```python opsObject.loadPGstarInlist("/path/to/inlist")```
-* ```python accessObject["your_parameter"] = value    ## write```
-* ```python value = accessObject["your_parameter]"   ## read```
-* ```python accessObject.delitem("your_parameter)"    ## delete```
+* ```python
+  opsObject.create(overwrite=False, clean=False)
+  ```
+* ```python
+  opsObject.clean()
+  ```
+* ```python
+  opsObject.make()
+  ```
+* ```python
+  opsObject.run(silent=False)
+  ```
+* ```python
+  opsObject.rerun("photo_number")
+  ```
+* ```python
+  opsObject.loadProjInlist("/path/to/inlist")
+  ```
+* ```python
+  opsObject.loadPGstarInlist("/path/to/inlist")
+  ```
+* ```python
+  accessObject["your_parameter"] = value    ## write
+  ```
+* ```python
+  value = accessObject["your_parameter]"   ## read
+  ```
+* ```python
+  accessObject.delitem("your_parameter)"    ## delete
+  ```
