@@ -13,7 +13,7 @@ A Python module to command and control [MESA](https://github.com/MESAHub/mesa)
 
 ## Installation
 ```
-pip3 install git+https://github.com/gautam-404/MESA-commando.git
+pip3 install git+https://github.com/gautam-404/MESAcommando.git
 ```
 
 ## Usage
