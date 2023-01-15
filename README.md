@@ -1,5 +1,5 @@
 # MESA-commando  
-A Python command framework for MESA
+A Python module to command and control [MESA](https://github.com/MESAHub/mesa)
 
 ### 🫵 Be the commander! 
 
