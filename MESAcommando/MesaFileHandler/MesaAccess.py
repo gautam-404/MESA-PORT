@@ -58,7 +58,7 @@ class MesaAccess:
                 got.append(self._fullDict[item])
             return got
         elif type(items) == str:
-            return self._fullDict[item]
+            return self._fullDict[items]
         else:
             raise ValueError("Input parameter name(s) must be of type string or list of strings.")
         
@@ -70,7 +70,7 @@ class MesaAccess:
                 if key in self._fullDict.keys():
                     self.mesaFileAccess.removeValue(key)
         elif type(keys) == str:
-            if key in self._fullDict.keys():
-                    self.mesaFileAccess.removeValue(key)
+            if keys in self._fullDict.keys():
+                    self.mesaFileAccess.removeValue(keys)
         else:
             raise ValueError("Input parameter name(s) must be of type string or list of strings.")
