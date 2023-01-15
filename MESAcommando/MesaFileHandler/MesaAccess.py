@@ -41,7 +41,7 @@ class MesaAccess:
             self.mesaFileAccess.addValue(key,value)
         self._fullDict = self.stripFullDict()
 
-    def __delitem__(self, key):
+    def delitem(self, key):
         if key in self._fullDict.keys():
             self.mesaFileAccess.removeValue(key)
 
@@ -61,4 +61,5 @@ class MesaAccess:
     
     def del_various(self, keys):
         for key in keys:
-            self.__delitem__(self, key)
+            if key in self._fullDict.keys():
+                self.mesaFileAccess.removeValue(key)
