@@ -31,10 +31,10 @@ class MesaAccess:
     def keys(self):
         return self._fullDict.keys()
 
-    def getitem(self, item):
+    def __getitem__(self, item):
         return self._fullDict[item]
 
-    def setitem(self, key, value):
+    def __setitem__(self, key, value):
         if key in self._fullDict.keys():
             self.mesaFileAccess[key] = value
         else:
@@ -49,7 +49,7 @@ class MesaAccess:
     def set_various(self, keys, values):
         if len(keys) == len(values):
             for i in range(len(keys)):
-                self.setitem(keys[i], values[i])
+                self.__setitem__(keys[i], values[i])
         else:
             raise ValueError(f"Length of keys {keys} does not match length of {values}")
 
