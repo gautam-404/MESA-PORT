@@ -118,18 +118,21 @@ class ProjectOps:
     def rerun(self, photo, silent=False):
         pwd = os.getcwd()
         try:
-            if silent == False:
-                with console.status("Running from photo...", spinner="moon"):
-                    self.oscommand(f"{pwd}/re {photo}")
-            elif silent == True:
-                with console.status("Running from photo...", spinner="moon"):
-                    file = open("{pwd}/runlog", "a+")  # append mode
-                    self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)
-                    file.write( "\n\n"+("*"*100)+"\n\n" )
-                    file.close()
+            if not os.path.isfile(f"{pwd}/photos/{photo}"):
+                raise FileNotFoundError("Photo '{photo}' could not be found.")
             else:
-                raise ValueError("Invalid input for argument 'silent'")
-            print("Done with the run!\n")
+                if silent == False:
+                    with console.status("Running from photo...", spinner="moon"):
+                        self.oscommand(f"{pwd}/re {pwd}/photos/{photo}")
+                elif silent == True:
+                    with console.status("Running from photo...", spinner="moon"):
+                        file = open("{pwd}/runlog", "a+")  # append mode
+                        self.oscommand(f"{pwd}/re {pwd}/photos/{photo}", stdout = file, stderr = file)
+                        file.write( "\n\n"+("*"*100)+"\n\n" )
+                        file.close()
+                else:
+                    raise ValueError("Invalid input for argument 'silent'.")
+                print("Done with the run!\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/re'  does not exists...could not restart!")
             print("Rerun terminated!")
@@ -139,7 +142,7 @@ class ProjectOps:
         os.chdir("..")
         pwd = os.getcwd()
         try:
-            self.oscommand(f"cp {pwd}/{inlistPath} {pwd}/{self.projName}/inlist_project")
+            self.oscommand(f"cp {inlistPath} {pwd}/{self.projName}/inlist_project")
             os.chdir(self.projName)
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the inlist {inlistPath} does not exists...could not load!")
@@ -150,7 +153,7 @@ class ProjectOps:
         os.chdir("..")
         pwd = os.getcwd()
         try:
-            self.oscommand(f"cp {pwd}/{inlistPath} {pwd}/{self.projName}/inlist_pgstar")
+            self.oscommand(f"cp {inlistPath} {pwd}/{self.projName}/inlist_pgstar")
             os.chdir(self.projName)
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the inlist '{inlistPath}' does not exists...could not load!")
