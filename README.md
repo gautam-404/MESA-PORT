@@ -25,5 +25,5 @@ accessObject = MesaAccess
 * `opsObject.loadProjInlist("/path/to/inlist")`
 * `opsObject.loadPGstarInlist("/path/to/inlist")`
 * `accessObject["your_parameter"] = value    ## write`  
-* `value = accessObject.["your_parameter]"   ## read]`
-* `accessObject.delitem("your_parameter)"    ## delete)`
+* `value = accessObject.["your_parameter]"   ## read`
+* `accessObject.delitem("your_parameter)"    ## delete`
