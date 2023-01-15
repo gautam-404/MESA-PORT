@@ -20,10 +20,10 @@ class MesaEnvironmentHandler(IMesaInterface):
         defaultsDir = mesaDir + defaultsPath
 
         if not os.path.exists(mesaDir):
-            raise FileNotFoundError("Mesa dir "+mesaDir+" does not exist. Be sure that it exists on your machine")
+            raise FileNotFoundError(f"Mesa dir {mesaDir} does not exist. Be sure that it exists on your machine")
 
         if not os.path.exists(defaultsDir):
-            raise FileNotFoundError("Defaults directory "+defaultsDir+" does not exist.")
+            raise FileNotFoundError(f"Defaults directory {defaultsDir} does not exist.")
 
         return mesaDir,defaultsDir
 
@@ -34,7 +34,7 @@ class MesaEnvironmentHandler(IMesaInterface):
                     return section, paramDict[parameter]
                 else:
                     raise TypeError(
-                        "Type of value for parameter " + parameter + " is wrong, expected type " + str(type(value)))
+                        f"Type of value for parameter {parameter} is wrong, expected type {str(type(value))}")
 
 
         return "",value

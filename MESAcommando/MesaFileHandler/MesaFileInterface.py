@@ -14,7 +14,7 @@ class IMesaInterface:
 
         for matches in p.findall(text):
             if len(matches) != 2:
-                raise AttributeError("Regex needs to match 2 items here! Found "+str(len(matches)))
+                raise AttributeError(f"Regex needs to match 2 items here! Found {str(len(matches))}")
 
             parameters[matches[0]] = self.convertToPythonTypes(matches[1])
 
@@ -38,7 +38,7 @@ class IMesaInterface:
             try:
                 return int(data)
             except:
-                raise AttributeError("Cannot convert "+data+" to known type!")
+                raise AttributeError(f"Cannot convert {data} to known type!")
 
     def convertToFortranType(self, data):
         if isinstance(data,bool):
@@ -48,7 +48,7 @@ class IMesaInterface:
         elif isinstance(data,float) or isinstance(data,int):
             return str(data)
         else:
-            raise AttributeError("Cannot convert type "+str(type(data))+"to known type")
+            raise AttributeError(f"Cannot convert type {str(type(data))} to known type")
 
     def readFile(self,fileName):
         with open(fileName) as f:

@@ -56,7 +56,7 @@ class MesaFileAccess(IMesaInterface):
         section,parmValue = self.envObject.checkParameter(key, value)
 
         if section == "":
-            raise KeyError("The parameter "+key+" is not available through Mesa. Please add it to the defaults list,"
+            raise KeyError(f"The parameter {key} is not available through Mesa. Please add it to the defaults list,"
                                                   "before adding it to the inlist files")
 
         parmValue = parmValue if value is None else value
@@ -81,11 +81,11 @@ class MesaFileAccess(IMesaInterface):
         section,_ = self.envObject.checkParameter(key)
 
         if section == "":
-            raise KeyError("The parameter "+key+" is not available through Mesa. Please add it to the defaults list,"
+            raise KeyError(f"The parameter {key} is not available through Mesa. Please add it to the defaults list,"
                                                   "before adding it to the inlist files")
 
         if section not in sections:
-            raise ValueError("Mesa says section for parameter "+key+" is "+section+". This section is not in the "
+            raise ValueError(f"Mesa says section for parameter {key} is {section}. This section is not in the "
                                                                                    "Sections read by this code")
 
         for file, parameteDict in self.dataDict[section].items():
