@@ -5,7 +5,7 @@ with open('requirements.txt') as f:
 
 
 setup(
-    name='MESA-commando',
+    name='MESAcommando',
     version='1.0',
     packages=find_packages(),
     install_requires=required,
