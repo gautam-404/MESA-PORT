@@ -11,8 +11,9 @@
 ## Usage
 
 ***Import***
-```
+```python
 from MESAcommando import  ProjectOps, MesaAccess
+
 opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom project name
 accessObject = MesaAccess
 
