@@ -118,7 +118,7 @@ class ProjectOps:
         pwd = os.getcwd()
         try:
             if not os.path.isfile(f"{pwd}/photos/{photo}"):
-                raise FileNotFoundError("Photo '{photo}' could not be found.")
+                raise FileNotFoundError(f"Photo '{photo}' could not be found.")
             else:
                 if silent == False:
                     with console.status("Running from photo...", spinner="moon"):

@@ -49,7 +49,7 @@ class MesaAccess:
         elif type(keys) == str:
             self.setitem(keys, values)
         else:
-            raise ValueError("Input parameter name(s) must be of type string or list of strings.")
+            raise TypeError("Input parameter name(s) must be of type string or list of strings.")
 
     def get(self, items):
         if type(items) == list:
@@ -60,7 +60,7 @@ class MesaAccess:
         elif type(items) == str:
             return self._fullDict[items]
         else:
-            raise ValueError("Input parameter name(s) must be of type string or list of strings.")
+            raise TypeError("Input parameter name(s) must be of type string or list of strings.")
         
 
     
@@ -73,4 +73,4 @@ class MesaAccess:
             if keys in self._fullDict.keys():
                     self.mesaFileAccess.removeValue(keys)
         else:
-            raise ValueError("Input parameter name(s) must be of type string or list of strings.")
+            raise TypeError("Input parameter name(s) must be of type string or list of strings.")
