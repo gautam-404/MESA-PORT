@@ -1,6 +1,6 @@
 # MESAcommando
 
-### Be the commander!!
+### You be the commander! 🫵
 
 * Now create, run and share your MESA projects!
   - With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
