@@ -1,4 +1,4 @@
-# MESAcommando  
+# MESA-commando  
 A Python command framework for MESA
 
 ### 🫵 Be the commander! 
