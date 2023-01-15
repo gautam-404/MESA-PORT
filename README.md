@@ -31,11 +31,11 @@ accessObject = MesaAccess()
 
 * Using a `ProjectOps` class object:
   ```python
-  opsObject.create(overwrite=False, clean=False)
+  opsObject.create(overwrite=False, clean=False)    ## CLI is shown if no arguments are passed
+  opsObject.clean()
   opsObject.make()
   opsObject.run(silent=False)
   opsObject.rerun("photo_number")                   ## Searches photos folder inside the project dir
-  opsObject.clean()
   opsObject.loadProjInlist("/path/to/inlist")       ## Load custom inlist_project, reads absolute path
   opsObject.loadPGstarInlist("/path/to/inlist")     ## Load custom inlist_pgstar, reads absolute path
   ```
