@@ -7,7 +7,7 @@ A Python module to command and control [MESA](https://github.com/MESAHub/mesa)
 * Create, run and share your MESA projects!  
   With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
 
-* This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Courtesy of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
+* This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Brainchild of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
 
 <br>
 
