@@ -2,6 +2,7 @@ import os, subprocess, shlex
 from MESAcommando.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
 import click
 from rich.console import Console
+console = Console()
 
 class ProjectOps:
     def __init__(self, name=''):
@@ -86,7 +87,7 @@ class ProjectOps:
     def make(self):
         pwd = os.getcwd()
         try:
-            with Console.status("Making...") as status:
+            with console.status("Making...", spinner="moon"):
                 self.oscommand(f"{pwd}/mk", stdout=subprocess.DEVNULL)
             print("Done making.\n")
         except subprocess.CalledProcessError:
@@ -98,10 +99,10 @@ class ProjectOps:
         pwd = os.getcwd()
         try:
             if silent == False:
-                with Console.status("Running...") as status:
+                with console.status("Running...", spinner="moon"):
                     self.oscommand(f"{pwd}/rn")
             elif silent == True:
-                with Console.status("Running...") as status:
+                with console.status("Running...", spinner="moon"):
                     file = open(f"{pwd}/runlog", "a+") 
                     self.oscommand(f"{pwd}/rn", stdout = file, stderr = file)
                     file.write( "\n\n"+("*"*100)+"\n\n" )
@@ -118,10 +119,10 @@ class ProjectOps:
         pwd = os.getcwd()
         try:
             if silent == False:
-                with Console.status("Running from photo...") as status:
+                with console.status("Running from photo...", spinner="moon"):
                     self.oscommand(f"{pwd}/re {photo}")
             elif silent == True:
-                with Console.status("Running from photo...") as status:
+                with console.status("Running from photo...", spinner="moon"):
                     file = open("{pwd}/runlog", "a+")  # append mode
                     self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)
                     file.write( "\n\n"+("*"*100)+"\n\n" )
