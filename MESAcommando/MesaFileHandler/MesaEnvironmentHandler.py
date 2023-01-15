@@ -28,7 +28,7 @@ class MesaEnvironmentHandler(IMesaInterface):
         return mesaDir,defaultsDir
 
     def checkParameter(self, parameter, value=None):
-        for section,paramDict in self.dataDict.items():
+        for section, paramDict in self.dataDict.items():
             if parameter in paramDict.keys():
                 if value is None or type(value) == type(paramDict[parameter]):
                     return section, paramDict[parameter]

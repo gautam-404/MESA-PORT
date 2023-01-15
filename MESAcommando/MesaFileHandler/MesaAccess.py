@@ -11,8 +11,8 @@ class MesaAccess:
 
     def stripToDict(self, section):
         retDict = OrderedDict()
-        for file,parameterDict in self.mesaFileAccess.dataDict[section].items():
-            for key,value in parameterDict.items():
+        for file, parameterDict in self.mesaFileAccess.dataDict[section].items():
+            for key, value in parameterDict.items():
                 retDict[key] = value
 
         return retDict

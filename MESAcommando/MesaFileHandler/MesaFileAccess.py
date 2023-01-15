@@ -36,7 +36,7 @@ class MesaFileAccess(IMesaInterface):
 
     def __setitem__(self, key, value):
         for section in sections:
-            for file,parameteDict in self.dataDict[section].items():
+            for file, parameteDict in self.dataDict[section].items():
                 if key in parameteDict.keys():
                     self.dataDict[section][file][key] = value
                     regex = r"(" + key + r".+=)\s* ([\.\w_\d']+)"
