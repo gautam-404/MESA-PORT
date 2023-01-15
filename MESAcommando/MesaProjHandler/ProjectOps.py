@@ -86,7 +86,7 @@ class ProjectOps:
     def make(self):
         pwd = os.getcwd()
         try:
-            with Console.status("Making..."):
+            with Console.status("Making...") as status:
                 self.oscommand(f"{pwd}/mk", stdout=subprocess.DEVNULL)
             print("Done making.\n")
         except subprocess.CalledProcessError:
@@ -98,10 +98,10 @@ class ProjectOps:
         pwd = os.getcwd()
         try:
             if silent == False:
-                with Console.status("Running..."):
+                with Console.status("Running...") as status:
                     self.oscommand(f"{pwd}/rn")
             elif silent == True:
-                with Console.status("Running..."):
+                with Console.status("Running...") as status:
                     file = open(f"{pwd}/runlog", "a+") 
                     self.oscommand(f"{pwd}/rn", stdout = file, stderr = file)
                     file.write( "\n\n"+("*"*100)+"\n\n" )
@@ -118,10 +118,10 @@ class ProjectOps:
         pwd = os.getcwd()
         try:
             if silent == False:
-                with Console.status("Running from photo..."):
+                with Console.status("Running from photo...") as status:
                     self.oscommand(f"{pwd}/re {photo}")
             elif silent == True:
-                with Console.status("Running from photo..."):
+                with Console.status("Running from photo...") as status:
                     file = open("{pwd}/runlog", "a+")  # append mode
                     self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)
                     file.write( "\n\n"+("*"*100)+"\n\n" )
