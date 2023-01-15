@@ -1,23 +1,27 @@
 from MESAcommando import  ProjectOps, MesaAccess
 
 ## Use ProjectOps("your_project") for a custom project name
-work = ProjectOps()          
+work = ProjectOps() 
+work.create(overwrite=True, clean=False)         
 
-## Use boolean arguments 'overwrite' and 'clean' to work on existing projects
-work.create()   
-work.make()           
+w = MesaAccess()
+w["create_pre_main_sequence_model"] = True
 
-work.loadProjInlist("/path/to/inlist")
-# work.loadPGstarInlist("/path/to/inlist")
+# ## Use boolean arguments 'overwrite' and 'clean' to work on existing projects
+# work.create()   
+# work.make()           
 
-object = MesaAccess()
-object["initial_mass"] = 5
+# work.loadProjInlist("/path/to/inlist")
+# # work.loadPGstarInlist("/path/to/inlist")
 
-## Use argument silent=True (False by default) for a silent run, terminal output is redirected to runlog
-work.run()              
+# object = MesaAccess()
+# object["initial_mass"] = 5
 
-## arg silent is False by default
-work.rerun("x450", silent=True)      
+# ## Use argument silent=True (False by default) for a silent run, terminal output is redirected to runlog
+# work.run()              
+
+# ## arg silent is False by default
+# work.rerun("x450", silent=True)      
  
-## Clean the project
-work.clean()              
+# ## Clean the project
+# work.clean()              
