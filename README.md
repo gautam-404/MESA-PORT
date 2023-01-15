@@ -11,6 +11,11 @@ A Python module to command and control [MESA](https://github.com/MESAHub/mesa)
 
 <br>
 
+## Installation
+```
+pip3 install git+https://github.com/gautam-404/MESA-commando.git
+```
+
 ## Usage
 
 ***Import***
