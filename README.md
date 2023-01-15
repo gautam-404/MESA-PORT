@@ -20,7 +20,7 @@ pip install git+https://github.com/gautam-404/MESAcommando.git
 ```python
 from MESAcommando import  ProjectOps, MesaAccess
 
-opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom project name
+opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom/pre-existing project name
 accessObject = MesaAccess()
 
 ```
