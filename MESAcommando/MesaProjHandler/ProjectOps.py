@@ -84,10 +84,10 @@ class ProjectOps:
             
 
     def make(self):
-        print("Making...")
         pwd = os.getcwd()
         try:
-            self.oscommand(f"{pwd}/mk", stdout=subprocess.DEVNULL)
+            with Console.status("Making..."):
+                self.oscommand(f"{pwd}/mk", stdout=subprocess.DEVNULL)
             print("Done making.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/mk' does not exists...could not make!")
@@ -98,10 +98,10 @@ class ProjectOps:
         pwd = os.getcwd()
         try:
             if silent == False:
-                with console.status("Running..."):
+                with Console.status("Running..."):
                     self.oscommand(f"{pwd}/rn")
             elif silent == True:
-                with console.status("Running..."):
+                with Console.status("Running..."):
                     file = open(f"{pwd}/runlog", "a+") 
                     self.oscommand(f"{pwd}/rn", stdout = file, stderr = file)
                     file.write( "\n\n"+("*"*100)+"\n\n" )
@@ -118,10 +118,10 @@ class ProjectOps:
         pwd = os.getcwd()
         try:
             if silent == False:
-                with console.status("Running from photo..."):
+                with Console.status("Running from photo..."):
                     self.oscommand(f"{pwd}/re {photo}")
             elif silent == True:
-                with console.status("Running from photo..."):
+                with Console.status("Running from photo..."):
                     file = open("{pwd}/runlog", "a+")  # append mode
                     self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)
                     file.write( "\n\n"+("*"*100)+"\n\n" )
