@@ -31,35 +31,46 @@ class MesaAccess:
     def keys(self):
         return self._fullDict.keys()
 
-    def __getitem__(self, item):
-        return self._fullDict[item]
-
-    def __setitem__(self, key, value):
+    def setitem(self, key, value):
         if key in self._fullDict.keys():
             self.mesaFileAccess[key] = value
         else:
             self.mesaFileAccess.addValue(key,value)
         self._fullDict = self.stripFullDict()
 
-    def delitem(self, key):
-        if key in self._fullDict.keys():
-            self.mesaFileAccess.removeValue(key)
 
-
-    def set_various(self, keys, values):
-        if len(keys) == len(values):
-            for i in range(len(keys)):
-                self.__setitem__(keys[i], values[i])
+    def set(self, keys, values):
+        if type(keys) == list:
+            if len(keys) == len(values):
+                for i in range(len(keys)):
+                    self.setitem(keys[i], values[i])
+            else:
+                raise ValueError(f"Length of keys {keys} does not match length of {values}")
+        elif type(keys) == str:
+            self.setitem(keys, values)
         else:
-            raise ValueError(f"Length of keys {keys} does not match length of {values}")
+            raise ValueError("Input parameter name(s) must be of type string or list of strings.")
 
-    def get_various(self, items):
-        got = []
-        for item in items:
-            got.append(self._fullDict[item])
-        return got
+    def get(self, items):
+        if type(items) == list:
+            got = []
+            for item in items:
+                got.append(self._fullDict[item])
+            return got
+        elif type(items) == str:
+            return self._fullDict[item]
+        else:
+            raise ValueError("Input parameter name(s) must be of type string or list of strings.")
+        
+
     
-    def del_various(self, keys):
-        for key in keys:
+    def delete(self, keys):
+        if type(keys) == list:
+            for key in keys:
+                if key in self._fullDict.keys():
+                    self.mesaFileAccess.removeValue(key)
+        elif type(keys) == str:
             if key in self._fullDict.keys():
-                self.mesaFileAccess.removeValue(key)
+                    self.mesaFileAccess.removeValue(key)
+        else:
+            raise ValueError("Input parameter name(s) must be of type string or list of strings.")

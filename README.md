@@ -43,17 +43,15 @@ accessObject = MesaAccess()
 * Using a `MesaAccess` class object:
   ```python
   ## Write
-  accessObject["some_parameter"] = value    
-  # or
-  accessObject.set_various( ["some_parameter1", "some_parameter2"], [value1, value2])
+  accessObject.set(parameters, values)              
+  ## Inputs paramets can be a string or a list of strings
+  ## Input values can be a single value or a list of values
   
   ## Read
-  value = accessObject["some_parameter"]    
-  # or
-  values_list = accessObject.get_various( ["some_parameter1", "some_parameter2"] )
+  value = accessObject.get(parameters)   
+  ## Inputs paramets can be a string or a list of strings
 
   ## Delete
-  accessObject.delitem("some_parameter")
-  # or
-  accessObject.del_various_( ["some_parameter1", "some_parameter2"] )
+  accessObject.delete(parameters)
+  ## Inputs paramets can be a string or a list of strings
   ```
