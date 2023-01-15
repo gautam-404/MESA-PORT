@@ -74,7 +74,6 @@ class ProjectOps:
 
 
     def clean(self):
-        print("Cleaning...")
         pwd = os.getcwd()
         try:
             self.oscommand(f"sh {pwd}/clean")
@@ -126,7 +125,7 @@ class ProjectOps:
                         self.oscommand(f"{pwd}/re {pwd}/photos/{photo}")
                 elif silent == True:
                     with console.status("Running from photo...", spinner="moon"):
-                        file = open("{pwd}/runlog", "a+")  # append mode
+                        file = open(f"{pwd}/runlog", "a+")  # append mode
                         self.oscommand(f"{pwd}/re {pwd}/photos/{photo}", stdout = file, stderr = file)
                         file.write( "\n\n"+("*"*100)+"\n\n" )
                         file.close()
