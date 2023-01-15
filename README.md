@@ -3,7 +3,7 @@
 ### Be the commander!!
 
 * Now create, run and share your MESA projects!
-  - You only need to share your python project. Anyone who has Python and MESA installed, will then be able to run your MESA model using this module. 
+  - With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
 * This package also allows you to manipulate parameters in your inlist files. The package will automatically convert these properly to the right data type and format for fortran. [Courtesy of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
 
 <br>
