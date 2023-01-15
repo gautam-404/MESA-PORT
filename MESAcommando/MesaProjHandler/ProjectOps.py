@@ -111,7 +111,7 @@ class ProjectOps:
             print("Done with the run!\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/rn' does not exists...could not run!")
-            print("Run terminated!")
+            print("Run terminated! Check runlog.")
             
     
     def rerun(self, photo, silent=False):
@@ -122,19 +122,19 @@ class ProjectOps:
             else:
                 if silent == False:
                     with console.status("Running from photo...", spinner="moon"):
-                        self.oscommand(f"{pwd}/re {pwd}/photos/{photo}")
+                        self.oscommand(f"{pwd}/re {photo}")
                 elif silent == True:
                     with console.status("Running from photo...", spinner="moon"):
                         file = open(f"{pwd}/runlog", "a+")  # append mode
-                        self.oscommand(f"{pwd}/re {pwd}/photos/{photo}", stdout = file, stderr = file)
+                        self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)
                         file.write( "\n\n"+("*"*100)+"\n\n" )
                         file.close()
                 else:
                     raise ValueError("Invalid input for argument 'silent'.")
                 print("Done with the run!\n")
         except subprocess.CalledProcessError:
-            print(f"Either the project '{self.projName}' or the file '{self.projName}/re'  does not exists...could not restart!")
-            print("Rerun terminated!")
+            print(f"Either the project '{self.projName}' or the file '{self.projName}/re' does not exists...could not restart!")
+            print("Rerun terminated! Check runlog.")
             
     
     def loadProjInlist(self, inlistPath):
