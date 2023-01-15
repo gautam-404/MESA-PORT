@@ -2,9 +2,10 @@
 
 ### 🫵 Be the commander! 
 
-* Now create, run and share your MESA projects!
-  - With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
-* This package also allows you to manipulate parameters in your inlist files. The package will automatically convert these properly to the right data type and format for fortran. [Courtesy of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
+* Create, run and share your MESA projects!  
+  With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
+
+* This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Courtesy of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
 
 <br>
 
@@ -15,39 +16,26 @@
 from MESAcommando import  ProjectOps, MesaAccess
 
 opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom project name
-accessObject = MesaAccess
+accessObject = MesaAccess()
 
 ```
 
 ***Commands***
 
-* ```python
+* Using a `ProjectOps` class object:
+  ```python
   opsObject.create(overwrite=False, clean=False)
-  ```
-* ```python
-  opsObject.clean()
-  ```
-* ```python
   opsObject.make()
-  ```
-* ```python
   opsObject.run(silent=False)
-  ```
-* ```python
   opsObject.rerun("photo_number")
-  ```
-* ```python
+  opsObject.clean()
   opsObject.loadProjInlist("/path/to/inlist")
-  ```
-* ```python
   opsObject.loadPGstarInlist("/path/to/inlist")
   ```
-* ```python
+
+* Using a `MesaAccess` class object:
+  ```python
   accessObject["your_parameter"] = value    ## write
-  ```
-* ```python
-  value = accessObject["your_parameter]"   ## read
-  ```
-* ```python
-  accessObject.delitem("your_parameter)"    ## delete
+  value = accessObject["your_parameter"]    ## read
+  accessObject.delitem("your_parameter")    ## delete
   ```
