@@ -77,7 +77,7 @@ class ProjectOps:
         print("Cleaning...")
         pwd = os.getcwd()
         try:
-            self.oscommand(f"{pwd}/clean")
+            self.oscommand(f"sh {pwd}/clean")
             print("Done cleaning.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/clean' does not exists...could not clean!")
