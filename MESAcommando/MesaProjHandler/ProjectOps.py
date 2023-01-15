@@ -1,6 +1,7 @@
 import os, subprocess, shlex
 from MESAcommando.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
 import click
+from rich.console import Console
 
 class ProjectOps:
     def __init__(self, name=''):
@@ -94,16 +95,17 @@ class ProjectOps:
         
     
     def run(self, silent=False):
-        print('Running...')
         pwd = os.getcwd()
         try:
             if silent == False:
-                self.oscommand(f"{pwd}/rn")
+                with console.status("Running..."):
+                    self.oscommand(f"{pwd}/rn")
             elif silent == True:
-                file = open(f"{pwd}/runlog", "a+") 
-                self.oscommand(f"{pwd}/rn", stdout = file, stderr = file)
-                file.write( "\n\n"+("*"*100)+"\n\n" )
-                file.close()
+                with console.status("Running..."):
+                    file = open(f"{pwd}/runlog", "a+") 
+                    self.oscommand(f"{pwd}/rn", stdout = file, stderr = file)
+                    file.write( "\n\n"+("*"*100)+"\n\n" )
+                    file.close()
             else:
                 raise ValueError("Invalid input for argument 'silent'")
             print("Done with the run!\n")
@@ -114,15 +116,16 @@ class ProjectOps:
     
     def rerun(self, photo, silent=False):
         pwd = os.getcwd()
-        print("Running from photo...")
         try:
             if silent == False:
-                self.oscommand(f"{pwd}/re {photo}")
+                with console.status("Running from photo..."):
+                    self.oscommand(f"{pwd}/re {photo}")
             elif silent == True:
-                file = open("{pwd}/runlog", "a+")  # append mode
-                self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)
-                file.write( "\n\n"+("*"*100)+"\n\n" )
-                file.close()
+                with console.status("Running from photo..."):
+                    file = open("{pwd}/runlog", "a+")  # append mode
+                    self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)
+                    file.write( "\n\n"+("*"*100)+"\n\n" )
+                    file.close()
             else:
                 raise ValueError("Invalid input for argument 'silent'")
             print("Done with the run!\n")
