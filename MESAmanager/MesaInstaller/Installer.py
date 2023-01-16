@@ -2,8 +2,8 @@ import platform, os
 import requests
 
 class Installer:
-    def __init__(self, ver='', dir=''):
-        self.install(ver='', dir='')
+    def __init__(self, version='', parent_dir=''):
+        self.install(version, parent_dir)
 
     def whichos(self):
         if "macOS" in platform.platform():

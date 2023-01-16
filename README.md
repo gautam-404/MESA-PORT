@@ -5,7 +5,10 @@
 ### Create, modify, run and share your MESA projects!  
 
 * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
+
 * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Brainchild of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
+
+* ***NEW***: Can now install MESA on Linux! See Usage.  Compatibility with MacOS coming soon...
 
 <br>
 
@@ -18,10 +21,15 @@ pip install git+https://github.com/gautam-404/MESAmanager.git
 
 ***Import***
 ```python
-from MESAmanager import  ProjectOps, MesaAccess
+from MESAmanager import  ProjectOps, MesaAccess, Installer
 
 opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom/pre-existing project name
 accessObject = MesaAccess()
+
+## Interactive installer for Linux systems
+Installer()               
+# Arguments: version="ver.si.on" and parent_dir='where/to/install'
+# Available versions options are "latest", "22.11.1", "22.05.1", "21.12.1", "15140" and "12778"
 
 ```
 
