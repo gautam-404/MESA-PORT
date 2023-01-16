@@ -1,5 +1,5 @@
-# MESAcommander
-#### A Python library to ***command and control*** [MESA](https://github.com/MESAHub/mesa)
+# MESAmanager
+#### A Python library to control and administer [MESA](https://github.com/MESAHub/mesa)
 
 
 ### Create, modify, run and share your MESA projects!  
@@ -11,14 +11,14 @@
 
 ## Installation
 ```
-pip install git+https://github.com/gautam-404/MESAcommando.git
+pip install git+https://github.com/gautam-404/MESAmanager.git
 ```
 
 ## Usage
 
 ***Import***
 ```python
-from MESAcommando import  ProjectOps, MesaAccess
+from MESAmanager import  ProjectOps, MesaAccess
 
 opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom/pre-existing project name
 accessObject = MesaAccess()
