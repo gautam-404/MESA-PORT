@@ -1,0 +1,3 @@
+[submodule "MESAcommando/PyMesaHandler"]
+	path = MESAcommando/PyMesaHandler
+	url = https://github.com/gautam-404/PyMesaHandler.git

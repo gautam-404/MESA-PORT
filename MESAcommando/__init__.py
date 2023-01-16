@@ -1,3 +1,2 @@
-from MESAcommando.MesaFileHandler.MesaAccess import MesaAccess
-from MESAcommando.MesaFileHandler import *
+from MesaFileHandler.MesaAccess import MesaAccess
 from MESAcommando.MesaProjHandler.ProjectOps import ProjectOps 

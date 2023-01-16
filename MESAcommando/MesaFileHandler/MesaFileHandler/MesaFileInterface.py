@@ -1,7 +1,7 @@
 import re
 from collections import OrderedDict
 
-from MESAcommando.MesaFileHandler.support import *
+from support import *
 
 class IMesaInterface:
 

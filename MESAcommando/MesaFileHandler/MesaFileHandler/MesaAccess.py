@@ -1,5 +1,5 @@
-from MESAcommando.MesaFileHandler import MesaFileAccess
-from MESAcommando.MesaFileHandler.support import *
+import MesaFileAccess
+from support import *
 
 from collections import OrderedDict
 
