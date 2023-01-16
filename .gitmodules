@@ -1,6 +1,3 @@
-[submodule "MESAcommando/MesaFileHandler"]
-	path = MESAcommando/MesaFileHandler
-	url = https://github.com/gautam-404/MesaFileHandler.git
 [submodule "MESAmanager/MesaFileHandler"]
 	path = MESAmanager/MesaFileHandler
 	url = https://github.com/gautam-404/MesaFileHandler.git
