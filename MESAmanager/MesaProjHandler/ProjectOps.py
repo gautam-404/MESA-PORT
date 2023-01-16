@@ -98,8 +98,8 @@ class ProjectOps:
         pwd = os.getcwd()
         try:
             if silent == False:
-                with console.status("Running...", spinner="moon"):
-                    self.oscommand(f"{pwd}/rn")
+                print("Running...")
+                self.oscommand(f"{pwd}/rn")
             elif silent == True:
                 with console.status("Running...", spinner="moon"):
                     file = open(f"{pwd}/runlog", "a+") 
@@ -114,17 +114,17 @@ class ProjectOps:
             print("Run terminated! Check runlog.")
             
     
-    def rerun(self, photo, silent=False):
+    def resume(self, photo, silent=False):
         pwd = os.getcwd()
         try:
             if not os.path.isfile(f"{pwd}/photos/{photo}"):
                 raise FileNotFoundError(f"Photo '{photo}' could not be found.")
             else:
                 if silent == False:
-                    with console.status("Running from photo...", spinner="moon"):
-                        self.oscommand(f"{pwd}/re {photo}")
+                    print(f"Resuming run from photo {photo}...")
+                    self.oscommand(f"{pwd}/re {photo}")
                 elif silent == True:
-                    with console.status("Running from photo...", spinner="moon"):
+                    with console.status("Resuming run from photo...", spinner="moon"):
                         file = open(f"{pwd}/runlog", "a+")  # append mode
                         self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)
                         file.write( "\n\n"+("*"*100)+"\n\n" )
@@ -133,8 +133,8 @@ class ProjectOps:
                     raise ValueError("Invalid input for argument 'silent'.")
                 print("Done with the run!\n")
         except subprocess.CalledProcessError:
-            print(f"Either the project '{self.projName}' or the file '{self.projName}/re' does not exists...could not restart!")
-            print("Rerun terminated! Check runlog.")
+            print(f"Either the project '{self.projName}' or the file '{self.projName}/re' does not exists...could not resume!")
+            print("Resume terminated! Check runlog.")
             
     
     def loadProjInlist(self, inlistPath):

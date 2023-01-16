@@ -17,7 +17,7 @@ object["initial_mass"] = 5
 work.run()              
 
 ## arg silent is False by default
-work.rerun("x450", silent=True)      
+work.resume("x450", silent=True)      
  
 ## Clean the project
 work.clean()              
