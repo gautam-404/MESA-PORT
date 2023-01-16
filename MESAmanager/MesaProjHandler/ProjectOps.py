@@ -1,5 +1,5 @@
 import os, subprocess, shlex
-from MESAcommando.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
+from MESAmanager.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
 import click
 from rich.console import Console
 console = Console()
