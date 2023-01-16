@@ -28,7 +28,7 @@ accessObject = MesaAccess()
 
 ## Interactive installer for Linux systems
 Installer()               
-# Arguments: version="ver.si.on" and parent_dir='where/to/install'
+# Optional arguments: version="ver.si.on" and parent_dir='where/to/install'
 # Available versions options are "latest", "22.11.1", "22.05.1", "21.12.1", "15140" and "12778"
 
 ```
