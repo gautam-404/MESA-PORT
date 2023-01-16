@@ -1,4 +1,4 @@
-# MESA-commander
+# MESAcommander
 #### A Python library to ***command and control*** [MESA](https://github.com/MESAHub/mesa)
 
 
