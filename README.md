@@ -4,11 +4,13 @@
 
 ### Create, modify, run and share your MESA projects!  
 
+* ***NEW***: Can now install MESA on Linux! See Usage.  Compatibility with MacOS coming soon...
+
 * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
 
 * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Brainchild of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
 
-* ***NEW***: Can now install MESA on Linux! See Usage.  Compatibility with MacOS coming soon...
+
 
 <br>
 
