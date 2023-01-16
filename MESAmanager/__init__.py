@@ -1,3 +1,3 @@
 from .MesaFileHandler import MesaAccess
-from .MesaProjHandler.ProjectOps import ProjectOps 
-from .MesaInstaller.Installer import Installer
+from .MesaProjHandler import ProjectOps 
+from .MesaInstaller import Installer
