@@ -59,36 +59,43 @@ class Installer:
         os.mkdir(dir+"/software")
 
         sdk_tar = dir+"/software/"+sdk_url.split('/')[-1]
-        response = requests.get(sdk_url, stream=True)
+        response = requests.get(sdk_url, stream=True, timeout=10)
         try:
             if response.status_code == 200:
                 with open(sdk_tar, 'wb') as f:
                     f.write(response.raw.read())
-        except Exception as e:
-            print("Could not download  {}")
+        except Exception:
+            print("Could not download MESA SDK. Please try again later.")
 
         mesa_tar = dir+"/software/"+mesa_url.split('/')[-1]
         response = requests.get(mesa_url, stream=True)
-        if response.status_code == 200:
-            with open(mesa_tar, 'wb') as f:
-                f.write(response.raw.read())
+        try:
+            if response.status_code == 200:
+                with open(mesa_tar, 'wb') as f:
+                    f.write(response.raw.read())
+        except Exception:
+            print("Could not download MESA. Please try again later.")
         return sdk_tar, mesa_tar
 
     def install(self, ver='', dir=''):
         ver = self.choose_ver(ver)
         dir = self.choose_dir(dir)
         sdk_url, mesa_url = self.prep_urls(ver)
-        sdk_tar, mesa_tar = self.download(sdk_url, mesa_url)
+        sdk_tar, mesa_tar = self.download(dir, sdk_url, mesa_url)
 
         subprocess.call(f"tar xvfz {sdk_tar} -C {dir}/software/")
         os.remove(sdk_tar)
         subprocess.call(f"export MESASDK_ROOT={dir}/software/mesasdk")
-        subprocess.call(f"source $MESASDK_ROOT/bin/mesasdk_init.sh")
+        subprocess.call("source $MESASDK_ROOT/bin/mesasdk_init.sh")
 
         subprocess.call(f"unzip {mesa_tar} -d {dir}/software/")
         os.remove(mesa_tar)
         subprocess.call(f"export MESA_DIR={dir}/software/{mesa_url.split('/')[-1]}")
-        subprocess.call(f"export OMP_NUM_THREADS=2")
+        subprocess.call("export OMP_NUM_THREADS=2")
+
+        subprocess.call("export GYRE_DIR=$MESA_DIR/gyre/gyre")
+        subprocess.call("cd $GYRE_DIR; make")
+        
 
         print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):")
         source_this=f'''
@@ -96,6 +103,7 @@ class Installer:
         source $MESASDK_ROOT/bin/mesasdk_init.sh
         export MESA_DIR={dir}/software/{mesa_url.split('/')[-1]}
         export OMP_NUM_THREADS=2
+        export GYRE_DIR=$MESA_DIR/gyre/gyre
         '''
         print(source_this)
 
