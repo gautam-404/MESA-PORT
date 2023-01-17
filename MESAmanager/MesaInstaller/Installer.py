@@ -1,4 +1,4 @@
-import platform, os
+import platform, subprocess, os
 import requests
 
 class Installer:
@@ -80,15 +80,15 @@ class Installer:
         sdk_url, mesa_url = self.prep_urls(ver)
         sdk_tar, mesa_tar = self.download(sdk_url, mesa_url)
 
-        os.system(f"tar xvfz {sdk_tar} -C {dir}/software/")
+        subprocess.call(f"tar xvfz {sdk_tar} -C {dir}/software/")
         os.remove(sdk_tar)
-        os.system(f"export MESASDK_ROOT={dir}/software/mesasdk")
-        os.system(f"source $MESASDK_ROOT/bin/mesasdk_init.sh")
+        subprocess.call(f"export MESASDK_ROOT={dir}/software/mesasdk")
+        subprocess.call(f"source $MESASDK_ROOT/bin/mesasdk_init.sh")
 
-        os.system(f"unzip {mesa_tar} -d {dir}/software/")
+        subprocess.call(f"unzip {mesa_tar} -d {dir}/software/")
         os.remove(mesa_tar)
-        os.system(f"export MESA_DIR={dir}/software/{mesa_url.split('/')[-1]}")
-        os.system(f"export OMP_NUM_THREADS=2")
+        subprocess.call(f"export MESA_DIR={dir}/software/{mesa_url.split('/')[-1]}")
+        subprocess.call(f"export OMP_NUM_THREADS=2")
 
         print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):")
         source_this=f'''
