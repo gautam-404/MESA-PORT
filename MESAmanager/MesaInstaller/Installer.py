@@ -1,6 +1,11 @@
-import platform, subprocess, os
+import os
+import platform
+import subprocess
+
 import requests
+from alive_progress import alive_bar
 from rich.console import Console
+
 console = Console()
 
 class Installer:
@@ -17,12 +22,13 @@ class Installer:
 
     def choose_directory(self, directory=''):
         while not os.path.exists(directory):
-            directory = input("Input path to a directoryectory for installation...")
-            try:
-                if os.path.exists(directory):
-                    print(f"MESA SDK and MESA will be installed at {directory}/software/")
-                    return directory
-            except:
+            directory = input("Input path to a directory for installation...")
+            if os.path.exists(directory):
+                print(f"MESA SDK and MESA will be installed at path: {directory}/software/")
+                if not os.path.exists(directory+"/software"):
+                        os.mkdir(directory+"/software")
+                return os.path.abspath(directory+"/software")
+            else:
                 print("Could not find the specified directory. Please try again.")
                 directory = ''
 
@@ -58,34 +64,31 @@ class Installer:
                 mesa_url = "https://zenodo.org/record/7319739/files/mesa-r12778.zip"
         return sdk_url, mesa_url
 
-    def download(self, directory, sdk_url, mesa_url):
-        if os.path.exists(directory):
-            if not os.path.exists(directory+"/software"):
-                os.mkdir(directory+"/software")
-            else:
-                print("Software directory already exists. Continuing...")
-                
-        with console.status("Downloading MESA SDK...", spinner="moon"):
-            sdk_tar = directory+"/software/"+sdk_url.split('/')[-1]
-            response = requests.get(sdk_url, stream=True, timeout=10)
-            try:
-                if response.status_code == 200:
-                    with open(sdk_tar, 'wb') as file:
-                        file.write(response.raw.read())
-            except Exception:
-                print("Could not download MESA SDK. Please try again later.")
-        print("MESA SDK download complete.")
 
-        with console.status("Downloading MESA...", spinner="moon"):
-            mesa_tar = directory+"/software/"+mesa_url.split('/')[-1]
-            response = requests.get(mesa_url, stream=True, timeout=10)
-            try:
-                if response.status_code == 200:
-                    with open(mesa_tar, 'wb') as file:
-                        file.write(response.raw.read())
-            except Exception:
-                print("Could not download MESA. Please try again later.")
-        print("MESA download complete.")
+
+    def download(self, directory, sdk_url, mesa_url):
+        def check_n_download(filepath, url):
+            if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
+                print("Skipping download...")
+                print("File already downloaded.")
+            else:
+                chunk_size = 11*1024*1024
+                response = requests.get(url, stream=True, timeout=10)
+                total = int(response.headers.get('content-length', 0))
+                with open(filepath, 'wb') as file, alive_bar(total, unit='B', scale=True) as progressbar:
+                    for chunk in response.raw.stream(chunk_size, decode_content=False):
+                        if chunk:
+                            size_ = file.write(chunk)
+                            progressbar(size_)
+                print("Download complete.")
+        
+        print("Downloading MESA SDK...")
+        sdk_tar = directory+"/"+sdk_url.split('/')[-1]
+        check_n_download(sdk_tar, sdk_url)
+
+        print("Downloading MESA...")
+        mesa_tar = directory+"/"+mesa_url.split('/')[-1]
+        check_n_download(mesa_tar, mesa_url)
         return sdk_tar, mesa_tar
 
     def install(self, ver='', directory=''):
@@ -96,16 +99,19 @@ class Installer:
 
 
         with console.status("Installing MESA SDK...", spinner="moon"):
-            subprocess.call(f"tar xvfz {sdk_tar} -C {directory}/software/")
-            os.remove(sdk_tar)
-            subprocess.call(f"export MESASDK_ROOT={directory}/software/mesasdk")
+            subprocess.call(f"tar xvfz {sdk_tar} -C {directory}/")
+            # os.remove(sdk_tar)
+            subprocess.call(f"export MESASDK_ROOT={directory}/mesasdk")
             subprocess.call("source $MESASDK_ROOT/bin/mesasdk_init.sh")
         print("MESA SDK installation complete.")
 
         with console.status("Installing MESA...", spinner="moon"):
-            subprocess.call(f"unzip {mesa_tar} -d {directory}/software/")
-            os.remove(mesa_tar)
-            subprocess.call(f"export MESA_directory={directory}/software/{mesa_url.split('/')[-1]}")
+            subprocess.call(f"unzip {mesa_tar} -d {directory}/")
+            # os.remove(mesa_tar)
+    #         suprocess.call(f"cd {directory}/software/")
+    #         cd $DIR/mesa-r15140
+    # ./install
+            subprocess.call(f"export MESA_directory={directory}/{mesa_url.split('/')[-1]}")
             subprocess.call("export OMP_NUM_THREADS=2")
         print("MESA installation complete.")
 
@@ -117,9 +123,9 @@ class Installer:
 
         print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):")
         source_this=f'''
-        export MESASDK_ROOT={directory}/software/mesasdk
+        export MESASDK_ROOT={directory}/mesasdk
         source $MESASDK_ROOT/bin/mesasdk_init.sh
-        export MESA_directory={directory}/software/{mesa_url.split('/')[-1]}
+        export MESA_directory={directory}/{mesa_url.split('/')[-1]}
         export OMP_NUM_THREADS=2
         export GYRE_directory=$MESA_directory/gyre/gyre
         '''
