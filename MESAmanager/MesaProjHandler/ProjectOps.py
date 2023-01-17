@@ -28,14 +28,14 @@ class ProjectOps:
                 os._exit()
 
         def cleanCheck():
-            if clean == None:
+            if clean is None:
                 if click.confirm(f"Clean the existing '{self.projName}' project for re-use?", default=False):
                     self.clean()
                 else:
                     useExisting()
-            elif clean == True:
+            elif clean is True:
                 self.clean()
-            elif clean == False:
+            elif clean is False:
                 print(f"Using the already existing '{self.projName}' project as it is.")
             else:
                 raise ValueError("Invalid input for argument 'clean'.")
@@ -48,12 +48,12 @@ class ProjectOps:
             os.rename("work", self.projName)
             os.chdir(self.projName)
 
-        if self.found == True:
-            if overwrite == True:
+        if self.found is True:
+            if overwrite is True:
                 writeover()
-            elif overwrite == False:
+            elif overwrite is False:
                 cleanCheck()
-            elif overwrite == None:
+            elif overwrite is None:
                 print(f"Mesa project named '{self.projName}' already exists!")
                 if not click.confirm(f"Use the already existing '{self.projName}' project as it is?", default=False):
                     if click.confirm("Do you wish to overwrite?", default=False):
@@ -97,10 +97,10 @@ class ProjectOps:
     def run(self, silent=False):
         pwd = os.getcwd()
         try:
-            if silent == False:
+            if silent is False:
                 print("Running...")
                 self.oscommand(f"{pwd}/rn")
-            elif silent == True:
+            elif silent is True:
                 with console.status("Running...", spinner="moon"):
                     file = open(f"{pwd}/runlog", "a+") 
                     self.oscommand(f"{pwd}/rn", stdout = file, stderr = file)
@@ -120,10 +120,10 @@ class ProjectOps:
             if not os.path.isfile(f"{pwd}/photos/{photo}"):
                 raise FileNotFoundError(f"Photo '{photo}' could not be found.")
             else:
-                if silent == False:
+                if silent is False:
                     print(f"Resuming run from photo {photo}...")
                     self.oscommand(f"{pwd}/re {photo}")
-                elif silent == True:
+                elif silent is True:
                     with console.status("Resuming run from photo...", spinner="moon"):
                         file = open(f"{pwd}/runlog", "a+")  # append mode
                         self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)

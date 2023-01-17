@@ -1,6 +1,8 @@
 # Build
 build/*
 **/*egg*
+**/__pycache__/
+test/*
 
 # Jupyter Notebook
 .ipynb_checkpoints

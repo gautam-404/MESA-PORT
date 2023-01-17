@@ -1,5 +1,7 @@
 import platform, subprocess, os
 import requests
+from rich.console import Console
+console = Console()
 
 class Installer:
     def __init__(self, version='', parent_directory=''):
@@ -57,24 +59,27 @@ class Installer:
 
     def download(self, directory, sdk_url, mesa_url):
         os.mkdir(directory+"/software")
+        with console.status("Downloading MESA SDK...", spinner="moon"):
+            sdk_tar = directory+"/software/"+sdk_url.split('/')[-1]
+            response = requests.get(sdk_url, stream=True, timeout=10)
+            try:
+                if response.status_code == 200:
+                    with open(sdk_tar, 'wb') as file:
+                        file.write(response.raw.read())
+            except Exception:
+                print("Could not download MESA SDK. Please try again later.")
+        print("MESA SDK download complete.")
 
-        sdk_tar = directory+"/software/"+sdk_url.split('/')[-1]
-        response = requests.get(sdk_url, stream=True, timeout=10)
-        try:
-            if response.status_code == 200:
-                with open(sdk_tar, 'wb') as file:
-                    file.write(response.raw.read())
-        except Exception:
-            print("Could not download MESA SDK. Please try again later.")
-
-        mesa_tar = directory+"/software/"+mesa_url.split('/')[-1]
-        response = requests.get(mesa_url, stream=True)
-        try:
-            if response.status_code == 200:
-                with open(mesa_tar, 'wb') as file:
-                    file.write(response.raw.read())
-        except Exception:
-            print("Could not download MESA. Please try again later.")
+        with console.status("Downloading MESA...", spinner="moon"):
+            mesa_tar = directory+"/software/"+mesa_url.split('/')[-1]
+            response = requests.get(mesa_url, stream=True, timeout=10)
+            try:
+                if response.status_code == 200:
+                    with open(mesa_tar, 'wb') as file:
+                        file.write(response.raw.read())
+            except Exception:
+                print("Could not download MESA. Please try again later.")
+        print("MESA download complete.")
         return sdk_tar, mesa_tar
 
     def install(self, ver='', directory=''):
@@ -83,18 +88,25 @@ class Installer:
         sdk_url, mesa_url = self.prep_urls(ver)
         sdk_tar, mesa_tar = self.download(directory, sdk_url, mesa_url)
 
-        subprocess.call(f"tar xvfz {sdk_tar} -C {directory}/software/")
-        os.remove(sdk_tar)
-        subprocess.call(f"export MESASDK_ROOT={directory}/software/mesasdk")
-        subprocess.call("source $MESASDK_ROOT/bin/mesasdk_init.sh")
 
-        subprocess.call(f"unzip {mesa_tar} -d {directory}/software/")
-        os.remove(mesa_tar)
-        subprocess.call(f"export MESA_directory={directory}/software/{mesa_url.split('/')[-1]}")
-        subprocess.call("export OMP_NUM_THREADS=2")
+        with console.status("Installing MESA SDK...", spinner="moon"):
+            subprocess.call(f"tar xvfz {sdk_tar} -C {directory}/software/")
+            os.remove(sdk_tar)
+            subprocess.call(f"export MESASDK_ROOT={directory}/software/mesasdk")
+            subprocess.call("source $MESASDK_ROOT/bin/mesasdk_init.sh")
+        print("MESA SDK installation complete.")
 
-        subprocess.call("export GYRE_directory=$MESA_directory/gyre/gyre")
-        subprocess.call("cd $GYRE_directory; make")
+        with console.status("Installing MESA...", spinner="moon"):
+            subprocess.call(f"unzip {mesa_tar} -d {directory}/software/")
+            os.remove(mesa_tar)
+            subprocess.call(f"export MESA_directory={directory}/software/{mesa_url.split('/')[-1]}")
+            subprocess.call("export OMP_NUM_THREADS=2")
+        print("MESA installation complete.")
+
+        with console.status("Installing GYRE...", spinner="moon"):
+            subprocess.call("export GYRE_directory=$MESA_directory/gyre/gyre")
+            subprocess.call("cd $GYRE_directory; make")
+        print("GYRE installation complete.")
         
 
         print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):")
