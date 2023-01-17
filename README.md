@@ -1,10 +1,10 @@
 # MESAmanager
-#### A Python library to control and administer [MESA](https://github.com/MESAHub/mesa)
+#### A Python package to control and administer [MESA](https://github.com/MESAHub/mesa)
 
 
 ### Create, modify, run and share your MESA projects!  
 
-* ***NEW***: Can now install MESA on Linux! See Usage. Installer compatibility with MacOS coming soon...
+* ***NEW***: Now install MESA on Linux with just python! See Usage. Installer compatibility with MacOS coming soon...
 
 * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
 
