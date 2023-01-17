@@ -3,3 +3,4 @@ numpy
 click
 rich
 requests
+alive_progress
