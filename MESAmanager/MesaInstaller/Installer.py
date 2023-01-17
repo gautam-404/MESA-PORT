@@ -2,6 +2,7 @@ import os, shutil, sys
 import platform
 import tarfile
 import zipfile
+import subprocess 
 
 import requests
 from alive_progress import alive_bar
@@ -85,8 +86,7 @@ class Installer:
     def download(self, directory, sdk_url, mesa_url):
         def check_n_download(filepath, url):
             if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
-                print("Skipping download...")
-                print("File already downloaded.")
+                print("Skipping download! File already downloaded.")
             else:
                 chunk_size = 11*1024*1024
                 response = requests.get(url, stream=True, timeout=10)
@@ -109,15 +109,24 @@ class Installer:
 
 
 
-    def install_pre_reqs(self):
+    def install_pre_reqs(self, logfile):
         if self.whichos() == "Linux":
-            os.system('''
-                    sudo apt-get update
-                    sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 libx11-dev zlib1g zlib1g-dev tcsh \\
-                        libX11 libX11-devel zlib zlib-devel \\
-                        zlib-dev libc6-dev \\
-                        glibc
-                        ''')
+            subprocess.call("sudo apt-get update", shell=True, stdout=logfile, stderr=logfile)
+            try:
+                subprocess.call("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
+                libx11-dev zlib1g zlib1g-dev tcsh", shell=True, stdout=logfile, stderr=logfile)
+            except:
+                try:
+                    subprocess.call("sudo apt-get install -yq binutils make perl libX11 libX11-devel zlib zlib-devel tcsh",\
+                     shell=True, stdout=logfile, stderr=logfile)
+                except:
+                    try:
+                        subprocess.call("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc",\
+                         shell=True, stdout=logfile, stderr=logfile)
+                    except:
+                        pass
+            
+
 
 
     def print_env_vars(self, directory, mesa_dir):
@@ -130,19 +139,7 @@ class Installer:
         '''
         print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):")
         print(source_this)
-
-
-
-
-    def set_env_vars(self, directory, mesa_dir):
-        os.environ['MESASDK_ROOT'] = directory+"/mesasdk"
-        os.system(f"export MESASDK_ROOT={directory}/mesasdk && source $MESASDK_ROOT/bin/mesasdk_init.sh")
-        os.environ['MESA_DIR'] = mesa_dir
-        os.environ['OMP_NUM_THREADS'] = "2"
-        os.environ['GYRE_directory'] = mesa_dir+"/gyre/gyre"
-
-
-
+        
 
     def extract_mesa(self, directory, sdk_tar, mesa_zip):
         with console.status("Extracting MESA SDK...", spinner="moon"):
@@ -168,15 +165,24 @@ class Installer:
         sdk_tar, mesa_zip = self.download(directory, sdk_url, mesa_url)
         mesa_dir = directory+'/'+mesa_zip.split('/')[-1][0:-4]
 
-        self.install_pre_reqs()
-        self.extract_mesa(directory, sdk_tar, mesa_zip)
-        self.set_env_vars(directory, mesa_dir)
+        with open(f"{directory}/install_log.txt", "w+") as logfile:
+            with console.status("Installing MESA pre-requisites...", spinner="moon"):
+                self.install_pre_reqs(logfile)
+            # self.extract_mesa(directory, sdk_tar, mesa_zip)
 
-        with console.status("Installing...", spinner="moon"):
-            if os.system("cd $MESA_DIR && chmod +x clean && chmod +x install && ./clean && ./install") != 0:
-                print("Installation failed.")
-            if os.system("cd $GYRE_DIR && chmod +x make && make") != 0:
-                print("Installation failed.")
+            with console.status("Installing MESA...", spinner="moon"):
+                run_shell =f'''
+                /bin/bash -c \"
+                export MESASDK_ROOT={directory}/mesasdk \\
+                && export MESA_DIR={mesa_dir} \\
+                && export OMP_NUM_THREADS=2 \\
+                && export GYRE_directory={mesa_dir}/gyre/gyre \\
+                && source {directory}/mesasdk/bin/mesasdk_init.sh \\
+                && chmod -R +x {mesa_dir} \\
+                && cd {mesa_dir} && ./clean  && ./install \\
+                && cd {mesa_dir}/gyre/gyre && make\"
+                '''
+                subprocess.call(run_shell, shell=True, stdout=logfile)
         print("Installation complete.")
         self.print_env_vars(directory, mesa_dir)
 

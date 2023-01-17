@@ -4,6 +4,9 @@ build/*
 **/__pycache__/
 test/*
 
+# Gitpod
+.gitpod.yml
+
 # Jupyter Notebook
 .ipynb_checkpoints
 
