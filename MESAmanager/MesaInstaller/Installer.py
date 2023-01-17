@@ -18,11 +18,12 @@ class Installer:
     def choose_directory(self, directory=''):
         while not os.path.exists(directory):
             directory = input("Input path to a directoryectory for installation...")
-            if os.path.exists(directory):
-                print(f"MESA SDK and MESA will be installed at {directory}/software/")
-                return directory
-            else:
-                print("Could not find the specified directoryectory. Please try again.")
+            try:
+                if os.path.exists(directory):
+                    print(f"MESA SDK and MESA will be installed at {directory}/software/")
+                    return directory
+            except:
+                print("Could not find the specified directory. Please try again.")
                 directory = ''
 
     def choose_ver(self, ver=''):
@@ -58,7 +59,12 @@ class Installer:
         return sdk_url, mesa_url
 
     def download(self, directory, sdk_url, mesa_url):
-        os.mkdir(directory+"/software")
+        if os.path.exists(directory):
+            if not os.path.exists(directory+"/software"):
+                os.mkdir(directory+"/software")
+            else:
+                print("Software directory already exists. Continuing...")
+                
         with console.status("Downloading MESA SDK...", spinner="moon"):
             sdk_tar = directory+"/software/"+sdk_url.split('/')[-1]
             response = requests.get(sdk_url, stream=True, timeout=10)
