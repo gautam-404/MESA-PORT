@@ -17,7 +17,6 @@ class Installer:
 
 
 
-
     def whichos(self):
         if "macOS" in platform.platform():
             raise OSError("MacOS is not supported by the installer yet!")
@@ -25,7 +24,6 @@ class Installer:
             return "Linux"
         else:
             raise OSError(f"OS {platform.platform()} not compatible.")
-
 
 
 
@@ -43,7 +41,6 @@ class Installer:
         if not os.path.exists(directory+"/software"):
             os.mkdir(directory+"/software")
         return os.path.abspath(directory+"/software")
-
 
 
 
@@ -124,8 +121,7 @@ class Installer:
                         subprocess.call("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc",\
                          shell=True, stdout=logfile, stderr=logfile)
                     except:
-                        pass
-            
+                        pass            
 
 
 
@@ -141,6 +137,7 @@ class Installer:
         print(source_this)
         
 
+
     def extract_mesa(self, directory, sdk_tar, mesa_zip):
         with console.status("Extracting MESA SDK...", spinner="moon"):
             with tarfile.open(sdk_tar, 'r:gz') as tarball:
@@ -154,7 +151,6 @@ class Installer:
                 zip_ref.extractall(f'{directory}/')
             # os.remove(mesa_zip)
         print("MESA extraction complete.")
-
 
 
 
