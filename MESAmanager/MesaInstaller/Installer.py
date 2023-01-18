@@ -30,7 +30,7 @@ class Installer:
     def whichos(self):
         if "macOS" in platform.platform():
             manufacturer = cpuinfo.get_cpu_info().get('brand_raw')
-            arch = 'Intel' if 'Intel' in manufacturer.lower() else 'ARM'
+            arch = 'Intel' if 'intel' in manufacturer.lower() else 'ARM'
             print(f'macOS-{arch} detected.')
             return f"macOS-{arch}"
         elif "Linux" in platform.platform():
