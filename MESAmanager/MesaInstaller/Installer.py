@@ -29,14 +29,14 @@ class Installer:
 
     def choose_directory(self, directory=''):
         while not os.path.exists(directory):
-            directory = input("Input path to a directory for installation...")
+            directory = input("Input path to a directory for installation...    ")
             if os.path.exists(directory):
-                print(f"MESA SDK and MESA will be installed at path: {directory}/software/")
+                print(f"MESA SDK and MESA will be installed at path: {directory}/software/\n")
                 if not os.path.exists(directory+"/software"):
                     os.mkdir(directory+"/software")
                 return os.path.abspath(directory+"/software")
             else:
-                print("Could not find the specified directory. Please try again.")
+                print("Could not find the specified directory. Please try again.\n")
                 directory = ''
         if not os.path.exists(directory+"/software"):
             os.mkdir(directory+"/software")
@@ -51,7 +51,7 @@ class Installer:
             print(versions)
             ver = input("Input the desired version...")
             if ver not in versions:
-                print("Not recognised, try again.")
+                print("Not recognised, try again.\n")
         return ver
 
 
@@ -83,7 +83,7 @@ class Installer:
     def download(self, directory, sdk_url, mesa_url):
         def check_n_download(filepath, url):
             if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
-                print("Skipping download! File already downloaded.")
+                print("Skipping download! File already downloaded.\n")
             else:
                 chunk_size = 11*1024*1024
                 response = requests.get(url, stream=True, timeout=10)
@@ -93,7 +93,7 @@ class Installer:
                         if chunk:
                             size_ = file.write(chunk)
                             progressbar(size_)
-                print("Download complete.")
+                print("Download complete.\n")
         
         print("Downloading MESA SDK...")
         sdk_tar = directory+"/"+sdk_url.split('/')[-1]
@@ -145,12 +145,12 @@ class Installer:
                     shutil.rmtree(f'{directory}/mesasdk')
                 tarball.extractall(f'{directory}/')
             # os.remove(sdk_tar)
-        print("MESA SDK extraction complete.")
+        print("MESA SDK extraction complete.\n")
         with console.status("Extracting MESA...", spinner="moon"):
             with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
                 zip_ref.extractall(f'{directory}/')
             # os.remove(mesa_zip)
-        print("MESA extraction complete.")
+        print("MESA extraction complete.\n")
 
 
 
@@ -162,9 +162,9 @@ class Installer:
         mesa_dir = directory+'/'+mesa_zip.split('/')[-1][0:-4]
 
         with open(f"{directory}/install_log.txt", "w+") as logfile:
-            with console.status("Installing MESA pre-requisites...", spinner="moon"):
+            with console.status("Installing MESA pre-requisites...\n", spinner="moon"):
                 self.install_pre_reqs(logfile)
-            # self.extract_mesa(directory, sdk_tar, mesa_zip)
+            self.extract_mesa(directory, sdk_tar, mesa_zip)
 
             with console.status("Installing MESA...", spinner="moon"):
                 run_shell =f'''
@@ -179,6 +179,6 @@ class Installer:
                 && cd {mesa_dir}/gyre/gyre && make\"
                 '''
                 subprocess.call(run_shell, shell=True, stdout=logfile)
-        print("Installation complete.")
+        print("Installation complete.\n")
         self.print_env_vars(directory, mesa_dir)
 
