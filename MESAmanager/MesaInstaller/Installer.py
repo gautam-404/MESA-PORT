@@ -1,4 +1,3 @@
-import getpass
 import os
 import platform
 import shlex
@@ -21,7 +20,7 @@ class Installer:
         self.cleanafter = cleanafter
         self.directory = self.choose_directory(parent_directory)
         self.ostype = self.whichos()
-        print("OS type:", self.ostype)
+        print(f"OS type: {self.ostype}\n")
         self.install(version)
         return
 
@@ -165,6 +164,7 @@ class Installer:
                 if self.cleanafter:
                     os.remove(sdk_download)
                 print("MESA SDK package installation complete.\n")
+
         with console.status("Extracting MESA", spinner="moon"):
             with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
                 zip_ref.extractall(self.directory)
@@ -181,24 +181,26 @@ class Installer:
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
         with open(f"{self.directory}/install_log.txt", "w+") as logfile:
-            subprocess.call(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+            subprocess.call(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)    ## to get sudo password prompt out of the way
             with console.status("Installing pre-requisites", spinner="moon"):
                 self.install_pre_reqs(logfile)
             self.extract_mesa(sdk_download, mesa_zip, logfile)
 
             with console.status("Installing MESA", spinner="moon"):
+                if self.ostype == "Linux":
+                    subprocess.call("export MESASDK_ROOT={self.directory}/mesasdk && \
+                            source $MESASDK_ROOT/bin/mesasdk_init.sh", shell=True, stdout=logfile, stderr=logfile)
                 run_shell =f'''
                 /bin/bash -c \"
                 export MESASDK_ROOT={self.directory}/mesasdk \\
                 && export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
                 && export GYRE_directory={mesa_dir}/gyre/gyre \\
-                && source {self.directory}/mesasdk/bin/mesasdk_init.sh \\
                 && chmod -R +x {mesa_dir} \\
                 && cd {mesa_dir} && ./clean  && ./install \\
                 && cd {mesa_dir}/gyre/gyre && make\"
                 '''
-                subprocess.call(run_shell, shell=True, stdout=logfile)
+                subprocess.call(run_shell, shell=True, stdout=logfile, stderr=logfile)
         print("Installation complete.\n")
         self.print_env_vars(mesa_dir)
 
