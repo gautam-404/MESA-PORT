@@ -43,8 +43,8 @@ class ProjectOps:
         def writeover():
             os.chdir("..")
             pwd = os.getcwd()
-            self.oscommand(f"rm -rf {pwd}/{self.projName}")
-            self.oscommand(f"cp -r {self.envObject.mesaDir}/star/work {pwd}")
+            subprocess.call(f"rm -rf {pwd}/{self.projName}", shell=True)
+            subprocess.call(f"cp -r {self.envObject.mesaDir}/star/work {pwd}", shell=True)
             os.rename("work", self.projName)
             os.chdir(self.projName)
 
@@ -64,34 +64,29 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'overwrite'.")
         else:
             pwd = os.getcwd()
-            self.oscommand(f"cp -r {self.envObject.mesaDir}/star/work {pwd}/{self.projName}")
+            subprocess.call(f"cp -r {self.envObject.mesaDir}/star/work {pwd}/{self.projName}", shell=True)
             os.chdir(self.projName)
-
-    
-    def oscommand(self, command, **args):
-        command_split = shlex.split(command)
-        return subprocess.check_call(command_split, **args)
 
 
     def clean(self):
         pwd = os.getcwd()
         try:
-            self.oscommand(f"sh {pwd}/clean")
+            subprocess.call(f"sh {pwd}/clean", shell=True, stdout=subprocess.DEVNULL)
             print("Done cleaning.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/clean' does not exists...could not clean!")
-            print("Clean terminated!")
+            print("Clean aborted!")
             
 
     def make(self):
         pwd = os.getcwd()
         try:
             with console.status("Making...", spinner="moon"):
-                self.oscommand(f"{pwd}/mk", stdout=subprocess.DEVNULL)
+                subprocess.call(f"{pwd}/mk", shell=True, stdout=subprocess.DEVNULL)
             print("Done making.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/mk' does not exists...could not make!")
-            print("Make terminated!")
+            print("Make aborted!")
         
     
     def run(self, silent=False):
@@ -99,19 +94,18 @@ class ProjectOps:
         try:
             if silent is False:
                 print("Running...")
-                self.oscommand(f"{pwd}/rn")
+                subprocess.call(f"{pwd}/rn", shell=True)
             elif silent is True:
                 with console.status("Running...", spinner="moon"):
                     file = open(f"{pwd}/runlog", "a+") 
-                    self.oscommand(f"{pwd}/rn", stdout = file, stderr = file)
+                    subprocess.call(f"{pwd}/rn", shell=True, stdout = file, stderr = file)
                     file.write( "\n\n"+("*"*100)+"\n\n" )
                     file.close()
             else:
                 raise ValueError("Invalid input for argument 'silent'")
             print("Done with the run!\n")
         except subprocess.CalledProcessError:
-            print(f"Either the project '{self.projName}' or the file '{self.projName}/rn' does not exists...could not run!")
-            print("Run terminated! Check runlog.")
+            print("Run aborted! Check runlog.")
             
     
     def resume(self, photo, silent=False):
@@ -122,39 +116,67 @@ class ProjectOps:
             else:
                 if silent is False:
                     print(f"Resuming run from photo {photo}...")
-                    self.oscommand(f"{pwd}/re {photo}")
+                    subprocess.call(f"{pwd}/re {photo}", shell=True)
                 elif silent is True:
                     with console.status("Resuming run from photo...", spinner="moon"):
                         file = open(f"{pwd}/runlog", "a+")  # append mode
-                        self.oscommand(f"{pwd}/re {photo}", stdout = file, stderr = file)
+                        subprocess.call(f"{pwd}/re {photo}", shell=True, stdout = file, stderr = file)
                         file.write( "\n\n"+("*"*100)+"\n\n" )
                         file.close()
                 else:
                     raise ValueError("Invalid input for argument 'silent'.")
                 print("Done with the run!\n")
         except subprocess.CalledProcessError:
-            print(f"Either the project '{self.projName}' or the file '{self.projName}/re' does not exists...could not resume!")
-            print("Resume terminated! Check runlog.")
+            print("Resume aborted! Check runlog.")
             
     
     def loadProjInlist(self, inlistPath):
-        os.chdir("..")
-        pwd = os.getcwd()
+        inlistPath = os.path.abspath("../"+inlistPath)
         try:
-            self.oscommand(f"cp {inlistPath} {pwd}/{self.projName}/inlist_project")
-            os.chdir(self.projName)
+            subprocess.call(f"cp {inlistPath} inlist_project", shell=True)
         except subprocess.CalledProcessError:
-            print(f"Either the project '{self.projName}' or the inlist {inlistPath} does not exists...could not load!")
-            print("Loading project inlist terminated!")
+            print("Failed loading project inlist!")
         
     
     def loadPGstarInlist(self, inlistPath):
-        os.chdir("..")
-        pwd = os.getcwd()
+        inlistPath = os.path.abspath("../"+inlistPath)
         try:
-            self.oscommand(f"cp {inlistPath} {pwd}/{self.projName}/inlist_pgstar")
-            os.chdir(self.projName)
+            subprocess.call(f"cp {inlistPath} inlist_pgstar", shell=True)
         except subprocess.CalledProcessError:
-            print(f"Either the project '{self.projName}' or the inlist '{inlistPath}' does not exists...could not load!")
-            print("Loading pgstar inlist terminated!")
+            print("Failed loading pgstar inlist!")
             
+    def loadGyreInput(self, gyre_in):
+        gyre_in = os.path.abspath("../"+gyre_in)
+        try:
+            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
+        except subprocess.CalledProcessError:
+            print("Failed loading gyre_in!")
+
+
+    def runGyre(self, gyre_in='', silent=False):
+        pwd = os.getcwd()
+        self.loadGyreInput(gyre_in)
+        try:
+            if silent is False:
+                print("Running gyre...")
+                subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True)
+            elif silent is True:
+                with console.status("Running gyre...", spinner="moon"):
+                    file = open(f"{pwd}/runlog", "a+") 
+                    subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True, stdout = file, stderr = file)
+                    file.write( "\n\n"+("*"*100)+"\n\n" )
+                    file.close()
+            else:
+                raise ValueError("Invalid input for argument 'silent'")
+            print("Done with the run!\n")
+        except subprocess.CalledProcessError:
+            try:
+                subprocess.call(f"cd $MESA_DIR/gyre/gyre && make", shell=True, stdout=subprocess.DEVNULL)
+                print('''Add $GYRE_DIR to your preferred shell's rc file (e.g. ~/.bashrc or ~/.zshrc):
+                echo "export GYRE_DIR=$MESA_DIR/gyre/gyre" >> ~/.zshrc
+                source ~/.zshrc
+                Then try again.
+                ''')
+            except:    
+                print(f"Check if $MESA_DIR is set in environment variables...could not run!")
+                print("Run terminated! Check runlog.")
