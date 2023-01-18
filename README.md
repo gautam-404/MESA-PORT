@@ -4,7 +4,7 @@
 
 ### Create, modify, run and share your MESA projects!  
 
-* ***NEW***: Now ***install MESA*** on ***Linux*** and ***MacOS*** (ARM/M-series and Intel) with just this python package!
+* ***NEW***: Now ***install MESA*** on ***Linux*** and ***macOS*** (ARM/M-series and Intel) with just this python package!
 
 * ***NEW***: MESAmanager can run also run GYRE! See Usage.
 
@@ -30,7 +30,7 @@ from MESAmanager import  ProjectOps, MesaAccess, Installer
 opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom/pre-existing project name
 accessObject = MesaAccess()
 
-## Interactive installer for Linux and MacOS (ARM/M-series and Intel) systems
+## Interactive installer for Linux and macOS (ARM/M-series and Intel) systems
 Installer()               
 # Optional arguments: version="ver.si.on" and parent_directory='where/to/install'
 # Available versions options are "latest", "22.11.1", "22.05.1", "21.12.1", "15140" and "12778"
