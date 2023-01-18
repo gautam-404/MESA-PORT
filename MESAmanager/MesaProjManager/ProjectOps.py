@@ -45,7 +45,7 @@ class ProjectOps:
                 shutil.rmtree(self.work_dir)
                 shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.work_dir)
             except shutil.Error:
-                raise(f"Could not overwrite the existing '{self.projName}' project!")
+                raise Exception(f"Could not overwrite the existing '{self.projName}' project!")
 
         if self.found is True:
             if overwrite is True:
@@ -66,7 +66,7 @@ class ProjectOps:
                 shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
                 self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
             except shutil.Error:
-                raise(f"Could not create the project '{self.projName}'!")
+                raise Exception(f"Could not create the project '{self.projName}'!")
 
 
     def clean(self):
@@ -96,9 +96,12 @@ class ProjectOps:
         inlistPath = os.path.abspath(inlistPath)
         inlist_project = os.path.join(self.work_dir, "inlist_project")
         try:
-            shutil.copy(inlistPath, inlist_project)
+            if os.path.exists(inlistPath):
+                shutil.copy(inlistPath, inlist_project)
+            else:
+                raise Exception("Could not find the specified project inlist file!")
         except shutil.Error:
-            raise("Failed loading project inlist!")
+            raise Exception("Failed loading project inlist!")
         
 
     
@@ -106,9 +109,12 @@ class ProjectOps:
         inlistPath = os.path.abspath(inlistPath)
         inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
         try:
-            shutil.copy(inlistPath, inlist_pgstar)
+            if os.path.exists(inlistPath):
+                shutil.copy(inlistPath, inlist_pgstar)
+            else:
+                raise Exception("Could not find the specified pgstar inlist file!")
         except shutil.Error:
-            raise("Failed loading pgstar inlist!")
+            raise Exception("Failed loading pgstar inlist!")
 
 
             
@@ -124,16 +130,16 @@ class ProjectOps:
                 gyre_in = os.path.join(self.work_dir, gyre_in)
                 shutil.copy(gyre_in, gyre_dest)
             else:
-                raise("Could not find the specified gyre input file. Aborting...")
+                raise Exception("Could not find the specified gyre input file. Aborting...")
         except shutil.Error:
-            raise("Failed loading gyre input file!")
+            raise Exception("Failed loading gyre input file!")
 
 
     
     def run(self, silent=False):
         runlog = os.path.join(self.work_dir, "runlog")
         if not os.path.exists(os.path.join(self.work_dir, "star")):
-            raise("The project is not made yet...please make it first!")
+            raise Exception("The project is not made yet...please make it first!")
         if silent is False:
             print("Running...")
             res = self.run_subprocess(['./rn'], self.work_dir, silent, runlog=runlog)
