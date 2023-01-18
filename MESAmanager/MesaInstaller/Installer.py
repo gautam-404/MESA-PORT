@@ -36,7 +36,7 @@ class Installer:
     def choose_directory(self, directory=''):
         while not os.path.exists(directory):
             directory = input("\nInput path to a directory for installation...    ")
-            software_directory = os.path.join(directory, "software")
+        software_directory = os.path.join(directory, "software")
         print(f"MESA SDK and MESA will be installed at path: {directory}/software/\n")
         if not os.path.exists(software_directory):
             os.mkdir(software_directory)
