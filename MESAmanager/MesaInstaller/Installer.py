@@ -200,9 +200,8 @@ class Installer:
 
                 run_shell =f'''
                 /bin/bash -c \"
-                export MESASDK_ROOT={self.directory}/mesasdk && 
+                export MESASDK_ROOT={sdk_dir} && 
                 && source $MESASDK_ROOT/bin/mesasdk_init.sh \\
-                && export MESASDK_ROOT={self.directory}/mesasdk \\
                 && export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
                 && export GYRE_directory={mesa_dir}/gyre/gyre \\
