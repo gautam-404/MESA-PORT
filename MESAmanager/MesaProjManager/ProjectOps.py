@@ -211,6 +211,8 @@ class ProjectOps:
         else:
             with open(runlog, "a+") as file, subprocess.Popen(args, cwd = dir,
                     stdout=file, stderr=file, universal_newlines=True) as proc:
+                    for line in proc.stdout:
+                        sys.stdout.write(line)
                     _data, error = proc.communicate()
                     if proc.returncode or error:
                         print('The process raised an error:', proc.returncode, error.decode())
