@@ -152,6 +152,17 @@ class ProjectOps:
         except subprocess.CalledProcessError:
             print("Failed loading gyre_in!")
 
+    def makeGyre(self):
+        try:
+            subprocess.call(f"cd $MESA_DIR/gyre/gyre && make", shell=True, stdout=subprocess.DEVNULL)
+            print('''Add $GYRE_DIR to your preferred shell's rc file (e.g. ~/.bashrc or ~/.zshrc):
+            echo "export GYRE_DIR=$MESA_DIR/gyre/gyre" >> ~/.zshrc
+            source ~/.zshrc
+            Then try again.
+            ''')
+        except:    
+            print(f"Check if $MESA_DIR is set in environment variables...could not run!")
+            print("Run terminated! Check runlog.")
 
     def runGyre(self, gyre_in, silent=False):
         pwd = os.getcwd()
@@ -170,27 +181,31 @@ class ProjectOps:
             print("Could not find the specified gyre input file. Aborting...")
             return
 
-        try:
+        if os.getenv('GYRE_DIR') is not None:
             if silent is False:
                 print("Running gyre...")
-                subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True)
+                try:
+                    subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True)
+                    print("Done with the run!\n")
+                    return
+                except subprocess.CalledProcessError:
+                    print("Gyre failed! Check runlog.")
             elif silent is True:
                 with console.status("Running gyre...", spinner="moon"):
                     file = open(f"{pwd}/runlog", "a+") 
-                    subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True, stdout = file, stderr = file)
+                    try:
+                        subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True, stdout = file, stderr = file)
+                        print("Done with the run!\n")
+                        return
+                    except subprocess.CalledProcessError:
+                        print("Gyre failed! Check runlog.")
                     file.write( "\n\n"+("*"*100)+"\n\n" )
                     file.close()
             else:
-                raise ValueError("Invalid input for argument 'silent'")
-            print("Done with the run!\n")
-        except subprocess.CalledProcessError:
-            try:
-                subprocess.call(f"cd $MESA_DIR/gyre/gyre && make", shell=True, stdout=subprocess.DEVNULL)
-                print('''Add $GYRE_DIR to your preferred shell's rc file (e.g. ~/.bashrc or ~/.zshrc):
-                echo "export GYRE_DIR=$MESA_DIR/gyre/gyre" >> ~/.zshrc
-                source ~/.zshrc
-                Then try again.
-                ''')
-            except:    
-                print(f"Check if $MESA_DIR is set in environment variables...could not run!")
-                print("Run terminated! Check runlog.")
+                raise ValueError("Invalid input for argument 'silent'")    
+        else:
+            print("GYRE_DIR not set in environment variables!")
+            print("Trying to make gyre...")
+            self._makeGyre()
+
+        
