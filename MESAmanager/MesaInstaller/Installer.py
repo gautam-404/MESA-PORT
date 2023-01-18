@@ -3,6 +3,8 @@ import platform
 import tarfile
 import zipfile
 import subprocess 
+import cpuinfo
+import mesaurls
 
 import requests
 from alive_progress import alive_bar
@@ -12,14 +14,18 @@ console = Console()
 
 class Installer:
     def __init__(self, version='', parent_directory=''):
-        self.install(version, parent_directory)
+        self.directory = self.choose_directory(parent_directory)
+        self.ostype = self.whichos()
+        self.install(version)
         return
 
 
 
     def whichos(self):
         if "macOS" in platform.platform():
-            raise OSError("MacOS is not supported by the installer yet!")
+            manufacturer = cpuinfo.get_cpu_info().get('brand_raw')
+            arch = 'intel' if 'Intel' in manufacturer.lower() else 'arm'
+            return f"macOS-{arch}"
         elif "Linux" in platform.platform():
             return "Linux"
         else:
@@ -30,25 +36,31 @@ class Installer:
     def choose_directory(self, directory=''):
         while not os.path.exists(directory):
             directory = input("Input path to a directory for installation...    ")
+            software_directory = os.path.join(directory, "software")
             if os.path.exists(directory):
                 print(f"MESA SDK and MESA will be installed at path: {directory}/software/\n")
-                if not os.path.exists(directory+"/software"):
-                    os.mkdir(directory+"/software")
-                return os.path.abspath(directory+"/software")
+                if not os.path.exists( software_directory ):
+                    os.mkdir( software_directory )
+                return os.path.abspath( software_directory )
             else:
                 print("Could not find the specified directory. Please try again.\n")
                 directory = ''
-        if not os.path.exists(directory+"/software"):
-            os.mkdir(directory+"/software")
-        return os.path.abspath(directory+"/software")
+        if not os.path.exists():
+            os.mkdir(os.path.join(directory, "software"))
+        return os.path.abspath(os.path.join(directory, "software"))
 
 
 
     def choose_ver(self, ver=''):
-        versions = ["latest", "22.11.1", "22.05.1", "21.12.1", "15140", "12778"]
+        if self.ostype == "Linux":
+            versions = mesaurls.linux_versions
+        elif self.ostype == "macOS-intel":
+            versions = mesaurls.mac_intel_versions
+        elif self.ostype == "macOS-arm":
+            versions = mesaurls.mac_arm_versions
         while ver not in versions:
             print("Versions available through this insaller are:")
-            print(versions)
+            print(versions, '\n')
             ver = input("Input the desired version...")
             if ver not in versions:
                 print("Not recognised, try again.\n")
@@ -57,31 +69,19 @@ class Installer:
 
 
     def prep_urls(self, ver):
-        if self.whichos() == "Linux":
-            if ver == "latest":
-                sdk_url = "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz"
-                mesa_url = "https://zenodo.org/record/7319739/files/mesa-r22.11.1.zip"
-            elif ver == "22.11.1":
-                sdk_url = "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz"
-                mesa_url = "https://zenodo.org/record/7319739/files/mesa-r22.11.1.zip"
-            elif ver == "22.05.1":
-                sdk_url = "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz"
-                mesa_url = "https://zenodo.org/record/6547951/files/mesa-r22.05.1.zip"
-            elif ver == "21.12.1":
-                sdk_url = "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz"
-                mesa_url = "https://zenodo.org/record/7319739/files/mesa-r22.12.1.zip"
-            elif ver == "15140":
-                sdk_url = "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-21.4.1.tar.gz"
-                mesa_url = "https://zenodo.org/record/7319739/files/mesa-r15140.zip"
-            elif ver == "12778":
-                sdk_url = "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-20.3.2.tar.gz"
-                mesa_url = "https://zenodo.org/record/7319739/files/mesa-r12778.zip"
+        if self.ostype == "Linux":
+            sdk_url = mesaurls.linux_sdk[ver]
+            mesa_url = mesaurls.mesa[ver]
+        elif self.ostype == "macOS-intel":
+            sdk_url = mesaurls.mac_intel_sdk[ver]
+            mesa_url = mesaurls.mesa[ver]
+        elif self.ostype == "macOS-arm":
+            sdk_url = mesaurls.mac_arm_sdk[ver]
+            mesa_url = mesaurls.mesa[ver]
         return sdk_url, mesa_url
 
 
-
-    def download(self, directory, sdk_url, mesa_url):
-        def check_n_download(filepath, url):
+    def check_n_download(filepath, url):
             if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
                 print("Skipping download! File already downloaded.\n")
             else:
@@ -94,20 +94,21 @@ class Installer:
                             size_ = file.write(chunk)
                             progressbar(size_)
                 print("Download complete.\n")
-        
+
+    def download(self, sdk_url, mesa_url):
         print("Downloading MESA SDK...")
-        sdk_tar = directory+"/"+sdk_url.split('/')[-1]
-        check_n_download(sdk_tar, sdk_url)
+        sdk_download = os.path.join(self.directory, sdk_url.split('/')[-1])
+        self.check_n_download(sdk_download, sdk_url)
 
         print("Downloading MESA...")
-        mesa_zip = directory+"/"+mesa_url.split('/')[-1]
-        check_n_download(mesa_zip, mesa_url)
-        return sdk_tar, mesa_zip
+        mesa_zip = os.path.join(self.directory, mesa_url.split('/')[-1])
+        self.check_n_download(mesa_zip, mesa_url)
+        return sdk_download, mesa_zip
 
 
 
     def install_pre_reqs(self, logfile):
-        if self.whichos() == "Linux":
+        if self.ostype == "Linux":
             subprocess.call("sudo apt-get update", shell=True, stdout=logfile, stderr=logfile)
             try:
                 subprocess.call("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
@@ -121,13 +122,19 @@ class Installer:
                         subprocess.call("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc",\
                          shell=True, stdout=logfile, stderr=logfile)
                     except:
-                        pass            
+                        pass           
+        if "macOS" in self.ostype:
+            subprocess.call("xcode-select --install", shell=True, stdout=logfile, stderr=logfile)
+            url_xquartz = "https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.4/XQuartz-2.8.4.pkg"
+            xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
+            self.check_n_download(xquartz, url_xquartz)
+            subprocess.call(f"sudo installer -pkg {xquartz} -verbose -target /", shell=True, stdout=logfile, stderr=logfile) 
+            os.remove(xquartz)
 
 
-
-    def print_env_vars(self, directory, mesa_dir):
+    def print_env_vars(self, mesa_dir):
         source_this=f'''
-        export MESASDK_ROOT={directory}/mesasdk
+        export MESASDK_ROOT={self.directory}/mesasdk
         source $MESASDK_ROOT/bin/mesasdk_init.sh
         export MESA_DIR={mesa_dir}
         export OMP_NUM_THREADS=2
@@ -138,47 +145,53 @@ class Installer:
         
 
 
-    def extract_mesa(self, directory, sdk_tar, mesa_zip):
-        with console.status("Extracting MESA SDK...", spinner="moon"):
-            with tarfile.open(sdk_tar, 'r:gz') as tarball:
-                if os.path.exists(f'{directory}/mesasdk'):
-                    shutil.rmtree(f'{directory}/mesasdk')
-                tarball.extractall(f'{directory}/')
-            # os.remove(sdk_tar)
-        print("MESA SDK extraction complete.\n")
+    def extract_mesa(self, sdk_download, mesa_zip, logfile):
+        if self.ostype == "Linux":
+            with console.status("Extracting MESA SDK...", spinner="moon"):
+                with tarfile.open(sdk_download, 'r:gz') as tarball:
+                    if os.path.exists( os.path.join(self.directory, 'mesasdk') ):
+                        shutil.rmtree( os.path.join(self.directory, 'mesasdk') )
+                    tarball.extractall( {self.directory} )
+                # os.remove(sdk_download)
+            print("MESA SDK extraction complete.\n")
+        elif "macOS" in self.ostype:
+            with console.status("Installing MESA SDK package...", spinner="moon"):
+                subprocess.call(f"sudo installer -pkg {sdk_download} -verbose -target /", 
+                                shell=True, stdout=logfile, stderr=logfile) 
+                # os.remove(sdk_download)
+            print("MESA SDK package installation complete.\n")
         with console.status("Extracting MESA...", spinner="moon"):
             with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
-                zip_ref.extractall(f'{directory}/')
+                zip_ref.extractall( {self.directory} )
             # os.remove(mesa_zip)
         print("MESA extraction complete.\n")
 
 
 
-    def install(self, ver='', directory=''):
+    def install(self, ver=''):
         ver = self.choose_ver(ver)
-        directory = self.choose_directory(directory)
         sdk_url, mesa_url = self.prep_urls(ver)
-        sdk_tar, mesa_zip = self.download(directory, sdk_url, mesa_url)
-        mesa_dir = directory+'/'+mesa_zip.split('/')[-1][0:-4]
+        sdk_download, mesa_zip = self.download(self.directory, sdk_url, mesa_url)
+        mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
-        with open(f"{directory}/install_log.txt", "w+") as logfile:
+        with open(f"{self.directory}/install_log.txt", "w+") as logfile:
             with console.status("Installing MESA pre-requisites...\n", spinner="moon"):
                 self.install_pre_reqs(logfile)
-            self.extract_mesa(directory, sdk_tar, mesa_zip)
+            self.extract_mesa(self.directory, sdk_download, mesa_zip, logfile)
 
             with console.status("Installing MESA...", spinner="moon"):
                 run_shell =f'''
                 /bin/bash -c \"
-                export MESASDK_ROOT={directory}/mesasdk \\
+                export MESASDK_ROOT={self.directory}/mesasdk \\
                 && export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
                 && export GYRE_directory={mesa_dir}/gyre/gyre \\
-                && source {directory}/mesasdk/bin/mesasdk_init.sh \\
+                && source {self.directory}/mesasdk/bin/mesasdk_init.sh \\
                 && chmod -R +x {mesa_dir} \\
                 && cd {mesa_dir} && ./clean  && ./install \\
                 && cd {mesa_dir}/gyre/gyre && make\"
                 '''
                 subprocess.call(run_shell, shell=True, stdout=logfile)
         print("Installation complete.\n")
-        self.print_env_vars(directory, mesa_dir)
+        self.print_env_vars(self.directory, mesa_dir)
 

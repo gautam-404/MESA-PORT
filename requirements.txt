@@ -4,3 +4,4 @@ click
 rich
 requests
 alive_progress
+py-cpuinfo
