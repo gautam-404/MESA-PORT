@@ -153,9 +153,18 @@ class ProjectOps:
             print("Failed loading gyre_in!")
 
 
-    def runGyre(self, gyre_in='', silent=False):
+    def runGyre(self, gyre_in, silent=False):
         pwd = os.getcwd()
-        self.loadGyreInput(gyre_in)
+        if os.path.exists(gyre_in):
+            self.loadGyreInput(gyre_in)
+        elif os.path.exists(f"LOGS/{gyre_in}"):
+            subprocess.call(f"mv LOGS/{gyre_in} LOGS/gyre.in", shell=True)
+        elif os.path.exists(f"{pwd}/{gyre_in}"):
+            subprocess.call(f"mv {pwd}/{gyre_in} LOGS/gyre.in", shell=True)
+        else:
+            print("Could not find the specified gyre input file. Aborting...")
+            return
+
         try:
             if silent is False:
                 print("Running gyre...")
