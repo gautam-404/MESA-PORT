@@ -6,7 +6,7 @@ with open('requirements.txt') as f:
 
 setup(
     name='MESAmanager',
-    version='0.4',
+    version='0.9',
     packages=find_packages(),
     install_requires=required,
     url='https://github.com/gautam-404/MESAmanager.git',
