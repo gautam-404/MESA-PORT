@@ -30,7 +30,7 @@ class Installer:
     def whichos(self):
         if "macOS" in platform.platform():
             manufacturer = cpuinfo.get_cpu_info().get('brand_raw')
-            arch = 'intel' if 'Intel' in manufacturer.lower() else 'ARM'
+            arch = 'Intel' if 'Intel' in manufacturer.lower() else 'ARM'
             print(f'macOS-{arch} detected.')
             return f"macOS-{arch}"
         elif "Linux" in platform.platform():
@@ -54,9 +54,9 @@ class Installer:
     def choose_ver(self, ver=''):
         if self.ostype == "Linux":
             versions = linux_versions
-        elif self.ostype == "macOS-intel":
+        elif self.ostype == "macOS-Intel":
             versions = mac_intel_versions
-        elif self.ostype == "macOS-arm":
+        elif self.ostype == "macOS-ARM":
             versions = mac_arm_versions
         while ver not in versions:
             print("Versions available through this insaller are:")
@@ -72,10 +72,10 @@ class Installer:
         if self.ostype == "Linux":
             sdk_url = linux_sdk_urls.get(ver)
             mesa_url = mesa_urls.get(ver)
-        elif self.ostype == "macOS-intel":
+        elif self.ostype == "macOS-Intel":
             sdk_url = mac_intel_sdk_urls.get(ver)
             mesa_url = mesa_urls.get(ver)
-        elif self.ostype == "macOS-arm":
+        elif self.ostype == "macOS-ARM":
             sdk_url = mac_arm_sdk_urls.get(ver)
             mesa_url = mesa_urls.get(ver)
         return sdk_url, mesa_url
