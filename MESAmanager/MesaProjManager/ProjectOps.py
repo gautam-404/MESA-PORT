@@ -130,9 +130,9 @@ class ProjectOps:
                 gyre_in = os.path.join(self.work_dir, gyre_in)
                 shutil.copy(gyre_in, gyre_dest)
             else:
-                raise Exception("Could not find the specified gyre input file. Aborting...")
+                raise Exception("Could not find the specified GYRE input file. Aborting...")
         except shutil.Error:
-            raise Exception("Failed loading gyre input file!")
+            raise Exception("Failed loading GYRE input file!")
 
 
     
@@ -184,18 +184,18 @@ class ProjectOps:
         runlog = os.path.join(self.work_dir, "runlog")
         if os.environ['GYRE_DIR'] is not None:
             if silent is False:
-                print("Running gyre...")
+                print("Running GYRE...")
                 res = self.run_subprocess([gyre_ex, 'gyre.in'], os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
                 if res is False:
-                    print("Gyre run failed! Check runlog.")
+                    print("GYRE run failed! Check runlog.")
             elif silent is True:
-                with console.status("Running gyre...", spinner="moon"):
+                with console.status("Running GYRE...", spinner="moon"):
                     res = self.run_subprocess([gyre_ex, 'gyre.in'], os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
                 if res is False:
-                    print("Gyre run failed! Check runlog.")
+                    print("GYRE run failed! Check runlog.")
             else:
                 raise ValueError("Invalid input for argument 'silent'")   
-            print("Gyre run complete!\n") 
+            print("GYRE run complete!\n") 
         else:
             print("Check if $GYRE_DIR is set in environment variables...could not run!")
             print("Run aborted!")
