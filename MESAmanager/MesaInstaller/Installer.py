@@ -109,8 +109,7 @@ class Installer:
     def call_sudo(self, arg, logfile):
         user = getpass.getuser()
         print(f"Running a sudo command. Press return when prompted if no password is set.")
-        print(f"Enter password for {user}:\n\n")
-        password = getpass.getpass()
+        password = getpass.getpass(f"Enter password for {user}:\n\n")
         child = pexpect.spawn(arg)
         child.expect('password')
         child.sendline(password)
@@ -195,8 +194,8 @@ class Installer:
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
         with open(f"{self.directory}/install_log.txt", "w+") as logfile:
-            with console.status("Installing MESA pre-requisites", spinner="moon"):
-                self.install_pre_reqs(logfile)
+            # with console.status("Installing MESA pre-requisites", spinner="moon"):
+            self.install_pre_reqs(logfile)
             self.extract_mesa(self.directory, sdk_download, mesa_zip, logfile)
 
             with console.status("Installing MESA", spinner="moon"):
