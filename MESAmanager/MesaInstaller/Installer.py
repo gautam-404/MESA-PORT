@@ -162,10 +162,7 @@ class Installer:
     def install(self, ver=''):
         ver = self.choose_ver(ver)
         sdk_url, mesa_url = self.prep_urls(ver)
-        print(self.directory)
-        print(sdk_url)
-        print(mesa_url)
-        sdk_download, mesa_zip = self.download(self.directory, sdk_url, mesa_url)
+        sdk_download, mesa_zip = self.download(sdk_url, mesa_url)
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
         with open(f"{self.directory}/install_log.txt", "w+") as logfile:
