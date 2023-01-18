@@ -35,20 +35,12 @@ class Installer:
 
     def choose_directory(self, directory=''):
         while not os.path.exists(directory):
-            directory = input("Input path to a directory for installation...    ")
+            directory = input("\nInput path to a directory for installation...    ")
             software_directory = os.path.join(directory, "software")
-            if os.path.exists(directory):
-                print(f"MESA SDK and MESA will be installed at path: {directory}/software/\n")
-                if not os.path.exists( software_directory ):
-                    os.mkdir( software_directory )
-                return os.path.abspath( software_directory )
-            else:
-                print("Could not find the specified directory. Please try again.\n")
-                directory = ''
-        if not os.path.exists():
-            os.mkdir(os.path.join(directory, "software"))
-        return os.path.abspath(os.path.join(directory, "software"))
-
+        print(f"MESA SDK and MESA will be installed at path: {directory}/software/\n")
+        if not os.path.exists(software_directory):
+            os.mkdir(software_directory)
+        return os.path.abspath( software_directory )
 
 
     def choose_ver(self, ver=''):
