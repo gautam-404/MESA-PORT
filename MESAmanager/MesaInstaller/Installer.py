@@ -1,13 +1,13 @@
 import getpass
 import os
 import platform
-import shlex
+# import shlex
 import shutil
 import subprocess
-import sys
 import tarfile
 import zipfile
 
+import pexpect
 import cpuinfo
 import requests
 from alive_progress import alive_bar
@@ -18,7 +18,8 @@ from .mesaurls import *
 console = Console()
 
 class Installer:
-    def __init__(self, version='', parent_directory=''):
+    def __init__(self, version='', parent_directory='', cleanafter=False):
+        self.cleanafter = cleanafter
         self.directory = self.choose_directory(parent_directory)
         self.ostype = self.whichos()
         print("OS type:", self.ostype)
@@ -106,12 +107,16 @@ class Installer:
     def call_sudo(self, arg, logfile):
         user = getpass.getuser()
         print(f"Running a sudo command. Press return when prompted if no password is set.")
-        print(f"Enter password for {user}:\n\n")
+        # print(f"Enter password for {user}:\n\n")
         password = getpass.getpass()
-        with subprocess.Popen(shlex.split(arg), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
-            proc.communicate(password)
-            if proc.returncode != 0:
-                    raise Exception("Failed to install. Check logfile for details.")
+        with pexpect.spawnu(arg, encoding='utf-8', timeout=30) as proc:
+            proc.expect(f"Enter password for {user}:\n\n")
+            proc.sendline(password)
+            proc.logfile = logfile
+        # with subprocess.Popen(shlex.split(arg), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
+        #     proc.communicate(password)
+        #     if proc.returncode != 0:
+        #             raise Exception("Failed to install. Check logfile for details.")
 
     def install_pre_reqs(self, logfile):
         if self.ostype == "Linux":
@@ -128,13 +133,17 @@ class Installer:
                     except:
                         pass           
         if "macOS" in self.ostype:
-            subprocess.call("xcode-select --install", shell=True, stdout=logfile, stderr=logfile)
+            print("Installing XCode Command Line Tools...")
+            self.call_sudo("sudo xcode-select --install", logfile)
+
             xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
             print("Downloading XQuartz...")
             self.check_n_download(xquartz, url_xquartz)
+
             print("Installing XQuartz...")
             self.call_sudo(f"sudo installer -pkg {xquartz} -target /", logfile)
-            # os.remove(xquartz)
+            if self.cleanafter:
+                os.remove(xquartz)
 
 
     def print_env_vars(self, mesa_dir):
@@ -157,17 +166,20 @@ class Installer:
                     if os.path.exists( os.path.join(self.directory, 'mesasdk') ):
                         shutil.rmtree( os.path.join(self.directory, 'mesasdk') )
                     tarball.extractall( {self.directory} )
-                # os.remove(sdk_download)
+                if self.cleanafter:
+                    os.remove(sdk_download)
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
             with console.status("Installing MESA SDK package", spinner="moon"):
                 self.call_sudo(f"sudo installer -pkg {sdk_download} -target /", logfile)
-                # os.remove(sdk_download)
+                if self.cleanafter:
+                    os.remove(sdk_download)
                 print("MESA SDK package installation complete.\n")
         with console.status("Extracting MESA", spinner="moon"):
             with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
                 zip_ref.extractall( {self.directory} )
-            # os.remove(mesa_zip)
+            if self.cleanafter:
+                os.remove(mesa_zip)
         print("MESA extraction complete.\n")
 
 
