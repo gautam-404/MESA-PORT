@@ -1,4 +1,4 @@
-import os, subprocess, shutil
+import os, sys, subprocess, shutil
 from MESAmanager.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
 import click
 from rich.console import Console
@@ -70,9 +70,8 @@ class ProjectOps:
 
 
     def clean(self):
-        clean_ex = os.path.join(self.work_dir, "clean")
         try:
-            subprocess.call(clean_ex, stdout=subprocess.DEVNULL)
+            subprocess.call('./clean', cwd = self.work_dir, stdout=subprocess.DEVNULL)
             print("Done cleaning.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/clean' does not exists...could not clean!")
@@ -80,10 +79,9 @@ class ProjectOps:
             
 
     def make(self):
-        make_ex = os.path.join(self.work_dir, "mk")
         try:
             with console.status("Making...", spinner="moon"):
-                subprocess.call(make_ex, stdout=subprocess.DEVNULL)
+                subprocess.call('./mk', cwd = self.work_dir, stdout=subprocess.DEVNULL)
             print("Done making.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/mk' does not exists...could not make!")
@@ -91,19 +89,22 @@ class ProjectOps:
         
     
     def run(self, silent=False):
-        run_ex = os.path.join(self.work_dir, "rn")
         runlog = os.path.join(self.work_dir, "runlog")
         try:
             if silent is False:
                 print("Running...")
-                file = open(runlog, "a+") 
-                subprocess.call(run_ex)
+                file = open(runlog, "a+")
+                proc = subprocess.Popen('./rn', cwd = self.work_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                for line in proc.stdout:
+                    sys.stdout.write(line)
+                    file.write(line)
+                proc.wait()
                 file.write( "\n\n"+("*"*100)+"\n\n" )
                 file.close()
             elif silent is True:
                 with console.status("Running...", spinner="moon"):
                     file = open(runlog, "a+") 
-                    subprocess.call(run_ex, stdout = file, stderr = file)
+                    subprocess.call('./rn', cwd = self.work_dir, stdout=file, stderr=file) 
                     file.write( "\n\n"+("*"*100)+"\n\n" )
                     file.close()
             else:
@@ -114,7 +115,6 @@ class ProjectOps:
             
     
     def resume(self, photo, silent=False):
-        resume_ex = os.path.join(self.work_dir, "re")
         photo_path = os.path.join(self.work_dir, "photos", photo)
         runlog = os.path.join(self.work_dir, "runlog")
         try:
@@ -123,14 +123,18 @@ class ProjectOps:
             else:
                 if silent is False:
                     print(f"Resuming run from photo {photo}...")
-                    file = open(runlog, "a+")  # append mode
-                    subprocess.call([resume_ex, photo])
+                    file = open(runlog, "a+")
+                    proc = subprocess.Popen(['./re', photo], cwd = self.work_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    for line in proc.stdout:
+                        sys.stdout.write(line)
+                        file.write(line)
+                    proc.wait()
                     file.write( "\n\n"+("*"*100)+"\n\n" )
                     file.close()
                 elif silent is True:
                     with console.status("Resuming run from photo...", spinner="moon"):
                         file = open(runlog, "a+")  # append mode
-                        subprocess.call(f"{resume_ex} {photo}", stdout = file, stderr = file)
+                        subprocess.call(['./re', photo], cwd = self.work_dir, stdout=file, stderr=file)
                         file.write( "\n\n"+("*"*100)+"\n\n" )
                         file.close()
                 else:
@@ -185,9 +189,15 @@ class ProjectOps:
         if os.getenv('GYRE_DIR') is not None:
             if silent is False:
                 print("Running gyre...")
-                file = open(runlog, "a+") 
                 try:
-                    subprocess.call(f"cd LOGS && {gyre_ex} gyre.in", shell=True)
+                    file = open(runlog, "a+") 
+                    proc = subprocess.call([gyre_ex, 'gyre.in'], cwd = os.path.join(self.work_dir, 'LOGS'))
+                    for line in proc.stdout:
+                        sys.stdout.write(line)
+                        file.write(line)
+                    proc.wait()
+                    file.write( "\n\n"+("*"*100)+"\n\n" )
+                    file.close()
                     return
                 except subprocess.CalledProcessError:
                     print("Gyre run failed! Check runlog.")
@@ -197,7 +207,8 @@ class ProjectOps:
                 with console.status("Running gyre...", spinner="moon"):
                     file = open(runlog, "a+") 
                     try:
-                        subprocess.call("cd LOGS && {gyre_ex} gyre.in", shell=True, stdout = file, stderr = file)
+                        subprocess.call([gyre_ex, 'gyre.in'], cwd = os.path.join(self.work_dir, 'LOGS'),\
+                                         stdout = file, stderr = file)
                         return
                     except subprocess.CalledProcessError:
                         print("Gyre run failed! Check runlog.")
