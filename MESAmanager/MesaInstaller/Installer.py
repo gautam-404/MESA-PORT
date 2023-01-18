@@ -4,6 +4,9 @@ import tarfile
 import zipfile
 import subprocess 
 import cpuinfo
+import sys
+import getpass
+
 from .mesaurls import *
 
 import requests
@@ -120,12 +123,12 @@ class Installer:
             xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
             print("Downloading XQuartz...")
             self.check_n_download(xquartz, url_xquartz)
+            print("Installing XQuartz...")
+            password = getpass("Please enter your password: ")
             with subprocess.Popen(['sudo', 'installer', '-pkg', xquartz, '-verbose', 'target', '/'],
                                     stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
-                print("Installing XQuartz...")
-                print("sudo: a password is required...")
-                proc.communicate(input('password:'))
-            os.remove(xquartz)
+                proc.communicate(password)
+            # os.remove(xquartz)
 
 
     def print_env_vars(self, mesa_dir):
@@ -151,11 +154,11 @@ class Installer:
                 # os.remove(sdk_download)
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
-            # with console.status("Installing MESA SDK package...", spinner="moon"):
+            with console.status("Installing MESA SDK package...", spinner="moon"):
+                password = getpass("Please enter your password: ")
                 with subprocess.Popen(['sudo', 'installer', '-pkg', sdk_download, '-verbose', 'target', '/'],
                                     stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
-                    print("sudo: a password is required...")
-                    proc.communicate(input('password:'))
+                    proc.communicate(password)
                 # os.remove(sdk_download)
                 print("MESA SDK package installation complete.\n")
         with console.status("Extracting MESA...", spinner="moon"):
@@ -173,8 +176,8 @@ class Installer:
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
         with open(f"{self.directory}/install_log.txt", "w+") as logfile:
-            # with console.status("Installing MESA pre-requisites...\n", spinner="moon"):
-            self.install_pre_reqs(logfile)
+            with console.status("Installing MESA pre-requisites...\n", spinner="moon"):
+                self.install_pre_reqs(logfile)
             self.extract_mesa(self.directory, sdk_download, mesa_zip, logfile)
 
             with console.status("Installing MESA...", spinner="moon"):
