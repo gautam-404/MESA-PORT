@@ -157,10 +157,15 @@ class ProjectOps:
         pwd = os.getcwd()
         if os.path.exists(gyre_in):
             self.loadGyreInput(gyre_in)
-        elif os.path.exists(f"LOGS/{gyre_in}"):
-            subprocess.call(f"mv LOGS/{gyre_in} LOGS/gyre.in", shell=True)
-        elif os.path.exists(f"{pwd}/{gyre_in}"):
-            subprocess.call(f"mv {pwd}/{gyre_in} LOGS/gyre.in", shell=True)
+        elif os.path.exists(os.path.join("LOGS", gyre_in)):
+            gyre_in = os.path.join("LOGS", gyre_in)
+            subprocess.call(f"mv {gyre_in} LOGS/gyre.in", shell=True)
+        elif os.path.exists(os.path.join(pwd, gyre_in)):
+            gyre_in = os.path.join(pwd, gyre_in)
+            subprocess.call(f"mv {gyre_in} LOGS/gyre.in", shell=True)
+        elif os.path.exists(os.path.join("..", gyre_in)):
+            gyre_in = os.path.join("..", gyre_in)
+            subprocess.call(f"mv ../{gyre_in} LOGS/gyre.in", shell=True)
         else:
             print("Could not find the specified gyre input file. Aborting...")
             return
