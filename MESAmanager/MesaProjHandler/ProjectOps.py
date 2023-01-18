@@ -14,10 +14,11 @@ class ProjectOps:
         else:
             self.projName = name
         if os.path.exists(self.projName):
-            os.chdir(self.projName)
+            self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
             self.found = True               ## Proj already present flag
         else:
             self.found = False
+        
 
     
 
@@ -41,12 +42,8 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'clean'.")
         
         def writeover():
-            os.chdir("..")
-            pwd = os.getcwd()
-            subprocess.call(f"rm -rf {pwd}/{self.projName}", shell=True)
-            subprocess.call(f"cp -r {self.envObject.mesaDir}/star/work {pwd}", shell=True)
-            os.rename("work", self.projName)
-            os.chdir(self.projName)
+            subprocess.call(['rm', '-rf', self.work_dir])
+            subprocess.call(['cp', '-r', os.path.join(self.envObject.mesaDir, 'star/work'), self.work_dir])
 
         if self.found is True:
             if overwrite is True:
@@ -63,15 +60,14 @@ class ProjectOps:
             else:
                 raise ValueError("Invalid input for argument 'overwrite'.")
         else:
-            pwd = os.getcwd()
-            subprocess.call(f"cp -r {self.envObject.mesaDir}/star/work {pwd}/{self.projName}", shell=True)
-            os.chdir(self.projName)
+            subprocess.call(['cp', '-r', os.path.join(self.envObject.mesaDir, 'star/work'), self.projName])
+            self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
 
 
     def clean(self):
-        pwd = os.getcwd()
+        clean_ex = os.path.join(self.work_dir, "clean")
         try:
-            subprocess.call(f"sh {pwd}/clean", shell=True, stdout=subprocess.DEVNULL)
+            subprocess.call(clean_ex, stdout=subprocess.DEVNULL)
             print("Done cleaning.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/clean' does not exists...could not clean!")
@@ -79,10 +75,10 @@ class ProjectOps:
             
 
     def make(self):
-        pwd = os.getcwd()
+        make_ex = os.path.join(self.work_dir, "mk")
         try:
             with console.status("Making...", spinner="moon"):
-                subprocess.call(f"{pwd}/mk", shell=True, stdout=subprocess.DEVNULL)
+                subprocess.call(make_ex, stdout=subprocess.DEVNULL)
             print("Done making.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/mk' does not exists...could not make!")
@@ -90,15 +86,19 @@ class ProjectOps:
         
     
     def run(self, silent=False):
-        pwd = os.getcwd()
+        run_ex = os.path.join(self.work_dir, "rn")
+        runlog = os.path.join(self.work_dir, "runlog")
         try:
             if silent is False:
                 print("Running...")
-                subprocess.call(f"{pwd}/rn", shell=True)
+                file = open(runlog, "a+") 
+                subprocess.call(run_ex)
+                file.write( "\n\n"+("*"*100)+"\n\n" )
+                file.close()
             elif silent is True:
                 with console.status("Running...", spinner="moon"):
-                    file = open(f"{pwd}/runlog", "a+") 
-                    subprocess.call(f"{pwd}/rn", shell=True, stdout = file, stderr = file)
+                    file = open(runlog, "a+") 
+                    subprocess.call(run_ex, stdout = file, stderr = file)
                     file.write( "\n\n"+("*"*100)+"\n\n" )
                     file.close()
             else:
@@ -109,18 +109,23 @@ class ProjectOps:
             
     
     def resume(self, photo, silent=False):
-        pwd = os.getcwd()
+        resume_ex = os.path.join(self.work_dir, "re")
+        photo_path = os.path.join(self.work_dir, "photos", photo)
+        runlog = os.path.join(self.work_dir, "runlog")
         try:
-            if not os.path.isfile(f"{pwd}/photos/{photo}"):
+            if not os.path.isfile(photo_path):
                 raise FileNotFoundError(f"Photo '{photo}' could not be found.")
             else:
                 if silent is False:
                     print(f"Resuming run from photo {photo}...")
-                    subprocess.call(f"{pwd}/re {photo}", shell=True)
+                    file = open(runlog, "a+")  # append mode
+                    subprocess.call([resume_ex, photo])
+                    file.write( "\n\n"+("*"*100)+"\n\n" )
+                    file.close()
                 elif silent is True:
                     with console.status("Resuming run from photo...", spinner="moon"):
-                        file = open(f"{pwd}/runlog", "a+")  # append mode
-                        subprocess.call(f"{pwd}/re {photo}", shell=True, stdout = file, stderr = file)
+                        file = open(runlog, "a+")  # append mode
+                        subprocess.call(f"{resume_ex} {photo}", stdout = file, stderr = file)
                         file.write( "\n\n"+("*"*100)+"\n\n" )
                         file.close()
                 else:
@@ -131,76 +136,69 @@ class ProjectOps:
             
     
     def loadProjInlist(self, inlistPath):
-        inlistPath = os.path.abspath("../"+inlistPath)
+        inlistPath = os.path.abspath(inlistPath)
+        inlist_project = os.path.join(self.work_dir, "inlist_project")
         try:
-            subprocess.call(f"cp {inlistPath} inlist_project", shell=True)
+            subprocess.call(['cp', inlistPath, inlist_project])
         except subprocess.CalledProcessError:
-            print("Failed loading project inlist!")
+            raise("Failed loading project inlist!")
         
+
     
     def loadPGstarInlist(self, inlistPath):
-        inlistPath = os.path.abspath("../"+inlistPath)
+        inlistPath = os.path.abspath(inlistPath)
+        inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
         try:
-            subprocess.call(f"cp {inlistPath} inlist_pgstar", shell=True)
+            subprocess.call(['cp', inlistPath, inlist_pgstar])
         except subprocess.CalledProcessError:
-            print("Failed loading pgstar inlist!")
+            raise("Failed loading pgstar inlist!")
+
+
             
     def loadGyreInput(self, gyre_in):
-        pwd = os.getcwd()
+        gyre_dest = os.path.join(self.work_dir, "LOGS", "gyre.in")
         if os.path.exists(gyre_in):
-            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
+            subprocess.call(['cp', gyre_in, gyre_dest])
         elif os.path.exists(os.path.join("LOGS", gyre_in)):
             gyre_in = os.path.join("LOGS", gyre_in)
-            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
-        elif os.path.exists(os.path.join("..", gyre_in)):
-            gyre_in = os.path.join("..", gyre_in)
-            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
+            subprocess.call(['cp', gyre_in, gyre_dest])
+        elif os.path.exists(os.path.join(self.work_dir, gyre_in)):
+            gyre_in = os.path.join(self.work_dir, gyre_in)
+            subprocess.call(['cp', gyre_in, gyre_dest])
         else:
-            print("Could not find the specified gyre input file. Aborting...")
-            return
- 
-
-
-    def makeGyre(self):
-        try:
-            subprocess.call(f"cd $MESA_DIR/gyre/gyre && make", shell=True, stdout=subprocess.DEVNULL)
-            print('''Add $GYRE_DIR to your preferred shell's rc file (e.g. ~/.bashrc or ~/.zshrc):
-            echo "export GYRE_DIR=$MESA_DIR/gyre/gyre" >> ~/.zshrc
-            source ~/.zshrc
-            Then try again.
-            ''')
-        except:    
-            print(f"Check if $MESA_DIR is set in environment variables...could not run!")
-            print("Run terminated! Check runlog.")
+            raise("Could not find the specified gyre input file. Aborting...")
 
 
 
     def runGyre(self, gyre_in, silent=False):
-        pwd = os.getcwd()
         self.loadGyreInput(gyre_in)
+        gyre_ex = os.path.join("$GYRE_DIR", "bin", "gyre")
+        runlog = os.path.join(self.work_dir, "runlog")
         if os.getenv('GYRE_DIR') is not None:
             if silent is False:
                 print("Running gyre...")
+                file = open(runlog, "a+") 
                 try:
-                    subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True)
+                    subprocess.call(f"cd LOGS && {gyre_ex} gyre.in", shell=True)
                     return
                 except subprocess.CalledProcessError:
-                    print("Gyre failed! Check runlog.")
+                    print("Gyre run failed! Check runlog.")
+                file.write( "\n\n"+("*"*100)+"\n\n" )
+                file.close()
             elif silent is True:
                 with console.status("Running gyre...", spinner="moon"):
-                    file = open(f"{pwd}/runlog", "a+") 
+                    file = open(runlog, "a+") 
                     try:
-                        subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True, stdout = file, stderr = file)
+                        subprocess.call("cd LOGS && {gyre_ex} gyre.in", shell=True, stdout = file, stderr = file)
                         return
                     except subprocess.CalledProcessError:
-                        print("Gyre failed! Check runlog.")
+                        print("Gyre run failed! Check runlog.")
                     file.write( "\n\n"+("*"*100)+"\n\n" )
                     file.close()
             else:
                 raise ValueError("Invalid input for argument 'silent'")    
         else:
-            print("GYRE_DIR not set in environment variables!")
-            print("Trying to make gyre...")
-            self._makeGyre()
+            print("Check if $GYRE_DIR is set in environment variables...could not run!")
+            print("Run terminated! Check runlog.")
 
         
