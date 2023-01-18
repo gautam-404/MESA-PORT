@@ -26,7 +26,6 @@ class ProjectOps:
         def useExisting():
             if not click.confirm(f"Use the already existing '{self.projName}' project as it is?", default=False):
                 raise ValueError("Aborting!!! No project specified.")
-                os._exit()
 
         def cleanCheck():
             if clean is None:
@@ -42,8 +41,11 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'clean'.")
         
         def writeover():
-            shutil.rmtree(self.work_dir)
-            shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.work_dir)
+            try:
+                shutil.rmtree(self.work_dir)
+                shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.work_dir)
+            except shutil.Error:
+                raise(f"Could not overwrite the existing '{self.projName}' project!")
 
         if self.found is True:
             if overwrite is True:
@@ -60,8 +62,11 @@ class ProjectOps:
             else:
                 raise ValueError("Invalid input for argument 'overwrite'.")
         else:
-            shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
-            self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
+            try:
+                shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
+                self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
+            except shutil.Error:
+                raise(f"Could not create the project '{self.projName}'!")
 
 
     def clean(self):
@@ -140,7 +145,7 @@ class ProjectOps:
         inlist_project = os.path.join(self.work_dir, "inlist_project")
         try:
             shutil.copy(inlistPath, inlist_project)
-        except subprocess.CalledProcessError:
+        except shutil.Error:
             raise("Failed loading project inlist!")
         
 
@@ -150,23 +155,26 @@ class ProjectOps:
         inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
         try:
             shutil.copy(inlistPath, inlist_pgstar)
-        except subprocess.CalledProcessError:
+        except shutil.Error:
             raise("Failed loading pgstar inlist!")
 
 
             
     def loadGyreInput(self, gyre_in):
         gyre_dest = os.path.join(self.work_dir, "LOGS", "gyre.in")
-        if os.path.exists(gyre_in):
-            shutil.copy(gyre_in, gyre_dest)
-        elif os.path.exists(os.path.join("LOGS", gyre_in)):
-            gyre_in = os.path.join("LOGS", gyre_in)
-            shutil.copy(gyre_in, gyre_dest)
-        elif os.path.exists(os.path.join(self.work_dir, gyre_in)):
-            gyre_in = os.path.join(self.work_dir, gyre_in)
-            shutil.copy(gyre_in, gyre_dest)
-        else:
-            raise("Could not find the specified gyre input file. Aborting...")
+        try:
+            if os.path.exists(gyre_in):
+                shutil.copy(gyre_in, gyre_dest)
+            elif os.path.exists(os.path.join("LOGS", gyre_in)):
+                gyre_in = os.path.join("LOGS", gyre_in)
+                shutil.copy(gyre_in, gyre_dest)
+            elif os.path.exists(os.path.join(self.work_dir, gyre_in)):
+                gyre_in = os.path.join(self.work_dir, gyre_in)
+                shutil.copy(gyre_in, gyre_dest)
+            else:
+                raise("Could not find the specified gyre input file. Aborting...")
+        except shutil.Error:
+            raise("Failed loading gyre input file!")
 
 
 
