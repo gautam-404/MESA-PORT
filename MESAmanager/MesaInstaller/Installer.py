@@ -19,6 +19,9 @@ class Installer:
     def __init__(self, version='', parent_directory=''):
         self.directory = self.choose_directory(parent_directory)
         self.ostype = self.whichos()
+        print("")
+        user = getpass.getuser()
+        self.password = getpass(f"Please enter password for user {user} (press return if no password is set): ")
         self.install(version)
         return
 
@@ -27,9 +30,11 @@ class Installer:
     def whichos(self):
         if "macOS" in platform.platform():
             manufacturer = cpuinfo.get_cpu_info().get('brand_raw')
-            arch = 'intel' if 'Intel' in manufacturer.lower() else 'arm'
+            arch = 'intel' if 'Intel' in manufacturer.lower() else 'ARM'
+            print(f'macOS-{arch} detected.')
             return f"macOS-{arch}"
         elif "Linux" in platform.platform():
+            print("Linux detected.")
             return "Linux"
         else:
             raise OSError(f"OS {platform.platform()} not compatible.")
@@ -100,22 +105,25 @@ class Installer:
         self.check_n_download(mesa_zip, mesa_url)
         return sdk_download, mesa_zip
 
-
+    def call_sudo(self, arg, logfile):
+        with subprocess.call(arg, shell=True, stdin=logfile, stderr=logfile) as proc:
+            proc.communicate(self.password.encode('utf-8'))
+            if proc.returncode != 0:
+                    raise Exception("Failed to install. Check logfile for details.")
+                    sys.exit()
 
     def install_pre_reqs(self, logfile):
         if self.ostype == "Linux":
-            subprocess.call("sudo apt-get update", shell=True, stdout=logfile, stderr=logfile)
+            self.call_sudo("sudo apt-get update", logfile)
             try:
-                subprocess.call("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
-                libx11-dev zlib1g zlib1g-dev tcsh", shell=True, stdout=logfile, stderr=logfile)
+                self.call_sudo("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
+                libx11-dev zlib1g zlib1g-dev tcsh", logfile)
             except:
                 try:
-                    subprocess.call("sudo apt-get install -yq binutils make perl libX11 libX11-devel zlib zlib-devel tcsh",\
-                     shell=True, stdout=logfile, stderr=logfile)
+                    self.call_sudo("sudo apt-get install -yq binutils make perl libx11-6 libx11-dev zlib1g zlib1g-dev tcsh", logfile)
                 except:
                     try:
-                        subprocess.call("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc",\
-                         shell=True, stdout=logfile, stderr=logfile)
+                        self.call_sudo("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc", logfile)
                     except:
                         pass           
         if "macOS" in self.ostype:
@@ -124,10 +132,7 @@ class Installer:
             print("Downloading XQuartz...")
             self.check_n_download(xquartz, url_xquartz)
             print("Installing XQuartz...")
-            password = getpass("Please enter your password: ")
-            with subprocess.Popen(['sudo', 'installer', '-pkg', xquartz, '-verbose', 'target', '/'],
-                                    stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
-                proc.communicate(password)
+            self.call_sudo(f"sudo installer -pkg {xquartz} -target /", logfile)
             # os.remove(xquartz)
 
 
@@ -155,10 +160,7 @@ class Installer:
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
             with console.status("Installing MESA SDK package...", spinner="moon"):
-                password = getpass("Please enter your password: ")
-                with subprocess.Popen(['sudo', 'installer', '-pkg', sdk_download, '-verbose', 'target', '/'],
-                                    stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
-                    proc.communicate(password)
+                self.call_sudo(f"sudo installer -pkg {sdk_download} -target /", logfile)
                 # os.remove(sdk_download)
                 print("MESA SDK package installation complete.\n")
         with console.status("Extracting MESA...", spinner="moon"):
