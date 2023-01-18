@@ -62,14 +62,14 @@ class Installer:
 
     def prep_urls(self, ver):
         if self.ostype == "Linux":
-            sdk_url = linux_sdk_urls[ver]
-            mesa_url = mesa_urls[ver]
+            sdk_url = linux_sdk_urls.get(ver)
+            mesa_url = mesa_urls.get(ver)
         elif self.ostype == "macOS-intel":
-            sdk_url = mac_intel_sdk_urls[ver]
-            mesa_url = mesa_urls[ver]
+            sdk_url = mac_intel_sdk_urls.get(ver)
+            mesa_url = mesa_urls.get(ver)
         elif self.ostype == "macOS-arm":
-            sdk_url = mac_arm_sdk_urls[ver]
-            mesa_url = mesa_urls[ver]
+            sdk_url = mac_arm_sdk_urls.get(ver)
+            mesa_url = mesa_urls.get(ver)
         return sdk_url, mesa_url
 
 
@@ -163,6 +163,8 @@ class Installer:
         ver = self.choose_ver(ver)
         sdk_url, mesa_url = self.prep_urls(ver)
         print(self.directory)
+        print(sdk_url)
+        print(mesa_url)
         sdk_download, mesa_zip = self.download(self.directory, sdk_url, mesa_url)
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
