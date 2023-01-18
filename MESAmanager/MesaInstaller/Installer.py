@@ -154,7 +154,7 @@ class Installer:
                 with tarfile.open(sdk_download, 'r:gz') as tarball:
                     if os.path.exists( os.path.join(self.directory, 'mesasdk') ):
                         shutil.rmtree( os.path.join(self.directory, 'mesasdk') )
-                    tarball.extractall( {self.directory} )
+                    tarball.extractall(self.director )
                 if self.cleanafter:
                     os.remove(sdk_download)
             print("MESA SDK extraction complete.\n")
@@ -167,7 +167,7 @@ class Installer:
                 print("MESA SDK package installation complete.\n")
         with console.status("Extracting MESA", spinner="moon"):
             with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
-                zip_ref.extractall( {self.directory} )
+                zip_ref.extractall(self.directory)
             if self.cleanafter:
                 os.remove(mesa_zip)
         print("MESA extraction complete.\n")
@@ -181,7 +181,9 @@ class Installer:
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
         with open(f"{self.directory}/install_log.txt", "w+") as logfile:
-            self.install_pre_reqs(logfile)
+            subprocess.call(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+            with console.status("Installing pre-requisites", spinner="moon"):
+                self.install_pre_reqs(logfile)
             self.extract_mesa(sdk_download, mesa_zip, logfile)
 
             with console.status("Installing MESA", spinner="moon"):
