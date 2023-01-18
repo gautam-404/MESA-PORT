@@ -108,7 +108,7 @@ class Installer:
         print(f"Running a sudo command.  Please enter password for user {user} (press return if no password is set):")
         password = getpass.getpass(f"password for {user}:")
         with subprocess.Popen(shlex.split(arg), shell=True, stdin=logfile, stderr=logfile) as proc:
-            proc.communicate(password.encode('utf-8'))
+            proc.communicate(password)
             if proc.returncode != 0:
                     raise Exception("Failed to install. Check logfile for details.")
                     sys.exit()
