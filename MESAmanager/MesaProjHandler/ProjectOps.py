@@ -177,6 +177,7 @@ class ProjectOps:
 
     def runGyre(self, gyre_in, silent=False):
         pwd = os.getcwd()
+        self.loadGyreInput(gyre_in)
         if os.getenv('GYRE_DIR') is not None:
             if silent is False:
                 print("Running gyre...")
