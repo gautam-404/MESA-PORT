@@ -105,8 +105,8 @@ class Installer:
 
     def call_sudo(self, arg, logfile):
         user = getpass.getuser()
-        print(f"Running a sudo command. Press return if no password is set.")
-        password = getpass.getpass(f"password for {user}:/n")
+        print(f"Running a sudo command. Press return when prompted if no password is set.")
+        password = getpass.getpass(f"password for {user}:\n")
         with subprocess.Popen(shlex.split(arg), stdin=logfile, stderr=logfile) as proc:
             proc.communicate(password)
             if proc.returncode != 0:
