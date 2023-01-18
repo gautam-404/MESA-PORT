@@ -115,7 +115,7 @@ class Installer:
         # child.sendline(password)
         # child.logfile = logfile
         with subprocess.Popen(shlex.split(arg), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
-            proc.communicate(input=password)
+            proc.communicate(input=password.encode())
             if proc.returncode != 0:
                     raise Exception("Failed to install. Check logfile for details.")
 
