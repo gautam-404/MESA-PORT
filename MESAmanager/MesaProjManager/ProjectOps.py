@@ -71,8 +71,7 @@ class ProjectOps:
 
     def clean(self):
         try:
-            subprocess.call('chmod +x clean', cwd = self.work_dir, shell=True)
-            subprocess.call('./clean', cwd = self.work_dir, stdout=subprocess.DEVNULL)
+            subprocess.call('chmod +x clean && ./clean', shell=True, cwd = self.work_dir, stdout=subprocess.DEVNULL)
             print("Done cleaning.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/clean' does not exists...could not clean!")
@@ -82,7 +81,6 @@ class ProjectOps:
     def make(self):
         try:
             with console.status("Making...", spinner="moon"):
-                subprocess.call('chmod +x mk', cwd = self.work_dir, shell=True)
                 subprocess.call('./mk', cwd = self.work_dir, stdout=subprocess.DEVNULL)
             print("Done making.\n")
         except subprocess.CalledProcessError:
@@ -92,7 +90,6 @@ class ProjectOps:
     
     def run(self, silent=False):
         runlog = os.path.join(self.work_dir, "runlog")
-        subprocess.call('chmod +x rn', cwd = self.work_dir, shell=True)
         try:
             if silent is False:
                 print("Running...")
@@ -120,7 +117,6 @@ class ProjectOps:
     def resume(self, photo, silent=False):
         photo_path = os.path.join(self.work_dir, "photos", photo)
         runlog = os.path.join(self.work_dir, "runlog")
-        subprocess.call('chmod +x re', cwd = self.work_dir, shell=True)
         try:
             if not os.path.isfile(photo_path):
                 raise FileNotFoundError(f"Photo '{photo}' could not be found.")
@@ -188,7 +184,7 @@ class ProjectOps:
 
     def runGyre(self, gyre_in, silent=False):
         self.loadGyreInput(gyre_in)
-        gyre_ex = os.path.join("$GYRE_DIR", "bin", "gyre")
+        gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
         runlog = os.path.join(self.work_dir, "runlog")
         if os.getenv('GYRE_DIR') is not None:
             if silent is False:
