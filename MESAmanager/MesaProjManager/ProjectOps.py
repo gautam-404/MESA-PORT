@@ -86,7 +86,46 @@ class ProjectOps:
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/mk' does not exists...could not make!")
             print("Make aborted!")
+
+
+
+    def loadProjInlist(self, inlistPath):
+        inlistPath = os.path.abspath(inlistPath)
+        inlist_project = os.path.join(self.work_dir, "inlist_project")
+        try:
+            shutil.copy(inlistPath, inlist_project)
+        except shutil.Error:
+            raise("Failed loading project inlist!")
         
+
+    
+    def loadPGstarInlist(self, inlistPath):
+        inlistPath = os.path.abspath(inlistPath)
+        inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
+        try:
+            shutil.copy(inlistPath, inlist_pgstar)
+        except shutil.Error:
+            raise("Failed loading pgstar inlist!")
+
+
+            
+    def loadGyreInput(self, gyre_in):
+        gyre_dest = os.path.join(self.work_dir, "LOGS", "gyre.in")
+        try:
+            if os.path.exists(gyre_in):
+                shutil.copy(gyre_in, gyre_dest)
+            elif os.path.exists(os.path.join("LOGS", gyre_in)):
+                gyre_in = os.path.join("LOGS", gyre_in)
+                shutil.copy(gyre_in, gyre_dest)
+            elif os.path.exists(os.path.join(self.work_dir, gyre_in)):
+                gyre_in = os.path.join(self.work_dir, gyre_in)
+                shutil.copy(gyre_in, gyre_dest)
+            else:
+                raise("Could not find the specified gyre input file. Aborting...")
+        except shutil.Error:
+            raise("Failed loading gyre input file!")
+
+
     
     def run(self, silent=False):
         runlog = os.path.join(self.work_dir, "runlog")
@@ -136,43 +175,6 @@ class ProjectOps:
             else:
                 raise ValueError("Invalid input for argument 'silent'.")
             print("Done with the run!\n")
-            
-    
-    def loadProjInlist(self, inlistPath):
-        inlistPath = os.path.abspath(inlistPath)
-        inlist_project = os.path.join(self.work_dir, "inlist_project")
-        try:
-            shutil.copy(inlistPath, inlist_project)
-        except shutil.Error:
-            raise("Failed loading project inlist!")
-        
-
-    
-    def loadPGstarInlist(self, inlistPath):
-        inlistPath = os.path.abspath(inlistPath)
-        inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
-        try:
-            shutil.copy(inlistPath, inlist_pgstar)
-        except shutil.Error:
-            raise("Failed loading pgstar inlist!")
-
-
-            
-    def loadGyreInput(self, gyre_in):
-        gyre_dest = os.path.join(self.work_dir, "LOGS", "gyre.in")
-        try:
-            if os.path.exists(gyre_in):
-                shutil.copy(gyre_in, gyre_dest)
-            elif os.path.exists(os.path.join("LOGS", gyre_in)):
-                gyre_in = os.path.join("LOGS", gyre_in)
-                shutil.copy(gyre_in, gyre_dest)
-            elif os.path.exists(os.path.join(self.work_dir, gyre_in)):
-                gyre_in = os.path.join(self.work_dir, gyre_in)
-                shutil.copy(gyre_in, gyre_dest)
-            else:
-                raise("Could not find the specified gyre input file. Aborting...")
-        except shutil.Error:
-            raise("Failed loading gyre input file!")
 
 
 
@@ -192,7 +194,6 @@ class ProjectOps:
                                 file.write(line)
                             proc.wait()
                             file.write( "\n\n"+("*"*100)+"\n\n" )
-                            file.close()
                 except subprocess.CalledProcessError:
                     print("Gyre run failed! Check runlog.")
                 file.write( "\n\n"+("*"*100)+"\n\n" )
@@ -209,4 +210,3 @@ class ProjectOps:
             print("Check if $GYRE_DIR is set in environment variables...could not run!")
             print("Run aborted!")
 
-        
