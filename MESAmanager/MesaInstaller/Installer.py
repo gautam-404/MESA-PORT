@@ -7,6 +7,7 @@ import subprocess
 import tarfile
 import zipfile
 
+import pexpect
 import cpuinfo
 import requests
 from alive_progress import alive_bar
@@ -103,15 +104,23 @@ class Installer:
         self.check_n_download(mesa_zip, mesa_url)
         return sdk_download, mesa_zip
 
+
+
     def call_sudo(self, arg, logfile):
         user = getpass.getuser()
         print(f"Running a sudo command. Press return when prompted if no password is set.")
         print(f"Enter password for {user}:\n\n")
         password = getpass.getpass()
-        with subprocess.Popen(shlex.split(arg), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
-            proc.communicate(password.encode())
-            if proc.returncode != 0:
-                    raise Exception("Failed to install. Check logfile for details.")
+        child = pexpect.spawn(arg)
+        child.expect('password')
+        child.sendline(password)
+        child.logfile = logfile
+        # with subprocess.Popen(shlex.split(arg), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
+        #     proc.communicate(password.encode())
+        #     if proc.returncode != 0:
+        #             raise Exception("Failed to install. Check logfile for details.")
+
+
 
     def install_pre_reqs(self, logfile):
         if self.ostype == "Linux":
