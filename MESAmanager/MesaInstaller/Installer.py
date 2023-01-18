@@ -152,7 +152,7 @@ class Installer:
 
     def extract_mesa(self, sdk_download, mesa_zip, logfile):
         if self.ostype == "Linux":
-            with console.status("Extracting MESA SDK", spinner="moon"):
+            with console.status("\nExtracting MESA SDK", spinner="moon"):
                 with tarfile.open(sdk_download, 'r:gz') as tarball:
                     if os.path.exists( os.path.join(self.directory, 'mesasdk') ):
                         shutil.rmtree( os.path.join(self.directory, 'mesasdk') )
@@ -160,11 +160,11 @@ class Installer:
                 # os.remove(sdk_download)
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
-            with console.status("Installing MESA SDK package", spinner="moon"):
+            with console.status("\nInstalling MESA SDK package", spinner="moon"):
                 self.call_sudo(f"sudo installer -pkg {sdk_download} -target /", logfile)
                 # os.remove(sdk_download)
                 print("MESA SDK package installation complete.\n")
-        with console.status("Extracting MESA", spinner="moon"):
+        with console.status("\nExtracting MESA", spinner="moon"):
             with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
                 zip_ref.extractall( {self.directory} )
             # os.remove(mesa_zip)
@@ -179,11 +179,11 @@ class Installer:
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
         with open(f"{self.directory}/install_log.txt", "w+") as logfile:
-            with console.status("Installing MESA pre-requisites\n", spinner="moon"):
+            with console.status("\nInstalling MESA pre-requisites\n", spinner="moon"):
                 self.install_pre_reqs(logfile)
             self.extract_mesa(self.directory, sdk_download, mesa_zip, logfile)
 
-            with console.status("Installing MESA", spinner="moon"):
+            with console.status("\nInstalling MESA", spinner="moon"):
                 run_shell =f'''
                 /bin/bash -c \"
                 export MESASDK_ROOT={self.directory}/mesasdk \\
