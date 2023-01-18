@@ -146,11 +146,20 @@ class ProjectOps:
             print("Failed loading pgstar inlist!")
             
     def loadGyreInput(self, gyre_in):
-        gyre_in = os.path.abspath("../"+gyre_in)
-        try:
+        pwd = os.getcwd()
+        if os.path.exists(gyre_in):
             subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
-        except subprocess.CalledProcessError:
-            print("Failed loading gyre_in!")
+        elif os.path.exists(os.path.join("LOGS", gyre_in)):
+            gyre_in = os.path.join("LOGS", gyre_in)
+            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
+        elif os.path.exists(os.path.join("..", gyre_in)):
+            gyre_in = os.path.join("..", gyre_in)
+            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
+        else:
+            print("Could not find the specified gyre input file. Aborting...")
+            return
+ 
+
 
     def makeGyre(self):
         try:
@@ -164,29 +173,15 @@ class ProjectOps:
             print(f"Check if $MESA_DIR is set in environment variables...could not run!")
             print("Run terminated! Check runlog.")
 
+
+
     def runGyre(self, gyre_in, silent=False):
         pwd = os.getcwd()
-        if os.path.exists(gyre_in):
-            self.loadGyreInput(gyre_in)
-        elif os.path.exists(os.path.join("LOGS", gyre_in)):
-            gyre_in = os.path.join("LOGS", gyre_in)
-            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
-        elif os.path.exists(os.path.join(pwd, gyre_in)):
-            gyre_in = os.path.join(pwd, gyre_in)
-            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
-        elif os.path.exists(os.path.join("..", gyre_in)):
-            gyre_in = os.path.join("..", gyre_in)
-            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
-        else:
-            print("Could not find the specified gyre input file. Aborting...")
-            return
-
         if os.getenv('GYRE_DIR') is not None:
             if silent is False:
                 print("Running gyre...")
                 try:
                     subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True)
-                    print("Done with the run!\n")
                     return
                 except subprocess.CalledProcessError:
                     print("Gyre failed! Check runlog.")
@@ -195,7 +190,6 @@ class ProjectOps:
                     file = open(f"{pwd}/runlog", "a+") 
                     try:
                         subprocess.call(f"cd LOGS && $GYRE_DIR/bin/gyre gyre.in", shell=True, stdout = file, stderr = file)
-                        print("Done with the run!\n")
                         return
                     except subprocess.CalledProcessError:
                         print("Gyre failed! Check runlog.")
