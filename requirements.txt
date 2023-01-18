@@ -5,4 +5,3 @@ rich
 requests
 alive_progress
 py-cpuinfo
-pexpect

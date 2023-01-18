@@ -7,7 +7,6 @@ import subprocess
 import tarfile
 import zipfile
 
-import pexpect
 import cpuinfo
 import requests
 from alive_progress import alive_bar
@@ -108,16 +107,12 @@ class Installer:
 
     def call_sudo(self, arg, logfile):
         user = getpass.getuser()
-        print(f"Running a sudo command. Press return when prompted if no password is set.")
+        print(f"Running a sudo command. You will be prompted for a password.")
         password = getpass.getpass(f"Enter password for {user}:")
-        # child = pexpect.spawn(arg)
-        # child.expect('password')
-        # child.sendline(password)
-        # child.logfile = logfile
         with subprocess.Popen(shlex.split(arg), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
             proc.communicate(input=password.encode())
-            if proc.returncode != 0:
-                    raise Exception("Failed to install. Check logfile for details.")
+            # if proc.returncode != 0:
+            #         raise Exception("Failed to install. Check logfile for details.")
 
 
 
