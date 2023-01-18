@@ -4,7 +4,7 @@
 
 ### Create, modify, run and share your MESA projects!  
 
-* ***NEW***: Now install MESA on Linux and MacOS (ARM/M-series and Intel) with just this python package!
+* ***NEW***: Now ***install MESA*** on ***Linux*** and ***MacOS*** (ARM/M-series and Intel) with just this python package!
 
 * ***NEW***: MESAmanager can run also run GYRE! See Usage.
 
