@@ -188,7 +188,7 @@ class ProjectOps:
         self.loadGyreInput(gyre_in)
         gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
         runlog = os.path.join(self.work_dir, "runlog")
-        if os.getenv('GYRE_DIR') is not None:
+        if os.environ['GYRE_DIR'] is not None:
             if silent is False:
                 print("Running gyre...")
                 try:
@@ -210,7 +210,7 @@ class ProjectOps:
                 with console.status("Running gyre...", spinner="moon"):
                     file = open(runlog, "a+") 
                     try:
-                        subprocess.call([gyre_ex, 'gyre.in'], cwd = os.path.join(self.work_dir, 'LOGS'),\
+                        subprocess.call([gyre_ex, 'gyre.in'], cwd = os.path.join(self.work_dir, 'LOGS'),
                                          stdout = file, stderr = file)
                         return
                     except subprocess.CalledProcessError:
