@@ -165,7 +165,7 @@ class ProjectOps:
             subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
         elif os.path.exists(os.path.join("..", gyre_in)):
             gyre_in = os.path.join("..", gyre_in)
-            subprocess.call(f"cp ../{gyre_in} LOGS/gyre.in", shell=True)
+            subprocess.call(f"cp {gyre_in} LOGS/gyre.in", shell=True)
         else:
             print("Could not find the specified gyre input file. Aborting...")
             return
