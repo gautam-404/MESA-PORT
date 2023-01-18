@@ -90,60 +90,52 @@ class ProjectOps:
     
     def run(self, silent=False):
         runlog = os.path.join(self.work_dir, "runlog")
-        try:
-            if silent is False:
-                print("Running...")
-                file = open(runlog, "a+")
-                proc = subprocess.Popen('./rn', cwd = self.work_dir, 
-                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                for line in proc.stdout:
-                    sys.stdout.write(line)
-                    file.write(line)
-                proc.wait()
-                file.write( "\n\n"+("*"*100)+"\n\n" )
-                file.close()
-            elif silent is True:
-                with console.status("Running...", spinner="moon"):
-                    file = open(runlog, "a+") 
-                    subprocess.call('./rn', cwd = self.work_dir, stdout=file, stderr=file) 
-                    file.write( "\n\n"+("*"*100)+"\n\n" )
-                    file.close()
-            else:
-                raise ValueError("Invalid input for argument 'silent'")
-            print("Done with the run!\n")
-        except subprocess.CalledProcessError:
-            print("Run aborted! Check runlog.")
-            
-    
-    def resume(self, photo, silent=False):
-        photo_path = os.path.join(self.work_dir, "photos", photo)
-        runlog = os.path.join(self.work_dir, "runlog")
-        try:
-            if not os.path.isfile(photo_path):
-                raise FileNotFoundError(f"Photo '{photo}' could not be found.")
-            else:
-                if silent is False:
-                    print(f"Resuming run from photo {photo}...")
-                    file = open(runlog, "a+")
-                    proc = subprocess.Popen(['./re', photo], cwd = self.work_dir, 
-                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
+        if silent is False:
+            print("Running...")
+            with open(runlog, "a+") as file:
+                with subprocess.Popen('./rn', cwd = self.work_dir, stdout=subprocess.PIPE, 
+                        stderr=subprocess.PIPE, universal_newlines=True) as proc:
                     for line in proc.stdout:
                         sys.stdout.write(line)
                         file.write(line)
                     proc.wait()
                     file.write( "\n\n"+("*"*100)+"\n\n" )
-                    file.close()
-                elif silent is True:
-                    with console.status("Resuming run from photo...", spinner="moon"):
-                        file = open(runlog, "a+")  # append mode
-                        subprocess.call(['./re', photo], cwd = self.work_dir, stdout=file, stderr=file)
+        elif silent is True:
+            with console.status("Running...", spinner="moon"):
+                with open(runlog, "a+") as file:
+                    with subprocess.call('./rn', cwd = self.work_dir, stdout=file, stderr=file) as proc:
                         file.write( "\n\n"+("*"*100)+"\n\n" )
-                        file.close()
-                else:
-                    raise ValueError("Invalid input for argument 'silent'.")
-                print("Done with the run!\n")
-        except subprocess.CalledProcessError:
-            print("Resume aborted! Check runlog.")
+        else:
+            raise ValueError("Invalid input for argument 'silent'")
+        print("Done with the run!\n")
+
+        
+    
+    def resume(self, photo, silent=False):
+        photo_path = os.path.join(self.work_dir, "photos", photo)
+        runlog = os.path.join(self.work_dir, "runlog")
+        if not os.path.isfile(photo_path):
+            raise FileNotFoundError(f"Photo '{photo}' could not be found.")
+        else:
+            if silent is False:
+                print(f"Resuming run from photo {photo}...")
+                with open(runlog, "a+") as file:
+                    with subprocess.Popen(['./re', photo], cwd = self.work_dir, stdout=subprocess.PIPE, 
+                                stderr=subprocess.STDOUT, universal_newlines=True) as proc:
+                        for line in proc.stdout:
+                            sys.stdout.write(line)
+                            file.write(line)
+                        proc.wait()
+                        file.write( "\n\n"+("*"*100)+"\n\n" )
+            elif silent is True:
+                with console.status("Resuming run from photo...", spinner="moon"):
+                    with open(runlog, "a+") as file:
+                        with subprocess.call(['./re', photo], cwd = self.work_dir, 
+                                    stdout=file, stderr=file) as proc:
+                            file.write( "\n\n"+("*"*100)+"\n\n" )
+            else:
+                raise ValueError("Invalid input for argument 'silent'.")
+            print("Done with the run!\n")
             
     
     def loadProjInlist(self, inlistPath):
@@ -192,35 +184,29 @@ class ProjectOps:
             if silent is False:
                 print("Running gyre...")
                 try:
-                    file = open(runlog, "a+") 
-                    proc = subprocess.call([gyre_ex, 'gyre.in'], cwd = os.path.join(self.work_dir, 'LOGS'),
-                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
-                    for line in proc.stdout:
-                        sys.stdout.write(line)
-                        file.write(line)
-                    proc.wait()
-                    file.write( "\n\n"+("*"*100)+"\n\n" )
-                    file.close()
-                    return
+                    with open(runlog, "a+") as file:
+                        with subprocess.Popen([gyre_ex, 'gyre.in'], cwd = os.path.join(self.work_dir, 'LOGS'),
+                                stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True) as proc:
+                            for line in proc.stdout:
+                                sys.stdout.write(line)
+                                file.write(line)
+                            proc.wait()
+                            file.write( "\n\n"+("*"*100)+"\n\n" )
+                            file.close()
                 except subprocess.CalledProcessError:
                     print("Gyre run failed! Check runlog.")
                 file.write( "\n\n"+("*"*100)+"\n\n" )
                 file.close()
             elif silent is True:
                 with console.status("Running gyre...", spinner="moon"):
-                    file = open(runlog, "a+") 
-                    try:
+                    with open(runlog, "a+") as file:
                         subprocess.call([gyre_ex, 'gyre.in'], cwd = os.path.join(self.work_dir, 'LOGS'),
-                                         stdout = file, stderr = file)
-                        return
-                    except subprocess.CalledProcessError:
-                        print("Gyre run failed! Check runlog.")
-                    file.write( "\n\n"+("*"*100)+"\n\n" )
-                    file.close()
+                                            stdout = file, stderr = file)   
+                        file.write( "\n\n"+("*"*100)+"\n\n" )
             else:
                 raise ValueError("Invalid input for argument 'silent'")    
         else:
             print("Check if $GYRE_DIR is set in environment variables...could not run!")
-            print("Run terminated! Check runlog.")
+            print("Run aborted!")
 
         
