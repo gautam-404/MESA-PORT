@@ -106,7 +106,7 @@ class Installer:
         return sdk_download, mesa_zip
 
     def call_sudo(self, arg, logfile):
-        with subprocess.call(arg, shell=True, stdin=logfile, stderr=logfile) as proc:
+        with subprocess.Popen(arg.split(' '), shell=True, stdin=logfile, stderr=logfile) as proc:
             proc.communicate(self.password.encode('utf-8'))
             if proc.returncode != 0:
                     raise Exception("Failed to install. Check logfile for details.")
