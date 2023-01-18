@@ -180,18 +180,24 @@ class Installer:
         sdk_download, mesa_zip = self.download(sdk_url, mesa_url)
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
-        with open(f"{self.directory}/install_log.txt", "w+") as logfile:
+        with open(f"install_log.txt", "w+") as logfile:
             subprocess.call(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)    ## to get sudo password prompt out of the way
             with console.status("Installing pre-requisites", spinner="moon"):
                 self.install_pre_reqs(logfile)
             self.extract_mesa(sdk_download, mesa_zip, logfile)
 
             with console.status("Installing MESA", spinner="moon"):
+                if self.ostype == "Linux":
+                    sdk_dir = os.path.join(self.directory, 'mesasdk')
+                elif "macOS" in self.ostype:
+                    sdk_dir = '/Applications/mesasdk'
+
                 if subprocess.call(f"/bin/bash -c \"export MESASDK_ROOT={self.directory}/mesasdk && \
                             source $MESASDK_ROOT/bin/mesasdk_init.sh && gfortran --version\"",
-                             shell=True, stdout=logfile, stderr=logfile) != 0:
+                            shell=True, stdout=logfile, stderr=logfile) != 0:
                     raise Exception("MESA SDK initialization failed. \
                         Please check the install_log.txt file for details.")
+
                 run_shell =f'''
                 /bin/bash -c \"
                 export MESASDK_ROOT={self.directory}/mesasdk && 
@@ -204,7 +210,9 @@ class Installer:
                 && cd {mesa_dir} && ./clean  && ./install \\
                 && cd {mesa_dir}/gyre/gyre && make\"
                 '''
-                subprocess.call(run_shell, shell=True, stdout=logfile, stderr=logfile)
+                if subprocess.call(run_shell, shell=True, stdout=logfile, stderr=logfile) != 0:
+                    raise Exception("MESA installation failed. \
+                        Please check the install_log.txt file for details.")
         print("Installation complete.\n")
         self.print_env_vars(mesa_dir)
 
