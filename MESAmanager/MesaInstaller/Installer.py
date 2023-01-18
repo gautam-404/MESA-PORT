@@ -1,17 +1,19 @@
-import os, shutil, sys
+import getpass
+import os
 import platform
+import shlex
+import shutil
+import subprocess
+import sys
 import tarfile
 import zipfile
-import subprocess 
+
 import cpuinfo
-import sys
-import getpass
-
-from .mesaurls import *
-
 import requests
 from alive_progress import alive_bar
 from rich.console import Console
+
+from .mesaurls import *
 
 console = Console()
 
@@ -102,10 +104,10 @@ class Installer:
         return sdk_download, mesa_zip
 
     def call_sudo(self, arg, logfile):
-        print("Running a sudo command.")
         user = getpass.getuser()
-        password = getpass.getpass(f"Please enter password for user {user} (press return if no password is set): ")
-        with subprocess.Popen(arg.split(''), shell=True, stdin=logfile, stderr=logfile) as proc:
+        print(f"Running a sudo command.  Please enter password for user {user} (press return if no password is set):")
+        password = getpass.getpass(f"password for {user}:")
+        with subprocess.Popen(shlex.split(arg), shell=True, stdin=logfile, stderr=logfile) as proc:
             proc.communicate(password.encode('utf-8'))
             if proc.returncode != 0:
                     raise Exception("Failed to install. Check logfile for details.")
@@ -150,7 +152,7 @@ class Installer:
 
     def extract_mesa(self, sdk_download, mesa_zip, logfile):
         if self.ostype == "Linux":
-            with console.status("Extracting MESA SDK\n\n", spinner="moon"):
+            with console.status("Extracting MESA SDK", spinner="moon"):
                 with tarfile.open(sdk_download, 'r:gz') as tarball:
                     if os.path.exists( os.path.join(self.directory, 'mesasdk') ):
                         shutil.rmtree( os.path.join(self.directory, 'mesasdk') )
@@ -158,11 +160,11 @@ class Installer:
                 # os.remove(sdk_download)
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
-            with console.status("Installing MESA SDK package\n\n", spinner="moon"):
+            with console.status("Installing MESA SDK package", spinner="moon"):
                 self.call_sudo(f"sudo installer -pkg {sdk_download} -target /", logfile)
                 # os.remove(sdk_download)
                 print("MESA SDK package installation complete.\n")
-        with console.status("Extracting MESA\n\n", spinner="moon"):
+        with console.status("Extracting MESA", spinner="moon"):
             with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
                 zip_ref.extractall( {self.directory} )
             # os.remove(mesa_zip)
@@ -177,11 +179,11 @@ class Installer:
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
         with open(f"{self.directory}/install_log.txt", "w+") as logfile:
-            with console.status("Installing MESA pre-requisites\n\n", spinner="moon"):
+            with console.status("Installing MESA pre-requisites", spinner="moon"):
                 self.install_pre_reqs(logfile)
             self.extract_mesa(self.directory, sdk_download, mesa_zip, logfile)
 
-            with console.status("Installing MESA\n\n", spinner="moon"):
+            with console.status("Installing MESA", spinner="moon"):
                 run_shell =f'''
                 /bin/bash -c \"
                 export MESASDK_ROOT={self.directory}/mesasdk \\
