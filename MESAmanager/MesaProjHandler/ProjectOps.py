@@ -1,4 +1,4 @@
-import os, subprocess, shlex
+import os, subprocess, shutil
 from MESAmanager.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
 import click
 from rich.console import Console
@@ -42,8 +42,8 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'clean'.")
         
         def writeover():
-            subprocess.call(['rm', '-rf', self.work_dir])
-            subprocess.call(['cp', '-r', os.path.join(self.envObject.mesaDir, 'star/work'), self.work_dir])
+            shutil.rmtree(self.work_dir)
+            shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.work_dir)
 
         if self.found is True:
             if overwrite is True:
@@ -60,7 +60,7 @@ class ProjectOps:
             else:
                 raise ValueError("Invalid input for argument 'overwrite'.")
         else:
-            subprocess.call(['cp', '-r', os.path.join(self.envObject.mesaDir, 'star/work'), self.projName])
+            shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
             self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
 
 
@@ -139,7 +139,7 @@ class ProjectOps:
         inlistPath = os.path.abspath(inlistPath)
         inlist_project = os.path.join(self.work_dir, "inlist_project")
         try:
-            subprocess.call(['cp', inlistPath, inlist_project])
+            shutil.copy(inlistPath, inlist_project)
         except subprocess.CalledProcessError:
             raise("Failed loading project inlist!")
         
@@ -149,7 +149,7 @@ class ProjectOps:
         inlistPath = os.path.abspath(inlistPath)
         inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
         try:
-            subprocess.call(['cp', inlistPath, inlist_pgstar])
+            shutil.copy(inlistPath, inlist_pgstar)
         except subprocess.CalledProcessError:
             raise("Failed loading pgstar inlist!")
 
@@ -158,13 +158,13 @@ class ProjectOps:
     def loadGyreInput(self, gyre_in):
         gyre_dest = os.path.join(self.work_dir, "LOGS", "gyre.in")
         if os.path.exists(gyre_in):
-            subprocess.call(['cp', gyre_in, gyre_dest])
+            shutil.copy(gyre_in, gyre_dest)
         elif os.path.exists(os.path.join("LOGS", gyre_in)):
             gyre_in = os.path.join("LOGS", gyre_in)
-            subprocess.call(['cp', gyre_in, gyre_dest])
+            shutil.copy(gyre_in, gyre_dest)
         elif os.path.exists(os.path.join(self.work_dir, gyre_in)):
             gyre_in = os.path.join(self.work_dir, gyre_in)
-            subprocess.call(['cp', gyre_in, gyre_dest])
+            shutil.copy(gyre_in, gyre_dest)
         else:
             raise("Could not find the specified gyre input file. Aborting...")
 
