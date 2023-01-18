@@ -104,42 +104,33 @@ class Installer:
         return sdk_download, mesa_zip
 
 
-
-    def call_sudo(self, arg, logfile):
-        user = getpass.getuser()
-        print(f"Running a sudo command. You will be prompted for a password.")
-        password = getpass.getpass(f"Enter password for {user}:")
-        with subprocess.Popen(shlex.split(arg), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
-            proc.communicate(input=password.encode())
-            # if proc.returncode != 0:
-            #         raise Exception("Failed to install. Check logfile for details.")
-
-
-
     def install_pre_reqs(self, logfile):
         if self.ostype == "Linux":
-            self.call_sudo("sudo apt-get update", logfile)
+            subprocess.call(shlex.split("sudo apt-get update"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
             try:
-                self.call_sudo("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
-                libx11-dev zlib1g zlib1g-dev tcsh", logfile)
+                subprocess.call(shlex.split("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
+                    libx11-dev zlib1g zlib1g-dev tcsh"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
             except:
                 try:
-                    self.call_sudo("sudo apt-get install -yq binutils make perl libx11-6 libx11-dev zlib1g zlib1g-dev tcsh", logfile)
+                    subprocess.call(shlex.split("sudo apt-get install -yq binutils make perl libx11-6 libx11-dev zlib1g zlib1g-dev tcsh"),
+                                 stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
                 except:
                     try:
-                        self.call_sudo("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc", logfile)
+                        subprocess.call(shlex.split("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc"),
+                                    stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
                     except:
                         pass           
         if "macOS" in self.ostype:
             print("Installing XCode Command Line Tools...")
-            self.call_sudo("sudo xcode-select --install", logfile)
+            subprocess.call(shlex.split("sudo xcode-select --install"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
 
             xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
             print("Downloading XQuartz...")
             self.check_n_download(xquartz, url_xquartz)
 
             print("Installing XQuartz...")
-            self.call_sudo(f"sudo installer -pkg {xquartz} -target /", logfile)
+            subprocess.call(shlex.split(f"sudo installer -pkg {xquartz} -target /"), 
+                            stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
             if self.cleanafter:
                 os.remove(xquartz)
 
@@ -169,7 +160,8 @@ class Installer:
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
             with console.status("Installing MESA SDK package", spinner="moon"):
-                self.call_sudo(f"sudo installer -pkg {sdk_download} -target /", logfile)
+                subprocess.call(shlex.split(f"sudo installer -pkg {sdk_download} -target /"),
+                                stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
                 if self.cleanafter:
                     os.remove(sdk_download)
                 print("MESA SDK package installation complete.\n")
@@ -189,9 +181,8 @@ class Installer:
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
         with open(f"{self.directory}/install_log.txt", "w+") as logfile:
-            # with console.status("Installing MESA pre-requisites", spinner="moon"):
             self.install_pre_reqs(logfile)
-            self.extract_mesa(self.directory, sdk_download, mesa_zip, logfile)
+            self.extract_mesa(sdk_download, mesa_zip, logfile)
 
             with console.status("Installing MESA", spinner="moon"):
                 run_shell =f'''
@@ -207,5 +198,5 @@ class Installer:
                 '''
                 subprocess.call(run_shell, shell=True, stdout=logfile)
         print("Installation complete.\n")
-        self.print_env_vars(self.directory, mesa_dir)
+        self.print_env_vars(mesa_dir)
 
