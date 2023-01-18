@@ -21,7 +21,7 @@ class Installer:
         self.ostype = self.whichos()
         print("")
         user = getpass.getuser()
-        self.password = getpass(f"Please enter password for user {user} (press return if no password is set): ")
+        self.password = getpass.getpass(f"Please enter password for user {user} (press return if no password is set): ")
         self.install(version)
         return
 
