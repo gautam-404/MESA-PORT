@@ -1,4 +1,4 @@
-# MESAmanager
+# MESA-manager
 #### A Python package to control and administer [MESA](https://github.com/MESAHub/mesa)(Modules for Experiments in Stellar Astrophysics)
 
 
@@ -18,7 +18,7 @@
 
 ## Installation
 ```
-pip install git+https://github.com/gautam-404/MESAmanager.git
+pip install git+https://github.com/gautam-404/MESA-manager.git
 ```
 
 ## Usage
