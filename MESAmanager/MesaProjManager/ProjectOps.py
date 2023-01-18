@@ -72,6 +72,9 @@ class ProjectOps:
     def clean(self):
         try:
             subprocess.call('chmod +x clean && ./clean', shell=True, cwd = self.work_dir, stdout=subprocess.DEVNULL)
+            runlog = os.path.join(self.work_dir, "runlog")
+            if os.path.exists(os.path.join(self.work_dir, "runlog")):
+                os.remove(runlog)
             print("Done cleaning.\n")
         except subprocess.CalledProcessError:
             print(f"Either the project '{self.projName}' or the file '{self.projName}/clean' does not exists...could not clean!")
@@ -129,6 +132,8 @@ class ProjectOps:
     
     def run(self, silent=False):
         runlog = os.path.join(self.work_dir, "runlog")
+        if not os.path.exists(os.path.join(self.work_dir, "star")):
+            raise("The project is not made yet...please make it first!")
         if silent is False:
             print("Running...")
             res = self.run_subprocess(['./rn'], self.work_dir, logging=True, runlog=runlog)
