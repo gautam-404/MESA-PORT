@@ -19,9 +19,7 @@ class Installer:
     def __init__(self, version='', parent_directory=''):
         self.directory = self.choose_directory(parent_directory)
         self.ostype = self.whichos()
-        print("")
-        user = getpass.getuser()
-        self.password = getpass.getpass(f"Please enter password for user {user} (press return if no password is set): ")
+        print("OS type:", self.ostype)
         self.install(version)
         return
 
@@ -106,8 +104,11 @@ class Installer:
         return sdk_download, mesa_zip
 
     def call_sudo(self, arg, logfile):
-        with subprocess.Popen(arg.split(' '), shell=True, stdin=logfile, stderr=logfile) as proc:
-            proc.communicate(self.password.encode('utf-8'))
+        print("Running a sudo command.")
+        user = getpass.getuser()
+        password = getpass.getpass(f"Please enter password for user {user} (press return if no password is set): ")
+        with subprocess.Popen(arg.split(''), shell=True, stdin=logfile, stderr=logfile) as proc:
+            proc.communicate(password.encode('utf-8'))
             if proc.returncode != 0:
                     raise Exception("Failed to install. Check logfile for details.")
                     sys.exit()
