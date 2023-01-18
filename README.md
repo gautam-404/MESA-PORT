@@ -6,6 +6,8 @@
 
 * ***NEW***: Now install MESA on Linux with just python! See Usage.
 
+* ***NEW***: MESAmanager can run also run GYRE! See Usage.
+
 * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
 
 * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Brainchild of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
@@ -44,8 +46,13 @@ Installer()
   opsObject.make()
   opsObject.run(silent=False)
   opsObject.resume("photo_number", silent=False)
-  opsObject.loadProjInlist("/path/to/inlist")       ## Load custom inlist_project, reads absolute path
-  opsObject.loadPGstarInlist("/path/to/inlist")     ## Load custom inlist_pgstar, reads absolute path
+  opsObject.loadProjInlist("/path/to/inlist")       ## Load custom inlist_project
+  opsObject.loadPGstarInlist("/path/to/inlist")     ## Load custom inlist_pgstar
+
+  opsObject.runGyre("gyre_input.in", silent=False)  
+  ## "gyre_input.in" can be a path to a GYRE input file
+  ## It can also be the name of a file in either your_project or your_project/LOGS directory
+
   ```
 
 * Using a `MesaAccess` class object:
