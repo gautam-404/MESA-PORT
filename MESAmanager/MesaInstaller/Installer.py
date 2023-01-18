@@ -109,15 +109,15 @@ class Installer:
     def call_sudo(self, arg, logfile):
         user = getpass.getuser()
         print(f"Running a sudo command. Press return when prompted if no password is set.")
-        password = getpass.getpass(f"Enter password for {user}:\n\n")
-        child = pexpect.spawn(arg)
-        child.expect('password')
-        child.sendline(password)
-        child.logfile = logfile
-        # with subprocess.Popen(shlex.split(arg), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
-        #     proc.communicate(password.encode())
-        #     if proc.returncode != 0:
-        #             raise Exception("Failed to install. Check logfile for details.")
+        password = getpass.getpass(f"Enter password for {user}:")
+        # child = pexpect.spawn(arg)
+        # child.expect('password')
+        # child.sendline(password)
+        # child.logfile = logfile
+        with subprocess.Popen(shlex.split(arg), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
+            proc.communicate(input=password)
+            if proc.returncode != 0:
+                    raise Exception("Failed to install. Check logfile for details.")
 
 
 
