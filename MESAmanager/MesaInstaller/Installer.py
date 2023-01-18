@@ -118,8 +118,12 @@ class Installer:
         if "macOS" in self.ostype:
             subprocess.call("xcode-select --install", shell=True, stdout=logfile, stderr=logfile)
             xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
+            print("Downloading and installing XQuartz...")
             self.check_n_download(xquartz, url_xquartz)
-            subprocess.call(f"sudo installer -pkg {xquartz} -verbose -target /", shell=True, stdout=logfile, stderr=logfile) 
+            with subprocess.Popen(['sudo', 'installer', '-pkg', xquartz, '-verbose', 'target', '/'],
+                                    stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
+                print("sudo: a password is required...")
+                proc.communicate(input('password:'))
             os.remove(xquartz)
 
 
@@ -147,8 +151,10 @@ class Installer:
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
             with console.status("Installing MESA SDK package...", spinner="moon"):
-                subprocess.call(f"sudo installer -pkg {sdk_download} -verbose -target /", 
-                                shell=True, stdout=logfile, stderr=logfile) 
+                with subprocess.Popen(['sudo', 'installer', '-pkg', sdk_download, '-verbose', 'target', '/'],
+                                    stdin=subprocess.PIPE, stdout=logfile, stderr=logfile) as proc:
+                    print("sudo: a password is required...")
+                    proc.communicate(input('password:'))
                 # os.remove(sdk_download)
             print("MESA SDK package installation complete.\n")
         with console.status("Extracting MESA...", spinner="moon"):
