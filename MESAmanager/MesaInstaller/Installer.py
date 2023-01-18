@@ -4,7 +4,7 @@ import tarfile
 import zipfile
 import subprocess 
 import cpuinfo
-import mesaurls
+from .mesaurls import *
 
 import requests
 from alive_progress import alive_bar
@@ -53,11 +53,11 @@ class Installer:
 
     def choose_ver(self, ver=''):
         if self.ostype == "Linux":
-            versions = mesaurls.linux_versions
+            versions = linux_versions
         elif self.ostype == "macOS-intel":
-            versions = mesaurls.mac_intel_versions
+            versions = mac_intel_versions
         elif self.ostype == "macOS-arm":
-            versions = mesaurls.mac_arm_versions
+            versions = mac_arm_versions
         while ver not in versions:
             print("Versions available through this insaller are:")
             print(versions, '\n')
@@ -70,14 +70,14 @@ class Installer:
 
     def prep_urls(self, ver):
         if self.ostype == "Linux":
-            sdk_url = mesaurls.linux_sdk[ver]
-            mesa_url = mesaurls.mesa[ver]
+            sdk_url = linux_sdk_urls[ver]
+            mesa_url = mesa_urls[ver]
         elif self.ostype == "macOS-intel":
-            sdk_url = mesaurls.mac_intel_sdk[ver]
-            mesa_url = mesaurls.mesa[ver]
+            sdk_url = mac_intel_sdk_urls[ver]
+            mesa_url = mesa_urls[ver]
         elif self.ostype == "macOS-arm":
-            sdk_url = mesaurls.mac_arm_sdk[ver]
-            mesa_url = mesaurls.mesa[ver]
+            sdk_url = mac_arm_sdk_urls[ver]
+            mesa_url = mesa_urls[ver]
         return sdk_url, mesa_url
 
 
@@ -125,7 +125,6 @@ class Installer:
                         pass           
         if "macOS" in self.ostype:
             subprocess.call("xcode-select --install", shell=True, stdout=logfile, stderr=logfile)
-            url_xquartz = "https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.4/XQuartz-2.8.4.pkg"
             xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
             self.check_n_download(xquartz, url_xquartz)
             subprocess.call(f"sudo installer -pkg {xquartz} -verbose -target /", shell=True, stdout=logfile, stderr=logfile) 
