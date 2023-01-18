@@ -94,7 +94,8 @@ class ProjectOps:
             if silent is False:
                 print("Running...")
                 file = open(runlog, "a+")
-                proc = subprocess.Popen('./rn', cwd = self.work_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                proc = subprocess.Popen('./rn', cwd = self.work_dir, 
+                        stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                 for line in proc.stdout:
                     sys.stdout.write(line)
                     file.write(line)
@@ -124,7 +125,8 @@ class ProjectOps:
                 if silent is False:
                     print(f"Resuming run from photo {photo}...")
                     file = open(runlog, "a+")
-                    proc = subprocess.Popen(['./re', photo], cwd = self.work_dir, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    proc = subprocess.Popen(['./re', photo], cwd = self.work_dir, 
+                            stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     for line in proc.stdout:
                         sys.stdout.write(line)
                         file.write(line)
@@ -191,7 +193,8 @@ class ProjectOps:
                 print("Running gyre...")
                 try:
                     file = open(runlog, "a+") 
-                    proc = subprocess.call([gyre_ex, 'gyre.in'], cwd = os.path.join(self.work_dir, 'LOGS'))
+                    proc = subprocess.call([gyre_ex, 'gyre.in'], cwd = os.path.join(self.work_dir, 'LOGS'),
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True)
                     for line in proc.stdout:
                         sys.stdout.write(line)
                         file.write(line)
