@@ -192,7 +192,7 @@ class Installer:
                 elif "macOS" in self.ostype:
                     sdk_dir = '/Applications/mesasdk'
 
-                if subprocess.call(f"/bin/bash -c \"export MESASDK_ROOT={self.directory}/mesasdk && \
+                if subprocess.call(f"/bin/bash -c \"export MESASDK_ROOT={sdk_dir} && \
                             source $MESASDK_ROOT/bin/mesasdk_init.sh && gfortran --version\"",
                             shell=True, stdout=logfile, stderr=logfile) != 0:
                     raise Exception("MESA SDK initialization failed. \
