@@ -73,7 +73,7 @@ class Installer:
         return sdk_url, mesa_url
 
 
-    def check_n_download(filepath, url):
+    def check_n_download(self, filepath, url):
             if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
                 print("Skipping download! File already downloaded.\n")
             else:
