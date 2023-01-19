@@ -56,12 +56,16 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   opsObject.make()
   opsObject.run(silent=False)
   opsObject.resume("photo_number", silent=False)
-  opsObject.loadProjInlist("/path/to/inlist")       ## Load custom inlist_project
-  opsObject.loadPGstarInlist("/path/to/inlist")     ## Load custom inlist_pgstar
+
+  ## Load custom inlist_project, can be a path or a file in your_project directory
+  opsObject.loadProjInlist("/path/to/inlist")
+  ## Load custom inlist_pgstar, can be a path or a file in your_project directory     
+  opsObject.loadPGstarInlist("/path/to/inlist")
+  ## Load custom run_star_extras.f90, can be a path or a file in your_project directory
 
   opsObject.runGyre("gyre_input.in", silent=False)  
-  ## "gyre_input.in" can be a path to a GYRE input file
-  ## It can also be the name of a file in either your_project or your_project/LOGS directory
+  ## "gyre_input.in" can either be a path to your GYRE input file
+  ## or it can also be the name of a file in your_project or your_project/LOGS directory
   ```
 
 * ***Using a `MesaAccess` class object:***

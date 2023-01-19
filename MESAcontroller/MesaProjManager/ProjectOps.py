@@ -93,26 +93,30 @@ class ProjectOps:
 
 
     def loadProjInlist(self, inlistPath):
-        inlistPath = os.path.abspath(inlistPath)
         inlist_project = os.path.join(self.work_dir, "inlist_project")
         try:
             if os.path.exists(inlistPath):
                 shutil.copy(inlistPath, inlist_project)
+            elif os.path.exists(os.path.join(self.work_dir, inlistPath)):
+                inlistPath = os.path.join(self.work_dir, inlistPath)
+                shutil.copy(inlistPath, inlist_project)
             else:
-                raise Exception("Could not find the specified project inlist file!")
+                raise Exception(f"Could not find the your specified project inlist file at {inlist_project}. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading project inlist!")
         
 
     
     def loadPGstarInlist(self, inlistPath):
-        inlistPath = os.path.abspath(inlistPath)
         inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
         try:
             if os.path.exists(inlistPath):
                 shutil.copy(inlistPath, inlist_pgstar)
+            elif os.path.exists(os.path.join(self.work_dir, inlistPath)):
+                inlistPath = os.path.join(self.work_dir, inlistPath)
+                shutil.copy(inlistPath, inlist_pgstar)
             else:
-                raise Exception("Could not find the specified pgstar inlist file!")
+                raise Exception(f"Could not find the your specified pgstar inlist file at {inlist_pgstar}. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading pgstar inlist!")
 
@@ -130,9 +134,22 @@ class ProjectOps:
                 gyre_in = os.path.join(self.work_dir, gyre_in)
                 shutil.copy(gyre_in, gyre_dest)
             else:
-                raise Exception("Could not find the specified GYRE input file. Aborting...")
+                raise Exception(f"Could not find your specified GYRE input file at {gyre_in}. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading GYRE input file!")
+    
+
+    
+    def loadExtras(self, extras_path):
+        extras_path = os.path.abspath(extras_path)
+        extras_default = os.path.join(self.work_dir, "src", "run_star_extras.f90")
+        try:
+            if os.path.exists(extras_path):
+                shutil.copy(extras_path, extras_default)
+            else:
+                raise Exception(f"Could not find your customised run_star_extras.f90 at path '{extras_path}'. Aborting...")
+        except shutil.Error:
+            raise Exception("Failed loading customised run_star_extras.f90 file!")
 
 
     
