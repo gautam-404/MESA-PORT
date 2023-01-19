@@ -1,5 +1,5 @@
 # MESA-manager
-#### A Python package to control and administer [MESA](https://github.com/MESAHub/mesa)(Modules for Experiments in Stellar Astrophysics)
+#### A Python package to control and administer [MESA](https://github.com/MESAHub/mesa) (Modules for Experiments in Stellar Astrophysics)
 
 
 ### Create, modify, run and share your MESA projects!  
