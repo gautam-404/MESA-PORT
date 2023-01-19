@@ -60,7 +60,7 @@ class Installer:
             print(versions, '\n')
             ver = input("Input the desired version...")
             if ver not in versions:
-                print("Not recognised, try again.\n")
+                print("Version not recognised, try again.\n")
         return ver
 
 
@@ -105,23 +105,23 @@ class Installer:
 
     def install_pre_reqs(self, logfile):
         if self.ostype == "Linux":
-            subprocess.call(shlex.split("sudo apt-get update"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+            subprocess.call(shlex.split("sudo apt-get update"), stdout=logfile, stderr=logfile)
             try:
                 subprocess.call(shlex.split("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
-                    libx11-dev zlib1g zlib1g-dev tcsh"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+                    libx11-dev zlib1g zlib1g-dev tcsh"), stdout=logfile, stderr=logfile)
             except:
                 try:
                     subprocess.call(shlex.split("sudo apt-get install -yq binutils make perl libx11-6 libx11-dev zlib1g zlib1g-dev tcsh"),
-                                 stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+                                stdout=logfile, stderr=logfile)
                 except:
                     try:
                         subprocess.call(shlex.split("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc"),
-                                    stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+                                    stdout=logfile, stderr=logfile)
                     except:
                         pass           
         if "macOS" in self.ostype:
             print("Installing XCode Command Line Tools...")
-            subprocess.call(shlex.split("sudo xcode-select --install"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+            subprocess.call(shlex.split("sudo xcode-select --install"), stdout=logfile, stderr=logfile)
             
             if not os.path.exists("/Applications/Utilities/XQuartz.app"):
                 xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
@@ -129,19 +129,18 @@ class Installer:
                 self.check_n_download(xquartz, url_xquartz)
 
                 print("Installing XQuartz...")
-                subprocess.call(shlex.split(f"sudo installer -pkg {xquartz} -target /"), 
-                                stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+                subprocess.call(shlex.split(f"sudo installer -pkg {xquartz} -target /"), stdout=logfile, stderr=logfile)
                 if self.cleanAfter:
                     os.remove(xquartz)
 
 
-    def print_env_vars(self, mesa_dir):
+    def print_env_vars(self, mesa_dir, sdk_dir):
         source_this=f'''
-        export MESASDK_ROOT={self.directory}/mesasdk
+        export MESASDK_ROOT={sdk_dir}/mesasdk
         source $MESASDK_ROOT/bin/mesasdk_init.sh
         export MESA_DIR={mesa_dir}
         export OMP_NUM_THREADS=2
-        export GYRE_directory=$MESA_DIR/gyre/gyre
+        export GYRE_DIR=$MESA_DIR/gyre/gyre
         '''
         print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):")
         print(source_this)
@@ -154,14 +153,14 @@ class Installer:
                 with tarfile.open(sdk_download, 'r:gz') as tarball:
                     if os.path.exists( os.path.join(self.directory, 'mesasdk') ):
                         shutil.rmtree( os.path.join(self.directory, 'mesasdk') )
-                    tarball.extractall(self.director )
+                    tarball.extractall(self.directory )
                 if self.cleanAfter:
                     os.remove(sdk_download)
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
             with console.status("Installing MESA SDK package", spinner="moon"):
                 subprocess.call(shlex.split(f"sudo installer -pkg {sdk_download} -target /"),
-                                stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+                                stdout=logfile, stderr=logfile)
                 if self.cleanAfter:
                     os.remove(sdk_download)
                 print("MESA SDK package installation complete.\n")
@@ -182,7 +181,8 @@ class Installer:
         mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
 
         with open(f"install_log.txt", "w+") as logfile:
-            subprocess.call(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)    ## to get sudo password prompt out of the way
+            ## to get sudo password prompt out of the way
+            subprocess.call(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)    
             with console.status("Installing pre-requisites", spinner="moon"):
                 self.install_pre_reqs(logfile)
             self.extract_mesa(sdk_download, mesa_zip, logfile)
@@ -205,14 +205,22 @@ class Installer:
                 && source $MESASDK_ROOT/bin/mesasdk_init.sh \\
                 && export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
-                && export GYRE_directory={mesa_dir}/gyre/gyre \\
                 && chmod -R +x {mesa_dir} \\
-                && cd {mesa_dir} && ./clean  && ./install \\
-                && cd {mesa_dir}/gyre/gyre && make\"
+                && cd {mesa_dir} && ./clean  && ./install\"
                 '''
                 if subprocess.call(run_shell, shell=True, stdout=logfile, stderr=logfile) != 0:
                     raise Exception("MESA installation failed. \
                         Please check the install_log.txt file for details.")
+
+                if subprocess.call(f"/bin/bash -c \"export GYRE_DIR={mesa_dir}/gyre/gyre && \
+                            cd {mesa_dir}/gyre/gyre && make\"",
+                            shell=True, stdout=logfile, stderr=logfile) != 0:
+                    raise Exception("GYRE installation failed. \
+                        Please check the install_log.txt file for details.")
+                else:
+                    logfile.write("GYRE installation complete.\n")
+                logfile.write("Build Successful.\n")
+
         print("Installation complete.\n")
-        self.print_env_vars(mesa_dir)
+        self.print_env_vars(mesa_dir, sdk_dir)
 
