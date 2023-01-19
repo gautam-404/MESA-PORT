@@ -40,7 +40,7 @@ pip install git+https://github.com/gautam-404/MESA-manager.git
   #     macOS-Intel: "22.05.1", "15140" and "12778".  
   #     macOS-ARM: "22.05.1".
   
-  ## cleanAfter=False by default toallow re-runing installation without removing downloaded files, 
+  ## cleanAfter=False by default to allow re-running installation without removing downloaded files, 
   ## this saves time when debugging a failed MESA build.
   ```
   
