@@ -68,27 +68,122 @@ class ProjectOps:
             except shutil.Error:
                 raise Exception(f"Could not create the project '{self.projName}'!")
 
+    
+    def run_subprocess(self, commands, dir, silent=False, runlog=''):
+        with subprocess.Popen(commands, cwd = dir,
+            stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
+
+            if runlog == '':
+                if silent is False:
+                    for outline in proc.stdout:
+                        sys.stdout.write(outline)
+                for errline in proc.stderr:
+                    sys.stdout.write(errline)
+            elif runlog != '':
+                with open(runlog, "a+") as file:
+                    for outline in proc.stdout:
+                        file.write(outline)
+                        if silent is False:
+                            sys.stdout.write(outline)
+                    for errline in proc.stderr:
+                        file.write(errline)
+                        sys.stdout.write(outline)
+                    file.write( "\n\n"+("*"*100)+"\n\n" )
+
+            _data, error = proc.communicate()
+            if proc.returncode or error:
+                print('The process raised an error:', proc.returncode, error)
+                return False
+            else:
+                return True
+
 
     def clean(self):
-        try:
-            subprocess.call('chmod +x clean && ./clean', shell=True, cwd = self.work_dir, stdout=subprocess.DEVNULL)
-            runlog = os.path.join(self.work_dir, "runlog")
-            if os.path.exists(os.path.join(self.work_dir, "runlog")):
-                os.remove(runlog)
+        res = self.run_subprocess('chmod +x clean && ./clean', self.work_dir, silent=True)
+        runlog = os.path.join(self.work_dir, "runlog")
+        if os.path.exists(os.path.join(self.work_dir, "runlog")):
+            os.remove(runlog)
+        if res is False:
+            raise Exception("Clean failed!")
+        else:
             print("Done cleaning.\n")
-        except subprocess.CalledProcessError:
-            print(f"Either the project '{self.projName}' or the file '{self.projName}/clean' does not exists...could not clean!")
-            print("Clean aborted!")
             
 
     def make(self):
-        try:
-            with console.status("Making...", spinner="moon"):
-                subprocess.call('./mk', cwd = self.work_dir, stdout=subprocess.DEVNULL)
+        with console.status("Making...", spinner="moon"):
+            res = self.run_subprocess('chmod +x mk && ./mk', self.work_dir, silent=True)
+        if res is False:
+            raise Exception("Make failed!")
+        else:    
             print("Done making.\n")
-        except subprocess.CalledProcessError:
-            print(f"Either the project '{self.projName}' or the file '{self.projName}/mk' does not exists...could not make!")
-            print("Make aborted!")
+
+
+    
+    def run(self, silent=False):
+        runlog = os.path.join(self.work_dir, "runlog")
+        if not os.path.exists(os.path.join(self.work_dir, "star")):
+            raise Exception("The project is not made yet...please make it first!") 
+        else:
+            if silent is False:
+                print("Running...")
+                res = self.run_subprocess(['./rn'], self.work_dir, silent, runlog=runlog)
+            elif silent is True:
+                with console.status("Running...", spinner="moon"):
+                    res = self.run_subprocess(['./rn'], self.work_dir, silent, runlog=runlog) 
+            else:
+                raise ValueError("Invalid input for argument 'silent'")
+
+            if res is False:
+                raise Exception("Run failed! Check runlog.")
+            else:
+                print("Done with the run!\n")
+        
+
+        
+    
+    def resume(self, photo, silent=False):
+        photo_path = os.path.join(self.work_dir, "photos", photo)
+        runlog = os.path.join(self.work_dir, "runlog")
+        if not os.path.isfile(photo_path):
+            raise FileNotFoundError(f"Photo '{photo}' could not be found.")
+        else:
+            if silent is False:
+                print(f"Resuming run from photo {photo}...")
+                res = self.run_subprocess(['./re', photo], self.work_dir, silent, runlog=runlog)
+            elif silent is True:
+                with console.status("Resuming run from photo...", spinner="moon"):
+                    res = self.run_subprocess(['./re', photo], self.work_dir, silent, runlog=runlog)
+            else:
+                raise ValueError("Invalid input for argument 'silent'.")
+            
+            if res is False:
+                print("Resume from photo failed! Check runlog.")
+            else:
+                print("Done with the run!\n")
+
+
+
+    def runGyre(self, gyre_in, silent=False):
+        self.loadGyreInput(gyre_in)
+        gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
+        runlog = os.path.join(self.work_dir, "runlog")
+        if os.environ['GYRE_DIR'] is not None:
+            if silent is False:
+                print("Running GYRE...")
+                res = self.run_subprocess([gyre_ex, 'gyre.in'], os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
+            elif silent is True:
+                with console.status("Running GYRE...", spinner="moon"):
+                    res = self.run_subprocess([gyre_ex, 'gyre.in'], os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
+            else:
+                raise ValueError("Invalid input for argument 'silent'")   
+            
+            if res is False:
+                    print("GYRE run failed! Check runlog.")
+            else:
+                print("GYRE run complete!\n") 
+        else:
+            print("Check if $GYRE_DIR is set in environment variables...could not run!")
+            print("Run aborted!")
 
 
 
@@ -152,84 +247,3 @@ class ProjectOps:
                 raise Exception(f"Could not find your customised run_star_extras.f90 at path '{extras_path}'. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading customised run_star_extras.f90 file!")
-
-
-    
-    def run(self, silent=False):
-        runlog = os.path.join(self.work_dir, "runlog")
-        if not os.path.exists(os.path.join(self.work_dir, "star")):
-            raise Exception("The project is not made yet...please make it first!")
-        if silent is False:
-            print("Running...")
-            res = self.run_subprocess(['./rn'], self.work_dir, silent, runlog=runlog)
-            if res is False:
-                print("Run failed! Check runlog.")
-        elif silent is True:
-            with console.status("Running...", spinner="moon"):
-                res = self.run_subprocess(['./rn'], self.work_dir, silent, runlog=runlog) 
-                if res is False:
-                    print("Run failed! Check runlog.")
-        else:
-            raise ValueError("Invalid input for argument 'silent'")
-        print("Done with the run!\n")
-
-        
-    
-    def resume(self, photo, silent=False):
-        photo_path = os.path.join(self.work_dir, "photos", photo)
-        runlog = os.path.join(self.work_dir, "runlog")
-        if not os.path.isfile(photo_path):
-            raise FileNotFoundError(f"Photo '{photo}' could not be found.")
-        else:
-            if silent is False:
-                print(f"Resuming run from photo {photo}...")
-                res = self.run_subprocess(['./re', photo], self.work_dir, silent, runlog=runlog)
-                if res is False:
-                    print("Resume from photo failed! Check runlog.")
-            elif silent is True:
-                with console.status("Resuming run from photo...", spinner="moon"):
-                    res = self.run_subprocess(['./re', photo], self.work_dir, silent, runlog=runlog)
-                    if res is False:
-                        print("Resume from photo failed! Check runlog.")
-            else:
-                raise ValueError("Invalid input for argument 'silent'.")
-            print("Done with the run!\n")
-
-
-
-    def runGyre(self, gyre_in, silent=False):
-        self.loadGyreInput(gyre_in)
-        gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
-        runlog = os.path.join(self.work_dir, "runlog")
-        if os.environ['GYRE_DIR'] is not None:
-            if silent is False:
-                print("Running GYRE...")
-                res = self.run_subprocess([gyre_ex, 'gyre.in'], os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
-                if res is False:
-                    print("GYRE run failed! Check runlog.")
-            elif silent is True:
-                with console.status("Running GYRE...", spinner="moon"):
-                    res = self.run_subprocess([gyre_ex, 'gyre.in'], os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
-                if res is False:
-                    print("GYRE run failed! Check runlog.")
-            else:
-                raise ValueError("Invalid input for argument 'silent'")   
-            print("GYRE run complete!\n") 
-        else:
-            print("Check if $GYRE_DIR is set in environment variables...could not run!")
-            print("Run aborted!")
-
-
-    def run_subprocess(self, args, dir, silent=False, runlog=''):
-        with open(runlog, "a+") as file, subprocess.Popen(args, cwd = dir,
-            stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
-            for line in proc.stdout:
-                file.write(line)
-                if silent is False:
-                    sys.stdout.write(line)
-            _data, error = proc.communicate()
-            if proc.returncode or error:
-                print('The process raised an error:', proc.returncode, error)
-                return False
-            file.write( "\n\n"+("*"*100)+"\n\n" )
-            return True

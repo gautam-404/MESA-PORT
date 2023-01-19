@@ -53,6 +53,9 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
                             ## Default name is 'work'
   opsObject.create(overwrite=False, clean=False)    ## CLI is shown if no arguments are passed
   opsObject.clean()
+
+  opsObject.loadExtras("path/to/custom/run_star_extras_file")
+
   opsObject.make()
   opsObject.run(silent=False)
   opsObject.resume("photo_number", silent=False)
