@@ -1,6 +1,6 @@
 # MESA-controller
 [![DOI](https://zenodo.org/badge/589065195.svg)](https://zenodo.org/badge/latestdoi/589065195)
-#### A Python package to control [MESA](https://github.com/MESAHub/mesa) (Modules for Experiments in Stellar Astrophysics)
+#### A Python package to control [MESA](https://github.com/MESAHub/mesa) (Modules for Experiments in Stellar Astrophysics) stellar evolution code
 
 
 ### Create, modify, run and share your MESA projects!  
@@ -13,7 +13,7 @@
 
   * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Brainchild of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
 
-  * MESA-manager can also run [GYRE](https://github.com/rhdtownsend/gyre) stellar oscillation code! See Usage.
+  * MESA-controller can also run [GYRE](https://github.com/rhdtownsend/gyre) stellar oscillation code! See Usage.
 
 
 
@@ -28,7 +28,7 @@ pip install git+https://github.com/gautam-404/MESA-manager.git
 
 * ***Importing:***
   ```python
-  from MESAmanager import  ProjectOps, MesaAccess, Installer
+  from MESAcontroller import  ProjectOps, MesaAccess, Installer
   ```
   
 * ***Using the built-in MESA `Installer`:***
