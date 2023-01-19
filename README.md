@@ -23,10 +23,10 @@ pip install git+https://github.com/gautam-404/MESA-manager.git
 
 ## Usage
 
-***Importing***
-```python
-from MESAmanager import  ProjectOps, MesaAccess, Installer
-```
+* ***Importing***
+  ```python
+  from MESAmanager import  ProjectOps, MesaAccess, Installer
+  ```
 * ***Using the built-in MESA installer:***
   ```python
   from MESAmanager import Installer
