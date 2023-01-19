@@ -6,7 +6,7 @@
 
 * ***NEW***: Now ***install MESA*** on ***Linux*** and ***macOS*** (ARM/M-series and Intel) with just this python package!
 
-* ***NEW***: MESAmanager can run also run GYRE! See Usage.
+* ***NEW***: MESA-manager can also run GYRE! See Usage.
 
 * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
 
