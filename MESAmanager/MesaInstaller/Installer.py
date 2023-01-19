@@ -132,18 +132,6 @@ class Installer:
                 subprocess.call(shlex.split(f"sudo installer -pkg {xquartz} -target /"), stdout=logfile, stderr=logfile)
                 if self.cleanAfter:
                     os.remove(xquartz)
-
-
-    def print_env_vars(self, mesa_dir, sdk_dir):
-        source_this=f'''
-        export MESASDK_ROOT={sdk_dir}
-        source $MESASDK_ROOT/bin/mesasdk_init.sh
-        export MESA_DIR={mesa_dir}
-        export OMP_NUM_THREADS=2
-        export GYRE_DIR=$MESA_DIR/gyre/gyre
-        '''
-        print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):\n")
-        print(source_this)
         
 
 
@@ -172,6 +160,17 @@ class Installer:
                 os.remove(mesa_zip)
         print("MESA extraction complete.\n")
 
+
+    def print_env_vars(self, mesa_dir, sdk_dir):
+        source_this=f'''
+        export MESASDK_ROOT={sdk_dir}
+        source $MESASDK_ROOT/bin/mesasdk_init.sh
+        export MESA_DIR={mesa_dir}
+        export OMP_NUM_THREADS=2
+        export GYRE_DIR=$MESA_DIR/gyre/gyre
+        '''
+        print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):\n")
+        print(source_this)
 
 
     def install(self, ver=''):
