@@ -1,4 +1,5 @@
-# MESA-manager
+# MESA-manager 
+[![DOI](https://zenodo.org/badge/589065195.svg)](https://zenodo.org/badge/latestdoi/589065195)
 #### A Python package to control and administer [MESA](https://github.com/MESAHub/mesa) (Modules for Experiments in Stellar Astrophysics)
 
 
