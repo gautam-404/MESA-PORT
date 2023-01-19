@@ -23,10 +23,11 @@ pip install git+https://github.com/gautam-404/MESA-manager.git
 
 ## Usage
 
-* ***Importing***
+* ***Importing:***
   ```python
   from MESAmanager import  ProjectOps, MesaAccess, Installer
   ```
+  
 * ***Using the built-in MESA installer:***
   ```python
   from MESAmanager import Installer
@@ -42,6 +43,7 @@ pip install git+https://github.com/gautam-404/MESA-manager.git
   ## cleanAfter=False by default toallow re-runing installation without removing downloaded files, 
   ## this saves time when debugging a failed MESA build.
   ```
+  
 * ***Using a `ProjectOps` class object:***
   ```python
   opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom/pre-existing project name
