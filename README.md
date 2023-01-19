@@ -1,6 +1,6 @@
 # MESA-controller
 [![DOI](https://zenodo.org/badge/589065195.svg)](https://zenodo.org/badge/latestdoi/589065195)
-#### A Python package to control [MESA](https://github.com/MESAHub/mesa) (Modules for Experiments in Stellar Astrophysics) stellar evolution code
+#### A Python package to control [MESA](https://github.com/MESAHub/mesa) stellar evolution code
 
 
 ### Create, modify, run and share your MESA projects!  
