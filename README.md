@@ -21,7 +21,7 @@
 
 ## Installation
 ```
-pip install git+https://github.com/gautam-404/MESA-manager.git
+pip install git+https://github.com/gautam-404/MESA-controller.git
 ```
 
 ## Usage
