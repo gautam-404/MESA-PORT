@@ -33,7 +33,6 @@ pip install git+https://github.com/gautam-404/MESA-manager.git
   
 * ***Using the built-in MESA `Installer`:***
   ```python
-  from MESAmanager import Installer
   ## Installer for Linux and macOS (ARM/M-series and Intel) systems
   
   Installer(version="latest", parentDir='where/to/install', cleanAfter=False )     
