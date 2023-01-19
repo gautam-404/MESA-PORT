@@ -5,10 +5,10 @@ with open('requirements.txt') as f:
 
 
 setup(
-    name='MESAmanager',
+    name='MESAcontroller',
     version='1.0.0-beta',
     packages=find_packages(),
     install_requires=required,
-    url='https://github.com/gautam-404/MESA-manager.git',
+    url='https://github.com/gautam-404/MESA-controller.git',
     author='gautam-404'
 )
