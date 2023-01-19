@@ -23,24 +23,29 @@ pip install git+https://github.com/gautam-404/MESA-manager.git
 
 ## Usage
 
-***Import***
+***Importing***
 ```python
 from MESAmanager import  ProjectOps, MesaAccess, Installer
-
-opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom/pre-existing project name
-accessObject = MesaAccess()
-
-## Interactive installer for Linux and macOS (ARM/M-series and Intel) systems
-Installer()               
-# Optional arguments: version="ver.si.on" and parent_directory='where/to/install'
-# Available versions options are "latest", "22.11.1", "22.05.1", "21.12.1", "15140" and "12778"
-
 ```
-
-***Commands***
-
-* Using a `ProjectOps` class object:
+* ***Using the built-in MESA installer:***
   ```python
+  from MESAmanager import Installer
+  ## Installer for Linux and macOS (ARM/M-series and Intel) systems
+  
+  Installer(version="latest", parentDir='where/to/install', cleanAfter=False )     
+  ## CLI is shown for missing arguments.         
+  ## Available versions:
+  #     Linux: "22.11.1", "22.05.1", "21.12.1", "15140" and "12778".
+  #     macOS-Intel: "22.05.1", "15140" and "12778".  
+  #     macOS-ARM: "22.05.1".
+  
+  ## cleanAfter=False by default toallow re-runing installation without removing downloaded files, 
+  ## this saves time when debugging a failed MESA build.
+  ```
+* ***Using a `ProjectOps` class object:***
+  ```python
+  opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom/pre-existing project name
+                            ## Default name is 'work'
   opsObject.create(overwrite=False, clean=False)    ## CLI is shown if no arguments are passed
   opsObject.clean()
   opsObject.make()
@@ -52,11 +57,12 @@ Installer()
   opsObject.runGyre("gyre_input.in", silent=False)  
   ## "gyre_input.in" can be a path to a GYRE input file
   ## It can also be the name of a file in either your_project or your_project/LOGS directory
-
   ```
 
-* Using a `MesaAccess` class object:
+* ***Using a `MesaAccess` class object:***
   ```python
+  accessObject = MesaAccess()
+
   ## Write
   accessObject.set(parameters, values)              
   ## Inputs paramets can be a string or a list of strings

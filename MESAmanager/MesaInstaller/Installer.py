@@ -16,9 +16,9 @@ from .mesaurls import *
 console = Console()
 
 class Installer:
-    def __init__(self, version='', parent_directory='', cleanafter=False):
-        self.cleanafter = cleanafter
-        self.directory = self.choose_directory(parent_directory)
+    def __init__(self, version='', parentDir='', cleanAfter=False):
+        self.cleanAfter = cleanAfter
+        self.directory = self.choose_directory(parentDir)
         self.ostype = self.whichos()
         print(f"OS type: {self.ostype}\n")
         self.install(version)
@@ -122,16 +122,17 @@ class Installer:
         if "macOS" in self.ostype:
             print("Installing XCode Command Line Tools...")
             subprocess.call(shlex.split("sudo xcode-select --install"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+            
+            if not os.path.exists("/Applications/Utilities/XQuartz.app"):
+                xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
+                print("Downloading XQuartz...")
+                self.check_n_download(xquartz, url_xquartz)
 
-            xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
-            print("Downloading XQuartz...")
-            self.check_n_download(xquartz, url_xquartz)
-
-            print("Installing XQuartz...")
-            subprocess.call(shlex.split(f"sudo installer -pkg {xquartz} -target /"), 
-                            stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
-            if self.cleanafter:
-                os.remove(xquartz)
+                print("Installing XQuartz...")
+                subprocess.call(shlex.split(f"sudo installer -pkg {xquartz} -target /"), 
+                                stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
+                if self.cleanAfter:
+                    os.remove(xquartz)
 
 
     def print_env_vars(self, mesa_dir):
@@ -154,21 +155,21 @@ class Installer:
                     if os.path.exists( os.path.join(self.directory, 'mesasdk') ):
                         shutil.rmtree( os.path.join(self.directory, 'mesasdk') )
                     tarball.extractall(self.director )
-                if self.cleanafter:
+                if self.cleanAfter:
                     os.remove(sdk_download)
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
             with console.status("Installing MESA SDK package", spinner="moon"):
                 subprocess.call(shlex.split(f"sudo installer -pkg {sdk_download} -target /"),
                                 stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)
-                if self.cleanafter:
+                if self.cleanAfter:
                     os.remove(sdk_download)
                 print("MESA SDK package installation complete.\n")
 
         with console.status("Extracting MESA", spinner="moon"):
             with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
                 zip_ref.extractall(self.directory)
-            if self.cleanafter:
+            if self.cleanAfter:
                 os.remove(mesa_zip)
         print("MESA extraction complete.\n")
 
