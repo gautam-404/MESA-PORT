@@ -136,7 +136,7 @@ class Installer:
 
     def print_env_vars(self, mesa_dir, sdk_dir):
         source_this=f'''
-        export MESASDK_ROOT={sdk_dir}/mesasdk
+        export MESASDK_ROOT={sdk_dir}
         source $MESASDK_ROOT/bin/mesasdk_init.sh
         export MESA_DIR={mesa_dir}
         export OMP_NUM_THREADS=2
@@ -220,6 +220,6 @@ class Installer:
                 else:
                     logfile.write("GYRE installation complete.\n")
                 logfile.write("Build Successful.\n")
-                
+
         self.print_env_vars(mesa_dir, sdk_dir)
         print("Installation complete.\n")
