@@ -141,14 +141,13 @@ class ProjectOps:
 
 
     def loadExtras(self, extras_path):
-        extras_path = os.path.abspath(extras_path)
         extras_default = os.path.join(self.work_dir, "src", "run_star_extras.f90")
         try:
             if os.path.exists(extras_path):
                 shutil.copy(extras_path, extras_default)
             elif os.path.exists(os.path.join(self.work_dir, extras_path)):
-                inlistPath = os.path.join(self.work_dir, extras_path)
-                shutil.copy(inlistPath, extras_default)
+                extras_path = os.path.join(self.work_dir, extras_path)
+                shutil.copy(extras_path, extras_default)
             else:
                 raise Exception(f"Could not find your customised run_star_extras.f90 at path '{extras_path}'. Aborting...")
         except shutil.Error:
