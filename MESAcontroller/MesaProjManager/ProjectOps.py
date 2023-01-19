@@ -1,4 +1,4 @@
-import os, sys, subprocess, shutil
+import os, sys, subprocess, shutil, shlex
 from MESAcontroller.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
 import click
 from rich.console import Console
@@ -70,7 +70,7 @@ class ProjectOps:
 
     
     def run_subprocess(self, commands, dir, silent=False, runlog=''):
-        with subprocess.Popen(commands, cwd = dir,
+        with subprocess.Popen(commands, cwd=dir,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
 
             if runlog == '':
@@ -99,7 +99,7 @@ class ProjectOps:
 
 
     def clean(self):
-        res = self.run_subprocess('chmod +x clean && ./clean', self.work_dir, silent=True)
+        res = self.run_subprocess(['./clean'], self.work_dir, silent=True)
         runlog = os.path.join(self.work_dir, "runlog")
         if os.path.exists(os.path.join(self.work_dir, "runlog")):
             os.remove(runlog)
@@ -111,7 +111,7 @@ class ProjectOps:
 
     def make(self):
         with console.status("Making...", spinner="moon"):
-            res = self.run_subprocess('chmod +x mk && ./mk', self.work_dir, silent=True)
+            res = self.run_subprocess(['./mk'], self.work_dir, silent=True)
         if res is False:
             raise Exception("Make failed!")
         else:    
