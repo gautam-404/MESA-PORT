@@ -28,7 +28,7 @@ pip install git+https://github.com/gautam-404/MESA-manager.git
   from MESAmanager import  ProjectOps, MesaAccess, Installer
   ```
   
-* ***Using the built-in MESA installer:***
+* ***Using the built-in MESA `Installer`:***
   ```python
   from MESAmanager import Installer
   ## Installer for Linux and macOS (ARM/M-series and Intel) systems
