@@ -142,7 +142,7 @@ class Installer:
         export OMP_NUM_THREADS=2
         export GYRE_DIR=$MESA_DIR/gyre/gyre
         '''
-        print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):")
+        print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):\n")
         print(source_this)
         
 
@@ -220,7 +220,6 @@ class Installer:
                 else:
                     logfile.write("GYRE installation complete.\n")
                 logfile.write("Build Successful.\n")
-
-        print("Installation complete.\n")
+                
         self.print_env_vars(mesa_dir, sdk_dir)
-
+        print("Installation complete.\n")
