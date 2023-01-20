@@ -196,8 +196,9 @@ class Installer:
                 elif "macOS" in self.ostype:
                     sdk_dir = '/Applications/mesasdk'
 
-                with subprocess.Popen(f"/usr/bin/env $SHELL -c \"export MESASDK_ROOT={sdk_dir} && \
-                            source {sdk_dir}/bin/mesasdk_init.sh\"", shell=True, stdout=logfile, stderr=logfile) as proc:
+                run_in_shell = f"/usr/bin/env $SHELL -c \"export MESASDK_ROOT={sdk_dir} && \
+                            source {sdk_dir}/bin/mesasdk_init.sh\""
+                with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
                     proc.wait()
                     if proc.returncode != 0:
                         raise Exception("MESA SDK initialization failed. \
@@ -207,6 +208,7 @@ class Installer:
                 /usr/bin/env $SHELL -c \"
                 export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
+                && chmod -R +x {mesa_dir} \\
                 && cd {mesa_dir} && ./clean  && ./install\"
                 '''
                 with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
