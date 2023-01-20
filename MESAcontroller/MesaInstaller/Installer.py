@@ -210,6 +210,7 @@ class Installer:
                 run_in_shell = f'''
                 /usr/bin/env $SHELL -c \"
                 export MESASDK_ROOT={sdk_dir} \\
+                && source {sdk_dir}/bin/mesasdk_init.sh \\
                 && export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
                 && cd {mesa_dir} && ./clean  && ./install\"
