@@ -1,11 +1,9 @@
-linux_versions = ["latest", "22.11.1", "22.05.1", "21.12.1", "15140", "12778"]
+linux_versions = ["latest", "22.05.1", "15140", "12778"]
 mac_intel_versions = ["latest", "22.05.1", "15140", "12778"]
-mac_arm_versions = ["latest"]
+mac_arm_versions = ["latest", "22.05.1"]
 
-linux_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.11.1.tar.gz",
-            "22.11.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.11.1.tar.gz",
-            "22.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.5.1.tar.gz",
-            "21.12.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-21.12.1.tar.gz",
+linux_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz",
+            "22.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz",
             "15140": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-15140.tar.gz",
             "12778": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-12778.tar.gz"}
 
