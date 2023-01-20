@@ -158,8 +158,11 @@ class Installer:
                 print("MESA SDK package installation complete.\n")
 
         with console.status("Extracting MESA", spinner="moon"):
-            with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
+            with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:       
                 zip_ref.extractall(self.directory)
+            mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
+            ## Python zipfile does not retain file permissions!!! -_-
+            subprocess.Popen(shlex.split(f"chmod -R +x {mesa_dir}")).wait()
             if self.cleanAfter:
                 os.remove(mesa_zip)
         print("MESA extraction complete.\n")
@@ -196,21 +199,20 @@ class Installer:
                 elif "macOS" in self.ostype:
                     sdk_dir = '/Applications/mesasdk'
 
-                with subprocess.Popen(f"/bin/bash -c \"export MESASDK_ROOT={sdk_dir} && \
-                            source $MESASDK_ROOT/bin/mesasdk_init.sh && gfortran --version\"",
-                            shell=True, stdout=logfile, stderr=logfile) as proc:
+                run_in_shell = f"/usr/bin/env $SHELL -c \"export MESASDK_ROOT={sdk_dir} && \
+                            source {sdk_dir}/bin/mesasdk_init.sh\""
+                with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
                     proc.wait()
                     if proc.returncode != 0:
                         raise Exception("MESA SDK initialization failed. \
                             Please check the install_log.txt file for details.")
 
                 run_in_shell = f'''
-                /bin/bash -c \"
+                /usr/bin/env $SHELL -c \"
                 export MESASDK_ROOT={sdk_dir} \\
-                && source $MESASDK_ROOT/bin/mesasdk_init.sh \\
+                && source {sdk_dir}/bin/mesasdk_init.sh \\
                 && export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
-                && chmod -R +x {mesa_dir} \\
                 && cd {mesa_dir} && ./clean  && ./install\"
                 '''
                 with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
@@ -221,7 +223,7 @@ class Installer:
                     else:
                         logfile.write("MESA installation complete.\n")
 
-                run_in_shell = f"/bin/bash -c \"export GYRE_DIR={mesa_dir}/gyre/gyre && \
+                run_in_shell = f"/usr/bin/env $SHELL -c \"export GYRE_DIR={mesa_dir}/gyre/gyre && \
                                 cd {mesa_dir}/gyre/gyre && make\""
                 with subprocess.Popen(run_in_shell,
                                     shell=True, stdout=logfile, stderr=logfile) as proc:
