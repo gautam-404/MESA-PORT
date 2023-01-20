@@ -79,7 +79,8 @@ class Installer:
 
 
     def check_n_download(self, filepath, url):
-            if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
+            try:
+                present = os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
                 print("Skipping download! File already downloaded.\n")
             else:
                 chunk_size = 11*1024*1024
