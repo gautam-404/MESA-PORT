@@ -161,16 +161,42 @@ class Installer:
         print("MESA extraction complete.\n")
 
 
-    def print_env_vars(self, mesa_dir, sdk_dir):
+    def write_env_vars(self, mesa_dir, sdk_dir):
         source_this=f'''
+
+        ############ MESA environment variables ###############
         export MESASDK_ROOT={sdk_dir}
         source $MESASDK_ROOT/bin/mesasdk_init.sh
         export MESA_DIR={mesa_dir}
-        export OMP_NUM_THREADS=2      ## set this to 1 or 2 times the cores on your machine
+        export OMP_NUM_THREADS=2      ## max should be 2 times the cores on your machine
         export GYRE_DIR=$MESA_DIR/gyre/gyre
+        #######################################################
+
         '''
-        print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):\n")
+
+        env_shell = os.environ['SHELL'].split('/')[-1]
+        if env_shell == "bash":
+            env_file = os.path.join(os.environ['HOME'], ".bashrc")
+        elif env_shell == "zsh":
+            env_file = os.path.join(os.environ['HOME'], ".zshrc")
+        elif env_shell == "csh":
+            env_file = os.path.join(os.environ['HOME'], ".cshrc")
+        elif env_shell == "tcsh":
+            env_file = os.path.join(os.environ['HOME'], ".tcshrc")
+        else:
+            env_file = os.path.join(os.environ['HOME'], ".profile")
+        
+        with open(env_file, "a") as f:
+            f.write(source_this)
+
+        print(f"The following environment variables have been written to your ~/{env_file} file:")
         print(source_this)
+        print("To activate these variables in your current shell, run the following command:\n")
+        print(f"source ~/{env_file}\n") 
+
+        
+
+
 
 
     def install(self, ver=''):
@@ -232,5 +258,5 @@ class Installer:
 
                 logfile.write("Build Successful.\n")
 
-        self.print_env_vars(mesa_dir, sdk_dir)
+        self.write_env_vars(mesa_dir, sdk_dir)
         print("Installation complete.\n")
