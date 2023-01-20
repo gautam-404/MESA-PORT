@@ -79,12 +79,8 @@ class Installer:
 
 
     def check_n_download(self, filepath, url):
-            try:
-                present = os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath)
-            except:
-                present = False
-            if present:
-                print("File already present, skipping download.\n")
+            if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
+                print("Skipping download! File already downloaded.\n")
             else:
                 chunk_size = 11*1024*1024
                 response = requests.get(url, stream=True, timeout=10)
@@ -158,26 +154,49 @@ class Installer:
                 print("MESA SDK package installation complete.\n")
 
         with console.status("Extracting MESA", spinner="moon"):
-            with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:       
+            with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:
                 zip_ref.extractall(self.directory)
-            mesa_dir = os.path.join(self.directory, mesa_zip.split('/')[-1][0:-4])
-            ## Python zipfile does not retain file permissions!!! -_-
-            subprocess.Popen(shlex.split(f"chmod -R +x {mesa_dir}")).wait()
             if self.cleanAfter:
                 os.remove(mesa_zip)
         print("MESA extraction complete.\n")
 
 
-    def print_env_vars(self, mesa_dir, sdk_dir):
+    def write_env_vars(self, mesa_dir, sdk_dir):
         source_this=f'''
+
+        ############ MESA environment variables ###############
         export MESASDK_ROOT={sdk_dir}
         source $MESASDK_ROOT/bin/mesasdk_init.sh
         export MESA_DIR={mesa_dir}
-        export OMP_NUM_THREADS=2
+        export OMP_NUM_THREADS=2      ## max should be 2 times the cores on your machine
         export GYRE_DIR=$MESA_DIR/gyre/gyre
+        #######################################################
+
         '''
-        print("Please add the following to the appropriate shell start-up file (~/.*rc or ~/.*profile):\n")
+
+        env_shell = os.environ['SHELL'].split('/')[-1]
+        if env_shell == "bash":
+            env_file = os.path.join(os.environ['HOME'], ".bashrc")
+        elif env_shell == "zsh":
+            env_file = os.path.join(os.environ['HOME'], ".zshrc")
+        elif env_shell == "csh":
+            env_file = os.path.join(os.environ['HOME'], ".cshrc")
+        elif env_shell == "tcsh":
+            env_file = os.path.join(os.environ['HOME'], ".tcshrc")
+        else:
+            env_file = os.path.join(os.environ['HOME'], ".profile")
+        
+        with open(env_file, "a") as f:
+            f.write(source_this)
+
+        print(f"The following environment variables have been written to your ~/{env_file} file:")
         print(source_this)
+        print("To activate these variables in your current shell, run the following command:\n")
+        print(f"source ~/{env_file}\n") 
+
+        
+
+
 
 
     def install(self, ver=''):
@@ -199,21 +218,23 @@ class Installer:
                 elif "macOS" in self.ostype:
                     sdk_dir = '/Applications/mesasdk'
 
-                run_in_shell = f"/usr/bin/env $SHELL -c \"export MESASDK_ROOT={sdk_dir} && \
-                            source {sdk_dir}/bin/mesasdk_init.sh\""
-                with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
+                with subprocess.Popen(f"/bin/bash -c \"export MESASDK_ROOT={sdk_dir} && \
+                            source $MESASDK_ROOT/bin/mesasdk_init.sh && gfortran --version\"",
+                            shell=True, stdout=logfile, stderr=logfile) as proc:
                     proc.wait()
                     if proc.returncode != 0:
                         raise Exception("MESA SDK initialization failed. \
                             Please check the install_log.txt file for details.")
 
                 run_in_shell = f'''
-                /usr/bin/env $SHELL -c \"
+                /bin/bash -c \"
                 export MESASDK_ROOT={sdk_dir} \\
-                && source {sdk_dir}/bin/mesasdk_init.sh \\
+                && source $MESASDK_ROOT/bin/mesasdk_init.sh \\
                 && export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
-                && cd {mesa_dir} && ./clean  && ./install\"
+                && chmod -R +x {mesa_dir} \\
+                && cd {mesa_dir} && ./clean  && ./install \\
+                && export GYRE_DIR={mesa_dir}/gyre/gyre\"
                 '''
                 with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
                     proc.wait()
@@ -223,17 +244,19 @@ class Installer:
                     else:
                         logfile.write("MESA installation complete.\n")
 
-                run_in_shell = f"/usr/bin/env $SHELL -c \"export GYRE_DIR={mesa_dir}/gyre/gyre && \
-                                cd {mesa_dir}/gyre/gyre && make\""
-                with subprocess.Popen(run_in_shell,
-                                    shell=True, stdout=logfile, stderr=logfile) as proc:
-                    proc.wait()
-                    if proc.returncode != 0:
-                        raise Exception("GYRE installation failed. \
-                            Please check the install_log.txt file for details.")
-                    else:
-                        logfile.write("GYRE installation complete.\n")
+                ## MESA installs GYRE by default now
+                # run_in_shell = f"/bin/bash -c \"export GYRE_DIR={mesa_dir}/gyre/gyre && \
+                #                 cd {mesa_dir}/gyre/gyre && make\""
+                # with subprocess.Popen(run_in_shell,
+                #                     shell=True, stdout=logfile, stderr=logfile) as proc:
+                #     proc.wait()
+                #     if proc.returncode != 0:
+                #         raise Exception("GYRE installation failed. \
+                #             Please check the install_log.txt file for details.")
+                #     else:
+                #         logfile.write("GYRE installation complete.\n")
+
                 logfile.write("Build Successful.\n")
 
-        self.print_env_vars(mesa_dir, sdk_dir)
+        self.write_env_vars(mesa_dir, sdk_dir)
         print("Installation complete.\n")
