@@ -99,7 +99,8 @@ class ProjectOps:
 
 
     def clean(self):
-        res = self.run_subprocess(['./clean'], self.work_dir, silent=True)
+        ## clean files are missing a shebang (#!/bin/bash) and hence need to be run with bash
+        res = self.run_subprocess(shlex.split('/bin/bash ./clean'), self.work_dir, silent=True)
         runlog = os.path.join(self.work_dir, "runlog")
         if os.path.exists(os.path.join(self.work_dir, "runlog")):
             os.remove(runlog)
@@ -111,7 +112,7 @@ class ProjectOps:
 
     def make(self):
         with console.status("Making...", spinner="moon"):
-            res = self.run_subprocess(['./mk'], self.work_dir, silent=True)
+            res = self.run_subprocess('./mk', self.work_dir, silent=True)
         if res is False:
             raise Exception("Make failed!")
         else:    
@@ -126,10 +127,10 @@ class ProjectOps:
         else:
             if silent is False:
                 print("Running...")
-                res = self.run_subprocess(['./rn'], self.work_dir, silent, runlog=runlog)
+                res = self.run_subprocess('./rn', self.work_dir, silent, runlog=runlog)
             elif silent is True:
                 with console.status("Running...", spinner="moon"):
-                    res = self.run_subprocess(['./rn'], self.work_dir, silent, runlog=runlog) 
+                    res = self.run_subprocess('./rn', self.work_dir, silent, runlog=runlog) 
             else:
                 raise ValueError("Invalid input for argument 'silent'")
 
@@ -149,10 +150,10 @@ class ProjectOps:
         else:
             if silent is False:
                 print(f"Resuming run from photo {photo}...")
-                res = self.run_subprocess(['./re', photo], self.work_dir, silent, runlog=runlog)
+                res = self.run_subprocess(shlex.split('./re {photo}'), self.work_dir, silent, runlog=runlog)
             elif silent is True:
                 with console.status("Resuming run from photo...", spinner="moon"):
-                    res = self.run_subprocess(['./re', photo], self.work_dir, silent, runlog=runlog)
+                    res = self.run_subprocess(shlex.split(f'./re {photo}'), self.work_dir, silent, runlog=runlog)
             else:
                 raise ValueError("Invalid input for argument 'silent'.")
             
