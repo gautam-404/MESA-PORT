@@ -196,14 +196,15 @@ class Installer:
                 elif "macOS" in self.ostype:
                     sdk_dir = '/Applications/mesasdk'
 
-                with subprocess.Popen(f". {sdk_dir}/bin/mesasdk_init.sh", shell=True, stdout=logfile, stderr=logfile) as proc:
+                with subprocess.Popen(f"/usr/bin/env bash -c \"export MESASDK_ROOT={sdk_dir} && \
+                            source $MESASDK_ROOT/bin/mesasdk_init.sh\"", stdout=logfile, stderr=logfile) as proc:
                     proc.wait()
                     if proc.returncode != 0:
                         raise Exception("MESA SDK initialization failed. \
                             Please check the install_log.txt file for details.")
 
                 run_in_shell = f'''
-                /bin/bash -c \"
+                /usr/bin/env bash -c \"
                 export MESASDK_ROOT={sdk_dir} \\
                 && source $MESASDK_ROOT/bin/mesasdk_init.sh \\
                 && export MESA_DIR={mesa_dir} \\
@@ -219,7 +220,7 @@ class Installer:
                     else:
                         logfile.write("MESA installation complete.\n")
 
-                run_in_shell = f"/bin/bash -c \"export GYRE_DIR={mesa_dir}/gyre/gyre && \
+                run_in_shell = f"/usr/bin/env bash -c \"export GYRE_DIR={mesa_dir}/gyre/gyre && \
                                 cd {mesa_dir}/gyre/gyre && make\""
                 with subprocess.Popen(run_in_shell,
                                     shell=True, stdout=logfile, stderr=logfile) as proc:
