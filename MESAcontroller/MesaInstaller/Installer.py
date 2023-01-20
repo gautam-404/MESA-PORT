@@ -105,23 +105,23 @@ class Installer:
 
     def install_pre_reqs(self, logfile):
         if self.ostype == "Linux":
-            subprocess.call(shlex.split("sudo apt-get update"), stdout=logfile, stderr=logfile)
+            subprocess.Popen(shlex.split("sudo apt-get update"), stdout=logfile, stderr=logfile)
             try:
-                subprocess.call(shlex.split("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
+                subprocess.Popen(shlex.split("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
                     libx11-dev zlib1g zlib1g-dev tcsh"), stdout=logfile, stderr=logfile)
             except:
                 try:
-                    subprocess.call(shlex.split("sudo apt-get install -yq binutils make perl libx11-6 libx11-dev zlib1g zlib1g-dev tcsh"),
+                    subprocess.Popen(shlex.split("sudo apt-get install -yq binutils make perl libx11-6 libx11-dev zlib1g zlib1g-dev tcsh"),
                                 stdout=logfile, stderr=logfile)
                 except:
                     try:
-                        subprocess.call(shlex.split("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc"),
+                        subprocess.Popen(shlex.split("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc"),
                                     stdout=logfile, stderr=logfile)
                     except:
                         pass           
         if "macOS" in self.ostype:
             print("Installing XCode Command Line Tools...")
-            subprocess.call(shlex.split("sudo xcode-select --install"), stdout=logfile, stderr=logfile)
+            subprocess.Popen(shlex.split("sudo xcode-select --install"), stdout=logfile, stderr=logfile)
             
             if not os.path.exists("/Applications/Utilities/XQuartz.app"):
                 xquartz = os.path.join(self.directory, url_xquartz.split('/')[-1])
@@ -129,7 +129,7 @@ class Installer:
                 self.check_n_download(xquartz, url_xquartz)
 
                 print("Installing XQuartz...")
-                subprocess.call(shlex.split(f"sudo installer -pkg {xquartz} -target /"), stdout=logfile, stderr=logfile)
+                subprocess.Popen(shlex.split(f"sudo installer -pkg {xquartz} -target /"), stdout=logfile, stderr=logfile)
                 if self.cleanAfter:
                     os.remove(xquartz)
         
@@ -147,7 +147,7 @@ class Installer:
             print("MESA SDK extraction complete.\n")
         elif "macOS" in self.ostype:
             with console.status("Installing MESA SDK package", spinner="moon"):
-                subprocess.call(shlex.split(f"sudo installer -pkg {sdk_download} -target /"),
+                subprocess.Popen(shlex.split(f"sudo installer -pkg {sdk_download} -target /"),
                                 stdout=logfile, stderr=logfile)
                 if self.cleanAfter:
                     os.remove(sdk_download)
@@ -181,7 +181,7 @@ class Installer:
 
         with open(f"install_log.txt", "w+") as logfile:
             ## to get sudo password prompt out of the way
-            subprocess.call(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)    
+            subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile)    
             with console.status("Installing pre-requisites", spinner="moon"):
                 self.install_pre_reqs(logfile)
             self.extract_mesa(sdk_download, mesa_zip, logfile)
@@ -192,7 +192,7 @@ class Installer:
                 elif "macOS" in self.ostype:
                     sdk_dir = '/Applications/mesasdk'
 
-                if subprocess.call(f"/bin/bash -c \"export MESASDK_ROOT={sdk_dir} && \
+                if subprocess.Popen(f"/bin/bash -c \"export MESASDK_ROOT={sdk_dir} && \
                             source $MESASDK_ROOT/bin/mesasdk_init.sh && gfortran --version\"",
                             shell=True, stdout=logfile, stderr=logfile) != 0:
                     raise Exception("MESA SDK initialization failed. \
@@ -207,11 +207,11 @@ class Installer:
                 && chmod -R +x {mesa_dir} \\
                 && cd {mesa_dir} && ./clean  && ./install\"
                 '''
-                if subprocess.call(run_shell, shell=True, stdout=logfile, stderr=logfile) != 0:
+                if subprocess.Popen(run_shell, shell=True, stdout=logfile, stderr=logfile) != 0:
                     raise Exception("MESA installation failed. \
                         Please check the install_log.txt file for details.")
 
-                if subprocess.call(f"/bin/bash -c \"export GYRE_DIR={mesa_dir}/gyre/gyre && \
+                if subprocess.Popen(f"/bin/bash -c \"export GYRE_DIR={mesa_dir}/gyre/gyre && \
                             cd {mesa_dir}/gyre/gyre && make\"",
                             shell=True, stdout=logfile, stderr=logfile) != 0:
                     raise Exception("GYRE installation failed. \
