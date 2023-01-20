@@ -1,9 +1,0 @@
-cff-version: 1.1.0
-message: "If you use this software, please cite it as below."
-authors:
-  - family-names: Gautam
-    given-names: Anuj
-    orcid: https://orcid.org/0000-0003-0619-0207
-title: gautam-404/MESA-controller: v1.0.1-beta
-version: v1.0.1-beta
-date-released: 2023-01-20
