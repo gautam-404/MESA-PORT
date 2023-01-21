@@ -1,15 +1,15 @@
 from .MesaFileAccess import *
 from .support import *
-# from MESAcontroller.MesaProjManager import *
+from MESAcontroller.MesaProjManager import *
 
 from collections import OrderedDict
 
 class MesaAccess:
     def __init__(self, project=''):
-        # if project is '':
-        #     self.project = ProjectOps.ProjectOps()
-        # else:
-        #     self.project = ProjectOps.ProjectOps(project)
+        if project is '':
+            self.project = ProjectOps.ProjectOps()
+        else:
+            self.project = ProjectOps.ProjectOps(project)
         self.mesaFileAccess = MesaFileAccess()
         self._fullDict = self.stripFullDict()
 
