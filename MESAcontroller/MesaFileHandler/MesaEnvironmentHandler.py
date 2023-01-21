@@ -4,8 +4,8 @@ from .support import *
 from .MesaFileInterface import IMesaInterface
 
 class MesaEnvironmentHandler(IMesaInterface):
-    def __init__(self):
-        IMesaInterface.__init__(self)
+    def __init__(self, project):
+        IMesaInterface.__init__(self, project)
         self.mesaDir,self.defaultsDir = self.readMesaDirs(mesa_env)
         for section,file in defaultsFileDict.items():
             fileContent = self.readFile(self.defaultsDir+file)

@@ -8,19 +8,18 @@ from .MesaEnvironmentHandler import MesaEnvironmentHandler
 
 class MesaFileAccess(IMesaInterface):
 
-    def __init__(self):
-        IMesaInterface.__init__(self)
-        self.envObject = MesaEnvironmentHandler()
+    def __init__(self, project):
+        IMesaInterface.__init__(self, project)
+        self.envObject = MesaEnvironmentHandler(project)
         self.setupDict()
 
     def setupDict(self):
         self.dataDict = OrderedDict()
-
         for section in sections:
             self.dataDict[section]  = OrderedDict()
-            self.readSections("inlist",section)
+            self.readSections('inlist', section)
 
-    def readSections(self,filename,section):
+    def readSections(self, filename, section):
         content = self.readFile(filename)
 
         p = re.compile(regex_sections)
@@ -41,7 +40,7 @@ class MesaFileAccess(IMesaInterface):
                     self.dataDict[section][file][key] = value
                     regex = r"(" + key + r".+=)\s* ([\.\w_\d']+)"
                     substring = r"\1 "+self.convertToFortranType(value)
-                    self.rewriteFile(file,regex,substring)
+                    self.rewriteFile(file, regex, substring)
                     return
 
     def rewriteFile(self, file, regex, substring):

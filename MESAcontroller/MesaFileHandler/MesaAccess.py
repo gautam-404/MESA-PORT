@@ -4,9 +4,12 @@ from .support import *
 from collections import OrderedDict
 
 class MesaAccess:
-    def __init__(self):
-        self.mesaFileAccess = MesaFileAccess()
-
+    def __init__(self, project=''):
+        if project == '':
+            project = 'work'
+        else:
+            project = project
+        self.mesaFileAccess = MesaFileAccess(project)
         self._fullDict = self.stripFullDict()
 
     def stripToDict(self, section):

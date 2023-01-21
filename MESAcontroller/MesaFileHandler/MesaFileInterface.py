@@ -5,7 +5,8 @@ from .support import *
 
 class IMesaInterface:
 
-    def __init__(self):
+    def __init__(self, project):
+        self.projpath = os.path.abspath(os.path.join(os.getcwd(), project))
         self.dataDict = OrderedDict()
 
     def getParameters(self,text):
@@ -50,13 +51,15 @@ class IMesaInterface:
         else:
             raise AttributeError(f"Cannot convert type {str(type(data))} to known type")
 
-    def readFile(self,fileName):
-        with open(fileName) as f:
-            return f.read()
+    def readFile(self, fileName):
+        with cd(self.projpath):
+            with open(fileName) as f:
+                return f.read()
 
-    def writeFile(self,fileName,content):
-        with open(fileName,'w') as f:
-            f.write(content)
+    def writeFile(self, fileName, content):
+        with cd(self.projpath):
+            with open(fileName, 'w') as f:
+                f.write(content)
 
     def items(self):
         return self.dataDict.items()

@@ -1,1 +1,1 @@
-from .Installer import *
+from .Installer import Installer

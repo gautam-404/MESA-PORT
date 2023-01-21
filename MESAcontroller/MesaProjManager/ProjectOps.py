@@ -1,12 +1,18 @@
-import os, sys, subprocess, shutil, shlex
-from MESAcontroller.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+
 import click
 from rich.console import Console
+
+from MESAcontroller.MesaFileHandler import *
+
 console = Console()
 
 class ProjectOps:
     def __init__(self, name=''):
-        self.envObject = MesaEnvironmentHandler()
         if name == '':
             self.projName = "work"
             ### If user input is preferred over a default value, uncomment the line below
@@ -15,11 +21,11 @@ class ProjectOps:
             self.projName = name
         if os.path.exists(self.projName):
             self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
-            self.found = True               ## Proj already present flag
+            self.exists = True               ## Proj already present flag
         else:
-            self.found = False
-        
-
+            self.exists = False
+        self.envObject = MesaEnvironmentHandler(self.projName)
+        self.access = MesaAccess(self.projName)
     
 
     def create(self, overwrite=None, clean=None):       ### overwrite and clean are boolean arguments that are intentionally kept empty
@@ -47,7 +53,7 @@ class ProjectOps:
             except shutil.Error:
                 raise Exception(f"Could not overwrite the existing '{self.projName}' project!")
 
-        if self.found is True:
+        if self.exists is True:
             if overwrite is True:
                 writeover()
             elif overwrite is False:
@@ -65,10 +71,22 @@ class ProjectOps:
             try:
                 shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
                 self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
+                self.exists = True
             except shutil.Error:
                 raise Exception(f"Could not create the project '{self.projName}'!")
-
     
+    def delete(self):
+        if self.exists is True:
+            shutil.rmtree(self.work_dir)
+            print(f"Deleted project '{self.projName}'.")
+        else:
+            print(f"Project '{self.projName}' does not exist.")
+
+    def check_exists(self):
+        if not self.exists:
+            raise FileNotFoundError(f"Project '{self.projName}' does not exist. Please create it first.")
+
+
     def run_subprocess(self, commands, dir, silent=False, runlog=''):
         with subprocess.Popen(commands, cwd=dir,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
@@ -99,6 +117,7 @@ class ProjectOps:
 
 
     def clean(self):
+        self.check_exists()
         ## clean files are missing a shebang (#!/bin/bash) and hence need to be run with bash
         res = self.run_subprocess(shlex.split('/bin/bash ./clean'), self.work_dir, silent=True)
         runlog = os.path.join(self.work_dir, "runlog")
@@ -111,6 +130,7 @@ class ProjectOps:
             
 
     def make(self):
+        self.check_exists()
         with console.status("Making...", spinner="moon"):
             res = self.run_subprocess('./mk', self.work_dir, silent=True)
         if res is False:
@@ -121,6 +141,7 @@ class ProjectOps:
 
     
     def run(self, silent=False):
+        self.check_exists()
         runlog = os.path.join(self.work_dir, "runlog")
         if not os.path.exists(os.path.join(self.work_dir, "star")):
             raise Exception("The project is not made yet...please make it first!") 
@@ -143,10 +164,11 @@ class ProjectOps:
         
     
     def resume(self, photo, silent=False):
+        self.check_exists()
         photo_path = os.path.join(self.work_dir, "photos", photo)
         runlog = os.path.join(self.work_dir, "runlog")
         if not os.path.isfile(photo_path):
-            raise FileNotFoundError(f"Photo '{photo}' could not be found.")
+            raise FileNotFoundError(f"Photo '{photo}' could not be exists.")
         else:
             if silent is False:
                 print(f"Resuming run from photo {photo}...")
@@ -165,6 +187,7 @@ class ProjectOps:
 
 
     def runGyre(self, gyre_in, silent=False):
+        self.check_exists()
         self.loadGyreInput(gyre_in)
         gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
         runlog = os.path.join(self.work_dir, "runlog")
@@ -188,7 +211,8 @@ class ProjectOps:
 
 
 
-    def loadProjInlist(self, inlistPath):
+    def load_ProjInlist(self, inlistPath):
+        self.check_exists()
         inlist_project = os.path.join(self.work_dir, "inlist_project")
         try:
             if os.path.exists(inlistPath):
@@ -197,13 +221,14 @@ class ProjectOps:
                 inlistPath = os.path.join(self.work_dir, inlistPath)
                 shutil.copy(inlistPath, inlist_project)
             else:
-                raise Exception(f"Could not find the your specified project inlist file at {inlist_project}. Aborting...")
+                raise Exception(f"Could not find the your specified project inlist file, '{inlistPath}'. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading project inlist!")
         
 
     
-    def loadPGstarInlist(self, inlistPath):
+    def load_PGstarInlist(self, inlistPath):
+        self.check_exists()
         inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
         try:
             if os.path.exists(inlistPath):
@@ -212,13 +237,41 @@ class ProjectOps:
                 inlistPath = os.path.join(self.work_dir, inlistPath)
                 shutil.copy(inlistPath, inlist_pgstar)
             else:
-                raise Exception(f"Could not find the your specified pgstar inlist file at {inlist_pgstar}. Aborting...")
+                raise Exception(f"Could not find the your specified pgstar inlist file, '{inlistPath}'. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading pgstar inlist!")
 
 
+    def load_HistoryColumns(self, HistoryColumns):
+        self.check_exists()
+        try:
+            if os.path.exists(HistoryColumns):
+                shutil.copy(HistoryColumns, self.work_dir)
+            elif os.path.exists(os.path.join(self.work_dir, HistoryColumns)):
+                pass
+            else:
+                raise Exception(f"Could not find the your specified history columns file, '{HistoryColumns}'. Aborting...")
+            self.access.set("history_columns_file", HistoryColumns.split("/")[-1])
+        except shutil.Error:
+            raise Exception("Failed loading history columns file!")
+
+
+    def load_ProfileColumns(self, ProfileColumns):
+        self.check_exists()
+        try:
+            if os.path.exists(ProfileColumns):
+                shutil.copy(ProfileColumns, self.work_dir)
+            elif os.path.exists(os.path.join(self.work_dir, ProfileColumns)):
+                pass
+            else:
+                raise Exception(f"Could not find the your specified profile columns file, '{ProfileColumns}'. Aborting...")
+            self.access.set("profile_columns_file", ProfileColumns.split("/")[-1])
+        except shutil.Error:
+            raise Exception("Failed loading profile columns file!")
+
             
-    def loadGyreInput(self, gyre_in):
+    def load_GyreInput(self, gyre_in):
+        self.check_exists()
         gyre_dest = os.path.join(self.work_dir, "LOGS", "gyre.in")
         try:
             if os.path.exists(gyre_in):
@@ -230,13 +283,14 @@ class ProjectOps:
                 gyre_in = os.path.join(self.work_dir, gyre_in)
                 shutil.copy(gyre_in, gyre_dest)
             else:
-                raise Exception(f"Could not find your specified GYRE input file at {gyre_in}. Aborting...")
+                raise Exception(f"Could not find your specified GYRE input file, '{gyre_in}'. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading GYRE input file!")
     
 
 
-    def loadExtras(self, extras_path):
+    def load_Extras(self, extras_path):
+        self.check_exists()
         extras_default = os.path.join(self.work_dir, "src", "run_star_extras.f90")
         try:
             if os.path.exists(extras_path):
@@ -245,6 +299,6 @@ class ProjectOps:
                 extras_path = os.path.join(self.work_dir, extras_path)
                 shutil.copy(extras_path, extras_default)
             else:
-                raise Exception(f"Could not find your customised run_star_extras.f90 at path '{extras_path}'. Aborting...")
+                raise Exception(f"Could not find your customised run_star_extras.f90, '{extras_path}'. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading customised run_star_extras.f90 file!")
