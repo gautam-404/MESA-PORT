@@ -4,7 +4,7 @@ from .support import *
 from collections import OrderedDict
 
 class MesaAccess:
-    """Class to access MESA files and parameters.
+    """Class to access MESA parameters.
     """    
     def __init__(self, project='work'):
         """Constructor for MesaAccess class.
