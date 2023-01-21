@@ -78,9 +78,7 @@ class ProjectOps:
             print(f"Project '{self.projName}' does not exist.")
 
     def check_exists(self):
-        if self.exists is True:
-            print(f"Project '{self.projName}' exists.")
-        else:
+        if not self.exists:
             raise FileNotFoundError(f"Project '{self.projName}' does not exist. Please create it first.")
 
 
