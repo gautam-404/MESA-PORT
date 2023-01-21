@@ -1,6 +1,6 @@
 import os, sys, subprocess, shutil, shlex
 from MESAcontroller.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
-from MESAcontroller.MesaFileHandler import MesaAccess
+from MESAcontroller.MesaFileHandler.MesaAccess import MesaAccess
 import click
 from rich.console import Console
 console = Console()
