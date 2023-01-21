@@ -28,12 +28,13 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 
 ## Usage
 
-* ***Importing:***
+### ***Importing:***
   ```python
   from MESAcontroller import  ProjectOps, MesaAccess, Installer
   ```
   
-* ***Using the built-in MESA `Installer`:***
+  
+### ***Using the built-in MESA `Installer`:***
   ```python
   ## Installer for Linux and macOS (ARM/M-series and Intel) systems
   
@@ -49,35 +50,45 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   ## this saves time when debugging a failed MESA build.
   ```
   
-* ***Using a `ProjectOps` class object:***
-  ```python
-  opsObject = ProjectOps()  ## Use ProjectOps("your_project") for a custom/pre-existing project name
-                            ## Default name is 'work'
-  opsObject.create(overwrite=False, clean=False)    ## CLI is shown if no arguments are passed
-  opsObject.clean()
+### ***Using a `ProjectOps` class object:***
+  * Creating a new MESA work directory:
+    ```python
+    proj = ProjectOps()                          ## This creates a default project directory named 'work'
+    proj.create(overwrite=False, clean=False)    ## CLI is shown if no arguments are passed                       
+    ```
+    For a custom name or to use an existing MESA work directory, pass its name as a string argument.
+    ```python
+    proj = ProjectOps("my_project")
+    ```
+  * Load custom MESA input files:
+    ```python
+    ### Arguments can be a path or the name of a file in my_project directory ###
+    
+    proj.load_Extras("path/to/custom/run_star_extras_file")          ## Load custom run_star_extras.f90
+    proj.load_ProjInlist("/path/to/custom/inlist")                   ## Load custom inlist_pgstar   
+    proj.load_PGstarInlist("/path/to/custom/inlist")                 ## Load custom inlist_pgstar
+    proj.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns
+    proj.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
+    ```
+    
+  * Take control of your project; make, clean, run, resume and delete.
+    ```python
+    opsObject.clean()
+    opsObject.make()
+    opsObject.run(silent=False)
+    opsObject.resume("photo_number", silent=False)
+    opsObject.delete()  ## Deletes the project directory
+    ```
+    
+  * Run GYRE:
+    ```python
+    opsObject.runGyre("gyre_input.in", silent=False)  
+    
+    ## "gyre_input.in" can either be a path to your GYRE input file
+    ## or it can also be the name of a file in your_project or your_project/LOGS directory
+    ```
 
-  opsObject.load_Extras("path/to/custom/run_star_extras_file")
-  ## Load custom run_star_extras.f90, can be a path or a file in your_project directory
-
-  opsObject.make()
-  opsObject.run(silent=False)
-  opsObject.resume("photo_number", silent=False)
-
-  ## Load custom MESA input files, can be a path or a file in your_project directory
-  opsObject.load_ProjInlist("/path/to/custom/inlist")                   ## Load custom inlist_pgstar   
-  opsObject.load_PGstarInlist("/path/to/custom/inlist")                 ## Load custom inlist_pgstar
-  opsObject.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns
-  opsObject.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
-
-
-  opsObject.runGyre("gyre_input.in", silent=False)  
-  ## "gyre_input.in" can either be a path to your GYRE input file
-  ## or it can also be the name of a file in your_project or your_project/LOGS directory
-
-  opsObject.delete()  ## Deletes the project directory
-  ```
-
-* ***Using a `MesaAccess` class object:***
+### ***Using a `MesaAccess` class object:***
   ```python
   accessObject = MesaAccess("your_project")  ## Use MesaAccess() for the default project name 'work'
 
