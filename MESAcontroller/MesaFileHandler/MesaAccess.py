@@ -7,9 +7,9 @@ from collections import OrderedDict
 class MesaAccess:
     def __init__(self, project=''):
         if project is '':
-            self.ProjectOps = ProjectOps.ProjectOps()
+            self.project = ProjectOps.ProjectOps()
         else:
-            self.ProjectOps = ProjectOps.ProjectOps(project)
+            self.project = ProjectOps.ProjectOps(project)
         self.mesaFileAccess = MesaFileAccess()
         self._fullDict = self.stripFullDict()
 
