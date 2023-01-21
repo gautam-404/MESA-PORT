@@ -19,8 +19,6 @@ class ProjectOps:
             self.exists = True               ## Proj already present flag
         else:
             self.exists = False
-        
-
     
 
     def create(self, overwrite=None, clean=None):       ### overwrite and clean are boolean arguments that are intentionally kept empty
@@ -239,7 +237,7 @@ class ProjectOps:
 
     def load_HistoryColumns(self, HistoryColumns):
         self.check_exists()
-        access = MesaAccess()
+        access = MesaAccess(self.projName)
         try:
             if os.path.exists(HistoryColumns):
                 shutil.copy(HistoryColumns, self.work_dir)
@@ -254,7 +252,7 @@ class ProjectOps:
 
     def load_ProfileColumns(self, ProfileColumns):
         self.check_exists()
-        access = MesaAccess()
+        access = MesaAccess(self.projName)
         try:
             if os.path.exists(ProfileColumns):
                 shutil.copy(ProfileColumns, self.work_dir)

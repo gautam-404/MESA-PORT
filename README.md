@@ -79,7 +79,7 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 
 * ***Using a `MesaAccess` class object:***
   ```python
-  accessObject = MesaAccess()
+  accessObject = MesaAccess("your_project")  ## Use MesaAccess() for the default project name 'work'
 
   ## Write
   accessObject.set(parameters, values)              
