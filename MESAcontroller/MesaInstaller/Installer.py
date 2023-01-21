@@ -16,7 +16,21 @@ from .mesaurls import *
 console = Console()
 
 class Installer:
+    """Class for installing MESA and MESA SDK.
+    """    
     def __init__(self, version='', parentDir='', cleanAfter=False):
+        """Constructor for Installer class.
+
+        Args:
+            version (str, optional): 
+            Version of MESA to install. CLI is used to choose version if not specified.
+
+            parentDir (str, optional): 
+            Path to a directory to install MESA and MESA SDK. CLI is used to choose directory if not specified.
+
+            cleanAfter (bool, optional): 
+            If True, the downloaded MESA SDK and MESA zip files will be deleted after installation. Defaults to False.
+        """     
         self.cleanAfter = cleanAfter
         self.directory = self.choose_directory(parentDir)
         self.ostype = self.whichos()
@@ -27,6 +41,14 @@ class Installer:
 
 
     def whichos(self):
+        """Determine the OS type.
+
+        Raises:
+            OSError: If OS is not compatible.
+
+        Returns:
+            str: OS type. 
+        """
         if "macOS" in platform.platform():
             manufacturer = cpuinfo.get_cpu_info().get('brand_raw')
             arch = 'Intel' if 'intel' in manufacturer.lower() else 'ARM'
@@ -39,6 +61,15 @@ class Installer:
 
 
     def choose_directory(self, directory=''):
+        """Choose a directory to install MESA.
+
+        Args:
+            directory (str, optional):
+            Path to a directory to install MESA and MESA SDK. CLI is used to choose directory if not specified.
+
+        Returns:
+            str: Path to a directory to install MESA and MESA SDK.
+        """        
         while not os.path.exists(directory):
             directory = input("\nInput path to a directory for installation...    ")
         software_directory = os.path.join(directory, "software")
@@ -49,6 +80,15 @@ class Installer:
 
 
     def choose_ver(self, ver=''):
+        """Choose a version of MESA to install.
+
+        Args:
+            ver (str, optional): 
+            Version of MESA to install. CLI is used to choose version if not specified.
+
+        Returns:
+            str: Version of MESA to install.
+        """        
         if self.ostype == "Linux":
             versions = linux_versions
         elif self.ostype == "macOS-Intel":
@@ -66,6 +106,14 @@ class Installer:
 
 
     def prep_urls(self, ver):
+        """Prepare the URLs for the MESA SDK and MESA zip files.
+
+        Args:
+            ver (str): Version of MESA to install. 
+
+        Returns:
+            tuple: URLs for the MESA SDK and MESA zip files.
+        """        
         if self.ostype == "Linux":
             sdk_url = linux_sdk_urls.get(ver)
             mesa_url = mesa_urls.get(ver)
@@ -79,20 +127,35 @@ class Installer:
 
 
     def check_n_download(self, filepath, url):
-            if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
-                print("Skipping download! File already downloaded.\n")
-            else:
-                chunk_size = 11*1024*1024
-                response = requests.get(url, stream=True, timeout=10)
-                total = int(response.headers.get('content-length', 0))
-                with open(filepath, 'wb') as file, alive_bar(total, unit='B', scale=True) as progressbar:
-                    for chunk in response.raw.stream(chunk_size, decode_content=False):
-                        if chunk:
-                            size_ = file.write(chunk)
-                            progressbar(size_)
-                print("Download complete.\n")
+        """Check if a file has already been downloaded, and if not, download it.
+
+        Args:
+            filepath (str): Path to the file to be downloaded. 
+            url (str): URL of the file to be downloaded.
+        """        
+        if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
+            print("Skipping download! File already downloaded.\n")
+        else:
+            chunk_size = 11*1024*1024
+            response = requests.get(url, stream=True, timeout=10)
+            total = int(response.headers.get('content-length', 0))
+            with open(filepath, 'wb') as file, alive_bar(total, unit='B', scale=True) as progressbar:
+                for chunk in response.raw.stream(chunk_size, decode_content=False):
+                    if chunk:
+                        size_ = file.write(chunk)
+                        progressbar(size_)
+            print("Download complete.\n")
 
     def download(self, sdk_url, mesa_url):
+        """Download the MESA SDK and MESA zip files.
+
+        Args:
+            sdk_url (str): URL of the MESA SDK.
+            mesa_url (str): URL of the MESA zip file.
+
+        Returns:
+            tuple: Paths to the downloaded MESA SDK and MESA zip files.
+        """        
         print("Downloading MESA SDK...")
         sdk_download = os.path.join(self.directory, sdk_url.split('/')[-1])
         self.check_n_download(sdk_download, sdk_url)
@@ -104,6 +167,11 @@ class Installer:
 
 
     def install_pre_reqs(self, logfile):
+        """Install the pre-requisites for MESA.
+
+        Args:
+            logfile (file): File to write the output of the installation to.
+        """        
         if self.ostype == "Linux":
             subprocess.Popen(shlex.split("sudo apt-get update"), stdout=logfile, stderr=logfile).wait()
             try:
@@ -136,6 +204,13 @@ class Installer:
 
 
     def extract_mesa(self, sdk_download, mesa_zip, logfile):
+        """Extract the MESA SDK and MESA zip files.
+
+        Args:
+            sdk_download (path): Path to the downloaded MESA SDK.
+            mesa_zip (path): Path to the downloaded MESA zip file.
+            logfile (file): File to write the output logs of the installation to.
+        """        
         if self.ostype == "Linux":
             with console.status("Extracting MESA Linux SDK", spinner="moon"):
                 with tarfile.open(sdk_download, 'r:gz') as tarball:
@@ -162,6 +237,12 @@ class Installer:
 
 
     def write_env_vars(self, mesa_dir, sdk_dir):
+        """Write the environment variables to the shell .rc file.
+
+        Args:
+            mesa_dir (path): Path to the MESA directory.
+            sdk_dir (path): Path to the MESA SDK directory.
+        """        
         source_this=f'''
 
         ############ MESA environment variables ###############
@@ -199,7 +280,12 @@ class Installer:
 
 
 
-    def install(self, ver=''):
+    def install(self, ver):
+        """Install MESA.
+
+        Args:
+            ver (str): MESA version to install.
+        """        
         ver = self.choose_ver(ver)
         sdk_url, mesa_url = self.prep_urls(ver)
         sdk_download, mesa_zip = self.download(sdk_url, mesa_url)
