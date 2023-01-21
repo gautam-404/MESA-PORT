@@ -68,8 +68,15 @@ class ProjectOps:
                 self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
             except shutil.Error:
                 raise Exception(f"Could not create the project '{self.projName}'!")
-
     
+    def delete(self):
+        if self.found is True:
+            shutil.rmtree(self.work_dir)
+            print(f"Deleted project '{self.projName}'.")
+        else:
+            print(f"Project '{self.projName}' does not exist.")
+
+
     def run_subprocess(self, commands, dir, silent=False, runlog=''):
         with subprocess.Popen(commands, cwd=dir,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
