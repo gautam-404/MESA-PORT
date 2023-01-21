@@ -5,11 +5,11 @@ work = ProjectOps()
 
 
 work.create()   ## Use boolean arguments 'overwrite' and 'clean' to work on existing projects
-work.loadExtras("path/to/custom/run_star_extras_file")
+work.load_Extras("path/to/custom/run_star_extras_file")
 work.make()           
 
-work.loadProjInlist("/path/to/inlist")
-work.loadPGstarInlist("/path/to/inlist")
+work.load_ProjInlist("/path/to/inlist")
+work.load_PGstarInlist("/path/to/inlist")
 
 object = MesaAccess()
 object.set("initial_mass", 5)
