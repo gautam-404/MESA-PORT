@@ -64,15 +64,17 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   opsObject.resume("photo_number", silent=False)
 
   ## Load custom MESA input files, can be a path or a file in your_project directory
-  opsObject.load_ProjInlist("/path/to/custom/inlist")                     ## Load custom inlist_pgstar   
-  opsObject.load_PGstarInlist("/path/to/custom/inlist")                   ## Load custom inlist_pgstar
-  opsObject.load_HistoryColumns("path/to/custom/history_columns_file")    ## Load custom history_columns
-  opsObject.load_ProfileColumns("path/to/custom/profile_columns_file")    ## Load custom profile_columns
+  opsObject.load_ProjInlist("/path/to/custom/inlist")                   ## Load custom inlist_pgstar   
+  opsObject.load_PGstarInlist("/path/to/custom/inlist")                 ## Load custom inlist_pgstar
+  opsObject.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns
+  opsObject.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
 
 
   opsObject.runGyre("gyre_input.in", silent=False)  
   ## "gyre_input.in" can either be a path to your GYRE input file
   ## or it can also be the name of a file in your_project or your_project/LOGS directory
+
+  opsObject.delete()  ## Deletes the project directory
   ```
 
 * ***Using a `MesaAccess` class object:***
