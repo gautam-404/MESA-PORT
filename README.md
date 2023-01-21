@@ -73,16 +73,16 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     
   * Take control of your project; make, clean, run, resume and delete.
     ```python
-    opsObject.clean()
-    opsObject.make()
-    opsObject.run(silent=False)
-    opsObject.resume("photo_number", silent=False)
-    opsObject.delete()  ## Deletes the project directory
+    proj.clean()
+    proj.make()
+    proj.run(silent=False)
+    proj.resume("photo_number", silent=False)
+    proj.delete()  ## Deletes the project directory
     ```
     
   * Run GYRE:
     ```python
-    opsObject.runGyre("gyre_input.in", silent=False)  
+    proj.runGyre("gyre_input.in", silent=False)  
     
     ## "gyre_input.in" can either be a path to your GYRE input file
     ## or it can also be the name of a file in your_project or your_project/LOGS directory
@@ -90,18 +90,18 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 
 ### ***Using a `MesaAccess` class object:***
   ```python
-  accessObject = MesaAccess("your_project")  ## Use MesaAccess() for the default project name 'work'
+  access = MesaAccess("your_project")  ## Use MesaAccess() for the default project name 'work'
 
   ## Write
-  accessObject.set(parameters, values)              
+  access.set(parameters, values)              
   ## Inputs paramets can be a string or a list of strings
   ## Input values can be a single value or a list of values
   
   ## Read
-  value = accessObject.get(parameters)   
+  value = access.get(parameters)   
   ## Inputs paramets can be a string or a list of strings
 
   ## Delete
-  accessObject.delete(parameters)
+  access.delete(parameters)
   ## Inputs paramets can be a string or a list of strings
   ```
