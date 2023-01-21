@@ -1,6 +1,6 @@
 from .MesaFileAccess import *
 from .support import *
-from MESAcontroller.MesaProjManager import ProjectOps
+from MESAcontroller.MesaProjManager.ProjectOps import *
 
 from collections import OrderedDict
 
