@@ -13,7 +13,7 @@ console = Console()
 
 class ProjectOps:
     def __init__(self, name=''):
-        self.envObject = MesaEnvironmentHandler.MesaEnvironmentHandler()
+        self.envObject = MesaEnvironmentHandler()
         if name == '':
             self.projName = "work"
             ### If user input is preferred over a default value, uncomment the line below
@@ -25,7 +25,7 @@ class ProjectOps:
             self.exists = True               ## Proj already present flag
         else:
             self.exists = False
-        self.access = MesaAccess.MesaAccess(self.projName)
+        self.access = MesaAccess(self.projName)
     
 
     def create(self, overwrite=None, clean=None):       ### overwrite and clean are boolean arguments that are intentionally kept empty

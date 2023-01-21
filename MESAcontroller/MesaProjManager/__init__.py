@@ -1,1 +1,1 @@
-from .ProjectOps import *
+from .ProjectOps import ProjectOps
