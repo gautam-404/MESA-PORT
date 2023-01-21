@@ -39,12 +39,13 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   ## Installer for Linux and macOS (ARM/M-series and Intel) systems
   
   Installer(version="latest", parentDir='where/to/install', cleanAfter=False )     
-  ## CLI is shown for missing arguments.         
+  ## CLI is shown for missing arguments.  
+  ## version = "latest" will install the latest version available for your system.
   ## Available versions: 
   #     Linux: "22.05.1", "15140" and "12778".
   #     macOS-Intel: "22.05.1", "15140" and "12778".  
   #     macOS-ARM: "22.05.1".
-  #    "latest" will install the latest version available for your system.
+ 
   
   ## cleanAfter=False by default to allow re-running installation without removing downloaded files, 
   ## this saves time when debugging a failed MESA build.
