@@ -55,16 +55,16 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   opsObject.create(overwrite=False, clean=False)    ## CLI is shown if no arguments are passed
   opsObject.clean()
 
-  opsObject.loadExtras("path/to/custom/run_star_extras_file")
+  opsObject.load_Extras("path/to/custom/run_star_extras_file")
 
   opsObject.make()
   opsObject.run(silent=False)
   opsObject.resume("photo_number", silent=False)
 
   ## Load custom inlist_project, can be a path or a file in your_project directory
-  opsObject.loadProjInlist("/path/to/inlist")
+  opsObject.load_ProjInlist("/path/to/inlist")
   ## Load custom inlist_pgstar, can be a path or a file in your_project directory     
-  opsObject.loadPGstarInlist("/path/to/inlist")
+  opsObject.load_PGstarInlist("/path/to/inlist")
   ## Load custom run_star_extras.f90, can be a path or a file in your_project directory
 
   opsObject.runGyre("gyre_input.in", silent=False)  

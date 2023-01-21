@@ -188,7 +188,7 @@ class ProjectOps:
 
 
 
-    def loadProjInlist(self, inlistPath):
+    def load_ProjInlist(self, inlistPath):
         inlist_project = os.path.join(self.work_dir, "inlist_project")
         try:
             if os.path.exists(inlistPath):
@@ -203,7 +203,20 @@ class ProjectOps:
         
 
     
-    def loadPGstarInlist(self, inlistPath):
+    def load_PGstarInlist(self, inlistPath):
+        inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
+        try:
+            if os.path.exists(inlistPath):
+                shutil.copy(inlistPath, inlist_pgstar)
+            elif os.path.exists(os.path.join(self.work_dir, inlistPath)):
+                inlistPath = os.path.join(self.work_dir, inlistPath)
+                shutil.copy(inlistPath, inlist_pgstar)
+            else:
+                raise Exception(f"Could not find the your specified pgstar inlist file at {inlist_pgstar}. Aborting...")
+        except shutil.Error:
+            raise Exception("Failed loading pgstar inlist!")
+
+    def load_PGstarInlist(self, inlistPath):
         inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
         try:
             if os.path.exists(inlistPath):
@@ -218,7 +231,7 @@ class ProjectOps:
 
 
             
-    def loadGyreInput(self, gyre_in):
+    def load_GyreInput(self, gyre_in):
         gyre_dest = os.path.join(self.work_dir, "LOGS", "gyre.in")
         try:
             if os.path.exists(gyre_in):
@@ -236,7 +249,7 @@ class ProjectOps:
     
 
 
-    def loadExtras(self, extras_path):
+    def load_Extras(self, extras_path):
         extras_default = os.path.join(self.work_dir, "src", "run_star_extras.f90")
         try:
             if os.path.exists(extras_path):
