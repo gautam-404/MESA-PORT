@@ -16,9 +16,9 @@ class ProjectOps:
             self.projName = name
         if os.path.exists(self.projName):
             self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
-            self.found = True               ## Proj already present flag
+            self.exists = True               ## Proj already present flag
         else:
-            self.found = False
+            self.exists = False
         
 
     
@@ -48,7 +48,7 @@ class ProjectOps:
             except shutil.Error:
                 raise Exception(f"Could not overwrite the existing '{self.projName}' project!")
 
-        if self.found is True:
+        if self.exists is True:
             if overwrite is True:
                 writeover()
             elif overwrite is False:
@@ -66,15 +66,22 @@ class ProjectOps:
             try:
                 shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
                 self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
+                self.exists = True
             except shutil.Error:
                 raise Exception(f"Could not create the project '{self.projName}'!")
     
     def delete(self):
-        if self.found is True:
+        if self.exists is True:
             shutil.rmtree(self.work_dir)
             print(f"Deleted project '{self.projName}'.")
         else:
             print(f"Project '{self.projName}' does not exist.")
+
+    def check_exists(self):
+        if self.exists is True:
+            print(f"Project '{self.projName}' exists.")
+        else:
+            raise FileNotFoundError(f"Project '{self.projName}' does not exist. Please create it first.")
 
 
     def run_subprocess(self, commands, dir, silent=False, runlog=''):
@@ -107,6 +114,7 @@ class ProjectOps:
 
 
     def clean(self):
+        self.check_exists()
         ## clean files are missing a shebang (#!/bin/bash) and hence need to be run with bash
         res = self.run_subprocess(shlex.split('/bin/bash ./clean'), self.work_dir, silent=True)
         runlog = os.path.join(self.work_dir, "runlog")
@@ -119,6 +127,7 @@ class ProjectOps:
             
 
     def make(self):
+        self.check_exists()
         with console.status("Making...", spinner="moon"):
             res = self.run_subprocess('./mk', self.work_dir, silent=True)
         if res is False:
@@ -129,6 +138,7 @@ class ProjectOps:
 
     
     def run(self, silent=False):
+        self.check_exists()
         runlog = os.path.join(self.work_dir, "runlog")
         if not os.path.exists(os.path.join(self.work_dir, "star")):
             raise Exception("The project is not made yet...please make it first!") 
@@ -151,10 +161,11 @@ class ProjectOps:
         
     
     def resume(self, photo, silent=False):
+        self.check_exists()
         photo_path = os.path.join(self.work_dir, "photos", photo)
         runlog = os.path.join(self.work_dir, "runlog")
         if not os.path.isfile(photo_path):
-            raise FileNotFoundError(f"Photo '{photo}' could not be found.")
+            raise FileNotFoundError(f"Photo '{photo}' could not be exists.")
         else:
             if silent is False:
                 print(f"Resuming run from photo {photo}...")
@@ -173,6 +184,7 @@ class ProjectOps:
 
 
     def runGyre(self, gyre_in, silent=False):
+        self.check_exists()
         self.loadGyreInput(gyre_in)
         gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
         runlog = os.path.join(self.work_dir, "runlog")
@@ -197,6 +209,7 @@ class ProjectOps:
 
 
     def load_ProjInlist(self, inlistPath):
+        self.check_exists()
         inlist_project = os.path.join(self.work_dir, "inlist_project")
         try:
             if os.path.exists(inlistPath):
@@ -212,6 +225,7 @@ class ProjectOps:
 
     
     def load_PGstarInlist(self, inlistPath):
+        self.check_exists()
         inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
         try:
             if os.path.exists(inlistPath):
@@ -226,6 +240,7 @@ class ProjectOps:
 
 
     def load_HistoryColumns(self, HistoryColumns):
+        self.check_exists()
         access = MesaAccess()
         try:
             if os.path.exists(HistoryColumns):
@@ -240,6 +255,7 @@ class ProjectOps:
 
 
     def load_ProfileColumns(self, ProfileColumns):
+        self.check_exists()
         access = MesaAccess()
         try:
             if os.path.exists(ProfileColumns):
@@ -254,6 +270,7 @@ class ProjectOps:
 
             
     def load_GyreInput(self, gyre_in):
+        self.check_exists()
         gyre_dest = os.path.join(self.work_dir, "LOGS", "gyre.in")
         try:
             if os.path.exists(gyre_in):
@@ -272,6 +289,7 @@ class ProjectOps:
 
 
     def load_Extras(self, extras_path):
+        self.check_exists()
         extras_default = os.path.join(self.work_dir, "src", "run_star_extras.f90")
         try:
             if os.path.exists(extras_path):
