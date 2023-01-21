@@ -5,12 +5,8 @@ from .support import *
 
 class IMesaInterface:
 
-    def __init__(self, project=''):
-        if project == '':
-            self.project = 'work'
-        else:
-            self.project = project
-        self.projpath = os.path.abspath(os.path.join(os.getcwd(), self.project))
+    def __init__(self, project):
+        self.projpath = os.path.abspath(os.path.join(os.getcwd(), project))
         self.dataDict = OrderedDict()
 
     def getParameters(self,text):
