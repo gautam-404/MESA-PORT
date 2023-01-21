@@ -1,5 +1,6 @@
 import os, sys, subprocess, shutil, shlex
 from MESAcontroller.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
+from MESAcontroller.MesaFileHandler import MesaAccess
 import click
 from rich.console import Console
 console = Console()
@@ -197,7 +198,7 @@ class ProjectOps:
                 inlistPath = os.path.join(self.work_dir, inlistPath)
                 shutil.copy(inlistPath, inlist_project)
             else:
-                raise Exception(f"Could not find the your specified project inlist file at {inlist_project}. Aborting...")
+                raise Exception(f"Could not find the your specified project inlist file, '{inlistPath}'. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading project inlist!")
         
@@ -212,23 +213,37 @@ class ProjectOps:
                 inlistPath = os.path.join(self.work_dir, inlistPath)
                 shutil.copy(inlistPath, inlist_pgstar)
             else:
-                raise Exception(f"Could not find the your specified pgstar inlist file at {inlist_pgstar}. Aborting...")
+                raise Exception(f"Could not find the your specified pgstar inlist file, '{inlistPath}'. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading pgstar inlist!")
 
-    def load_PGstarInlist(self, inlistPath):
-        inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
+
+    def load_HistoryColumns(self, HistoryColumns):
+        access = MesaAccess()
         try:
-            if os.path.exists(inlistPath):
-                shutil.copy(inlistPath, inlist_pgstar)
-            elif os.path.exists(os.path.join(self.work_dir, inlistPath)):
-                inlistPath = os.path.join(self.work_dir, inlistPath)
-                shutil.copy(inlistPath, inlist_pgstar)
+            if os.path.exists(HistoryColumns):
+                shutil.copy(HistoryColumns, self.work_dir)
+            elif os.path.exists(os.path.join(self.work_dir, HistoryColumns)):
+                pass
             else:
-                raise Exception(f"Could not find the your specified pgstar inlist file at {inlist_pgstar}. Aborting...")
+                raise Exception(f"Could not find the your specified history columns file, '{HistoryColumns}'. Aborting...")
+            access.set("history_columns_file", HistoryColumns.split("/")[-1])
         except shutil.Error:
-            raise Exception("Failed loading pgstar inlist!")
+            raise Exception("Failed loading history columns file!")
 
+
+    def load_ProfileColumns(self, ProfileColumns):
+        access = MesaAccess()
+        try:
+            if os.path.exists(ProfileColumns):
+                shutil.copy(ProfileColumns, self.work_dir)
+            elif os.path.exists(os.path.join(self.work_dir, ProfileColumns)):
+                pass
+            else:
+                raise Exception(f"Could not find the your specified profile columns file, '{ProfileColumns}'. Aborting...")
+            access.set("profile_columns_file", ProfileColumns.split("/")[-1])
+        except shutil.Error:
+            raise Exception("Failed loading profile columns file!")
 
             
     def load_GyreInput(self, gyre_in):
@@ -243,7 +258,7 @@ class ProjectOps:
                 gyre_in = os.path.join(self.work_dir, gyre_in)
                 shutil.copy(gyre_in, gyre_dest)
             else:
-                raise Exception(f"Could not find your specified GYRE input file at {gyre_in}. Aborting...")
+                raise Exception(f"Could not find your specified GYRE input file, '{gyre_in}'. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading GYRE input file!")
     
@@ -258,6 +273,6 @@ class ProjectOps:
                 extras_path = os.path.join(self.work_dir, extras_path)
                 shutil.copy(extras_path, extras_default)
             else:
-                raise Exception(f"Could not find your customised run_star_extras.f90 at path '{extras_path}'. Aborting...")
+                raise Exception(f"Could not find your customised run_star_extras.f90, '{extras_path}'. Aborting...")
         except shutil.Error:
             raise Exception("Failed loading customised run_star_extras.f90 file!")
