@@ -10,7 +10,7 @@ class MesaFileAccess(IMesaInterface):
 
     def __init__(self, project):
         IMesaInterface.__init__(self, project)
-        self.envObject = MesaEnvironmentHandler()
+        self.envObject = MesaEnvironmentHandler(project)
         self.setupDict()
 
     def setupDict(self):
