@@ -1,13 +1,19 @@
-import os, sys, subprocess, shutil, shlex
-# from MESAcontroller.MesaFileHandler.MesaEnvironmentHandler import MesaEnvironmentHandler
-from MESAcontroller.MesaFileHandler import *
+import os
+import shlex
+import shutil
+import subprocess
+import sys
+
 import click
 from rich.console import Console
+
+from MESAcontroller.MesaFileHandler import *
+
 console = Console()
 
 class ProjectOps:
     def __init__(self, name=''):
-        self.envObject = MesaEnvironmentHandler()
+        self.envObject = MesaEnvironmentHandler.MesaEnvironmentHandler()
         if name == '':
             self.projName = "work"
             ### If user input is preferred over a default value, uncomment the line below
@@ -19,6 +25,7 @@ class ProjectOps:
             self.exists = True               ## Proj already present flag
         else:
             self.exists = False
+        self.access = MesaAccess.MesaAccess(self.projName)
     
 
     def create(self, overwrite=None, clean=None):       ### overwrite and clean are boolean arguments that are intentionally kept empty
@@ -237,7 +244,6 @@ class ProjectOps:
 
     def load_HistoryColumns(self, HistoryColumns):
         self.check_exists()
-        access = MesaAccess(self.projName)
         try:
             if os.path.exists(HistoryColumns):
                 shutil.copy(HistoryColumns, self.work_dir)
@@ -245,14 +251,13 @@ class ProjectOps:
                 pass
             else:
                 raise Exception(f"Could not find the your specified history columns file, '{HistoryColumns}'. Aborting...")
-            access.set("history_columns_file", HistoryColumns.split("/")[-1])
+            self.access.set("history_columns_file", HistoryColumns.split("/")[-1])
         except shutil.Error:
             raise Exception("Failed loading history columns file!")
 
 
     def load_ProfileColumns(self, ProfileColumns):
         self.check_exists()
-        access = MesaAccess(self.projName)
         try:
             if os.path.exists(ProfileColumns):
                 shutil.copy(ProfileColumns, self.work_dir)
@@ -260,7 +265,7 @@ class ProjectOps:
                 pass
             else:
                 raise Exception(f"Could not find the your specified profile columns file, '{ProfileColumns}'. Aborting...")
-            access.set("profile_columns_file", ProfileColumns.split("/")[-1])
+            self.access.set("profile_columns_file", ProfileColumns.split("/")[-1])
         except shutil.Error:
             raise Exception("Failed loading profile columns file!")
 
