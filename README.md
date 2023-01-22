@@ -12,6 +12,8 @@
   * ***Install MESA*** on ***Linux*** and ***macOS*** (ARM/M-series and Intel) with just this python package!
 
   * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
+  
+  * Single star as well as binary system evolution supported.
 
   * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Brainchild of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
 
