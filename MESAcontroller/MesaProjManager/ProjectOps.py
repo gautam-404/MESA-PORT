@@ -7,27 +7,32 @@ import sys
 import click
 from rich.console import Console
 
-from MESAcontroller.MesaFileHandler import *
+from MESAcontroller.MesaFileHandler import MesaAccess, MesaEnvironmentHandler
+from .loader import load
 
 console = Console()
 
 class ProjectOps:
     """This class handles MESA project operations.
     """    
-    def __init__(self, name='work'):
+    def __init__(self, name='work', binary = False):
         """Constructor for ProjectOps class.
 
         Args:
             name (str, optional): Name of the project. Defaults to 'work'.
+            binary (bool, optional): True for a binary star system. Defaults to False.
         """        
         self.projName = name
+        self.binary = binary
+        if self.binary:
+            self.envObject = MesaEnvironmentHandler(binary=self.binary, target='binary')
+        else:
+            self.envObject = MesaEnvironmentHandler()
         if os.path.exists(self.projName):
-            self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
             self.exists = True               ## Proj already present flag
         else:
             self.exists = False
-        self.envObject = MesaEnvironmentHandler(self.projName)
-        self.access = MesaAccess(self.projName)
+        
     
 
     def create(self, overwrite=None, clean=None):       ### overwrite and clean are boolean arguments that are intentionally kept empty
@@ -60,12 +65,17 @@ class ProjectOps:
         def writeover():
             """A helper function to overwrite the existing project."""
             try:
-                shutil.rmtree(self.work_dir)
-                shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.work_dir)
+                shutil.rmtree(self.projName)
+                if not self.binary:
+                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
+                else:
+                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'binary/work'), self.projName)
+
             except shutil.Error:
                 raise Exception(f"Could not overwrite the existing '{self.projName}' project!")
 
         if self.exists is True:
+            self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
             if overwrite is True:
                 writeover()
             elif overwrite is False:
@@ -78,10 +88,13 @@ class ProjectOps:
                     else:
                         cleanCheck()
             else:
-                raise ValueError("Invalid input for argument 'overwrite'.")
+                raise ValueError("Invalid input for argument 'overwrite'.") 
         else:
             try:
-                shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
+                if not self.binary:
+                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
+                else:
+                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'binary/work'), self.projName)
                 self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
                 self.exists = True
             except shutil.Error:
@@ -189,7 +202,8 @@ class ProjectOps:
         """        
         self.check_exists()
         runlog = os.path.join(self.work_dir, "runlog")
-        if not os.path.exists(os.path.join(self.work_dir, "star")):
+        if not os.path.exists(os.path.join(self.work_dir, "star")) and \
+            not os.path.exists(os.path.join(self.work_dir, "binary")):
             raise Exception("The project is not made yet...please make it first!") 
         else:
             if silent is False:
@@ -209,7 +223,7 @@ class ProjectOps:
 
         
     
-    def resume(self, photo, silent=False):
+    def resume(self, photo, silent=False, target=None):
         """Resumes the run from a given photo.
 
         Args:
@@ -219,9 +233,18 @@ class ProjectOps:
         Raises:
             FileNotFoundError: If the photo does not exist.
             ValueError: If the input for argument 'silent' is invalid.
-        """        
+        """
         self.check_exists()
-        photo_path = os.path.join(self.work_dir, "photos", photo)
+        if self.binary:
+            if target == 'primary':
+                photo_path = os.path.join(self.work_dir, "photos1", photo)
+            elif target == 'secondary':
+                photo_path = os.path.join(self.work_dir, "photos2", photo)
+            else:
+                raise ValueError('''Invalid input for argument 'target'.  
+                                Please use 'primary' or 'secondary' or 1 or 2.''')
+        else:
+            photo_path = os.path.join(self.work_dir, "photos", photo)
         runlog = os.path.join(self.work_dir, "runlog")
         if not os.path.isfile(photo_path):
             raise FileNotFoundError(f"Photo '{photo}' could not be exists.")
@@ -242,27 +265,39 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, silent=False):
+    def runGyre(self, gyre_in, silent=False, target=None):
         """Runs GYRE.
 
         Args:
             gyre_in (str): GYRE input file.
             silent (bool, optional): Run the command silently. Defaults to False.
+            target (str, optional): If the project is a binary system, specify the star 
+                                    for which GYRE is to be run. Defaults to None.
 
         Raises:
             ValueError: If the input for argument 'silent' is invalid.
         """        
         self.check_exists()
-        self.loadGyreInput(gyre_in)
+        self.load_GyreInput(gyre_in)
         gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
+        if self.binary:
+            if target == 'primary':
+                LOGS_dir = os.path.join(self.work_dir, "LOGS1")
+            elif target == 'secondary':
+                LOGS_dir = os.path.join(self.work_dir, "LOGS2")
+            else:
+                raise ValueError('''Invalid input for argument 'star'.  
+                                Please use 'primary' or 'secondary''')
+        else:
+            LOGS_dir = os.path.join(self.work_dir, "LOGS")
         runlog = os.path.join(self.work_dir, "runlog")
         if os.environ['GYRE_DIR'] is not None:
             if silent is False:
                 print("Running GYRE...")
-                res = self.run_subprocess(f'{gyre_ex} gyre.in', os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
+                res = self.run_subprocess(f'{gyre_ex} gyre.in', LOGS_dir, silent, runlog=runlog)
             elif silent is True:
                 with console.status("Running GYRE...", spinner="moon"):
-                    res = self.run_subprocess(f'{gyre_ex} gyre.in', os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
+                    res = self.run_subprocess(f'{gyre_ex} gyre.in', LOGS_dir, silent, runlog=runlog)
             else:
                 raise ValueError("Invalid input for argument 'silent'")   
             
@@ -275,149 +310,89 @@ class ProjectOps:
             print("Run aborted!")
 
 
-
-    def load_ProjInlist(self, inlistPath):
-        """Loads the project inlist file.
+    def load_InlistProject(self, inlistPath, target=None):
+        """Loads the inlist file.
 
         Args:
-            inlistPath (str): Path to the project inlist file.
+            inlistPath (str): Path to the inlist file.
+            target (str, optional): If the project is a binary system, specify the star 
+                                    or binary. Defaults to None.
+                                    Input can be 'primary', 'secondary' or 'binary'.
 
         Raises:
-            FileNotFoundError: If the inlist file could not be found.
-            Exception: If the inlist file could not be copied.
+            ValueError: If the input for argument 'typeof' is invalid.
         """        
         self.check_exists()
-        inlist_project = os.path.join(self.work_dir, "inlist_project")
-        try:
-            if os.path.exists(inlistPath):
-                shutil.copy(inlistPath, inlist_project)
-            elif os.path.exists(os.path.join(self.work_dir, inlistPath)):
-                inlistPath = os.path.join(self.work_dir, inlistPath)
-                shutil.copy(inlistPath, inlist_project)
-            else:
-                raise FileNotFoundError(f"Could not find the your specified project inlist file, '{inlistPath}'. Aborting...")
-        except shutil.Error:
-            raise Exception("Failed loading project inlist!")
+        if target not in [None, 'primary', 'secondary', 'binary']:
+            raise ValueError("Invalid input for argument 'typeof'")
+        load(inlistPath, self.work_dir, "inlist_project", self.binary, target)
+            
+    
+    def load_InlistPG(self, inlistPath):
+        """Loads the inlist file.
+
+        Args:
+            inlistPath (str): Path to the inlist file.
+
+        Raises:
+            ValueError: If the input for argument 'typeof' is invalid.
+        """        
+        self.check_exists()
+        load(inlistPath, self.work_dir, "inlist_pgstar")
         
 
-    
-    def load_PGstarInlist(self, inlistPath):
-        """Loads the pgstar inlist file.
-
-        Args:
-            inlistPath (str): Path to the pgstar inlist file.
-
-        Raises:
-            FileNotFoundError: If the inlist file could not be found.
-            Exception: If the inlist file could not be copied.
-        """        
-        self.check_exists()
-        inlist_pgstar = os.path.join(self.work_dir, "inlist_pgstar")
-        try:
-            if os.path.exists(inlistPath):
-                shutil.copy(inlistPath, inlist_pgstar)
-            elif os.path.exists(os.path.join(self.work_dir, inlistPath)):
-                inlistPath = os.path.join(self.work_dir, inlistPath)
-                shutil.copy(inlistPath, inlist_pgstar)
-            else:
-                raise FileNotFoundError(f"Could not find the your specified pgstar inlist file, '{inlistPath}'. Aborting...")
-        except shutil.Error:
-            raise Exception("Failed loading pgstar inlist!")
-
-
-    def load_HistoryColumns(self, HistoryColumns):
-        """Loads the history columns file.
+    def load_HistoryColumns(self, HistoryColumns, target=None):
+        """Loads the history columns.
 
         Args:
             HistoryColumns (str): Path to the history columns file.
-
-        Raises:
-            FileNotFoundError: If the history columns file could not be found.
-            Exception: If the history columns file could not be copied.
+            target (str, optional): If the project is a binary system, specify the star or binary.
+                                    Input 'primary', 'secondary' or 'binary'. Defaults to None.
         """        
         self.check_exists()
-        try:
-            if os.path.exists(HistoryColumns):
-                shutil.copy(HistoryColumns, self.work_dir)
-            elif os.path.exists(os.path.join(self.work_dir, HistoryColumns)):
-                pass
-            else:
-                raise FileNotFoundError(f"Could not find the your specified history columns file, '{HistoryColumns}'. Aborting...")
-            self.access.set("history_columns_file", HistoryColumns.split("/")[-1])
-        except shutil.Error:
-            raise Exception("Failed loading history columns file!")
+        if target not in ['primary', 'secondary', 'binary']:
+            raise ValueError("Invalid input for argument 'typeof'")
+        load(HistoryColumns, self.work_dir, "history_columns", self.binary, target)
 
 
     def load_ProfileColumns(self, ProfileColumns):
-        """Loads the profile columns file.
+        """Loads the profile columns.
 
         Args:
             ProfileColumns (str): Path to the profile columns file.
+        """  
+        self.check_exists()      
+        load(ProfileColumns, self.work_dir, "profile_columns")
 
-        Raises:
-            FileNotFoundError: If the profile columns file could not be found.
-            Exception: If the profile columns file could not be copied.
-        """        
-        self.check_exists()
-        try:
-            if os.path.exists(ProfileColumns):
-                shutil.copy(ProfileColumns, self.work_dir)
-            elif os.path.exists(os.path.join(self.work_dir, ProfileColumns)):
-                pass
-            else:
-                raise FileNotFoundError(f"Could not find the your specified profile columns file, '{ProfileColumns}'. Aborting...")
-            self.access.set("profile_columns_file", ProfileColumns.split("/")[-1])
-        except shutil.Error:
-            raise Exception("Failed loading profile columns file!")
 
-            
     def load_GyreInput(self, gyre_in):
         """Loads the GYRE input file.
 
         Args:
             gyre_in (str): Path to the GYRE input file.
-
-        Raises:
-            FileNotFoundError: If the GYRE input file could not be found.
-            Exception: If the GYRE input file could not be copied.
-        """        
-        self.check_exists()
-        gyre_dest = os.path.join(self.work_dir, "LOGS", "gyre.in")
-        try:
-            if os.path.exists(gyre_in):
-                shutil.copy(gyre_in, gyre_dest)
-            elif os.path.exists(os.path.join("LOGS", gyre_in)):
-                gyre_in = os.path.join("LOGS", gyre_in)
-                shutil.copy(gyre_in, gyre_dest)
-            elif os.path.exists(os.path.join(self.work_dir, gyre_in)):
-                gyre_in = os.path.join(self.work_dir, gyre_in)
-                shutil.copy(gyre_in, gyre_dest)
-            else:
-                raise FileNotFoundError(f"Could not find your specified GYRE input file, '{gyre_in}'. Aborting...")
-        except shutil.Error:
-            raise Exception("Failed loading GYRE input file!")
-    
+        """ 
+        self.check_exists()       
+        load(gyre_in, self.work_dir, "gyre.in")
 
 
-    def load_Extras(self, extras_path):
-        """Loads the customised run_star_extras.f90 file.
+    def load_StarExtras(self, extras_path):
+        """Loads the extras file.
 
         Args:
-            extras_path (str): Path to the customised run_star_extras.f90 file.
-
-        Raises:
-            FileNotFoundError: If the customised run_star_extras.f90 file could not be found.
-            Exception: If the customised run_star_extras.f90 file could not be copied.
-        """        
+            extras_path (str): Path to the extras file.
+        """  
         self.check_exists()
-        extras_default = os.path.join(self.work_dir, "src", "run_star_extras.f90")
-        try:
-            if os.path.exists(extras_path):
-                shutil.copy(extras_path, extras_default)
-            elif os.path.exists(os.path.join(self.work_dir, extras_path)):
-                extras_path = os.path.join(self.work_dir, extras_path)
-                shutil.copy(extras_path, extras_default)
-            else:
-                raise FileNotFoundError(f"Could not find your customised run_star_extras.f90, '{extras_path}'. Aborting...")
-        except shutil.Error:
-            raise Exception("Failed loading customised run_star_extras.f90 file!")
+        load(extras_path, self.work_dir, "extras")
+
+
+    def load_BinaryExtras(self, extras_path):
+        """Loads the extras file.
+
+        Args:
+            extras_path (str): Path to the extras file.
+        """  
+        self.check_exists()
+        if self.binary:
+            load(extras_path, self.work_dir, "extras", binary=True)
+        else:
+            raise ValueError(f"{self.projName} is not a binary system!")

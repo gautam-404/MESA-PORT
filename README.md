@@ -12,6 +12,8 @@
   * ***Install MESA*** on ***Linux*** and ***macOS*** (ARM/M-series and Intel) with just this python package!
 
   * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
+  
+  * Single star as well as binary system evolution supported.
 
   * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Brainchild of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
 
@@ -54,7 +56,10 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 ### ***Using a `ProjectOps` class object:***
   * Creating a new MESA work directory:
     ```python
-    proj = ProjectOps()                          ## This creates a default project directory named 'work'
+    proj = ProjectOps(name='work', binary = False)   ## Default project name is 'work'. 
+                                                     ## Default is single star evolution.
+
+    ## Create a new project
     proj.create(overwrite=False, clean=False)    ## CLI is shown if no arguments are passed                       
     ```
     For a custom name or to use an existing MESA work directory, pass its name as a string argument.
@@ -63,35 +68,50 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     ```
   * Load custom MESA input files:
     ```python
-    ### Arguments can be a path or the name of a file in my_project directory ###
+    ### Path arguments can be a path or the name of a file in 'my_project' directory ###
     
-    proj.load_Extras("path/to/custom/run_star_extras_file")          ## Load custom run_star_extras.f90
-    proj.load_ProjInlist("/path/to/custom/inlist")                   ## Load custom inlist_pgstar   
-    proj.load_PGstarInlist("/path/to/custom/inlist")                 ## Load custom inlist_pgstar
+    proj.load_StarExtras("path/to/custom/run_star_extras_file")      ## Load custom run_star_extras.f90
+    proj.load_InlistProject("/path/to/custom/inlist")                       ## Load custom inlist_project 
+    proj.load_InlistPG("/path/to/custom/inlist")                       ## Load custom inlist_pgstar    
     proj.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns
     proj.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
+    ```
+    When working with a binary system, you can load custom files for the primary and secondary stars.
+    ```python
+    proj.load_InlistProject("/path/to/custom/inlist", target="primary")     ## Load custom 'inlist1'
+    proj.load_InlistProject("/path/to/custom/inlist", target="secondary")   ## Load custom 'inlist2'
+    proj.load_InlistProject("/path/to/custom/inlist", target="binary")      ## Load custom 'inlist_pgstar'
+    proj.load_BinaryExtras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
+    ```
+
     ```
     
   * Take control of your project; make, clean, run, resume and delete.
     ```python
     proj.clean()
     proj.make()
-    proj.run(silent=False)
-    proj.resume("photo_number", silent=False)
+    proj.run(silent=False)      ## Run MESA. Silent=True will suppress console output and write to a runlog file.
+    proj.resume("photo_name", silent=False)
+    proj.resume("photo_name", silent=False, star="primary")  ## For binary systems. Can be "primary" or "secondary"
     proj.delete()  ## Deletes the project directory
     ```
     
   * Run GYRE:
     ```python
     proj.runGyre("gyre_input.in", silent=False)  
-    
     ## "gyre_input.in" can either be a path to your GYRE input file
     ## or it can also be the name of a file in your_project or your_project/LOGS directory
+    ```
+    GYRE can also be run for the primary or the secondary star in a binary system.
+    ```python
+    proj.runGyre("gyre_input.in", silent=False, target="primary")  ## Target can be "primary" or "secondary"
     ```
 
 ### ***Using a `MesaAccess` class object:***
   ```python
-  access = MesaAccess("your_project")  ## Use MesaAccess() for the default project name 'work'
+  access = MesaAccess("your_project")  
+  ## Use MesaAccess("your_project", binary=True, target='binary') for the default project name 'work'.
+  ## Use target='primary', target='secondary' or target='binary' for binary systems.
 
   ## Write
   access.set(parameters, values)              
