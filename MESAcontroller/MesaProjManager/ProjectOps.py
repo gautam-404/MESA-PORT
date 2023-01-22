@@ -262,27 +262,39 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, silent=False):
+    def runGyre(self, gyre_in, silent=False, star=None):
         """Runs GYRE.
 
         Args:
             gyre_in (str): GYRE input file.
             silent (bool, optional): Run the command silently. Defaults to False.
+            star (str, optional): If the project is a binary system, specify the star 
+                                    for which GYRE is to be run. Defaults to None.
 
         Raises:
             ValueError: If the input for argument 'silent' is invalid.
         """        
         self.check_exists()
-        self.loadGyreInput(gyre_in)
+        self.load_GyreInput(gyre_in)
         gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
+        if self.binary:
+            if star == 'primary':
+                LOGS_dir = os.path.join(self.work_dir, "LOGS1")
+            elif star == 'secondary':
+                LOGS_dir = os.path.join(self.work_dir, "LOGS2")
+            else:
+                raise ValueError('''Invalid input for argument 'star'.  
+                                Please use 'primary' or 'secondary''')
+        else:
+            LOGS_dir = os.path.join(self.work_dir, "LOGS")
         runlog = os.path.join(self.work_dir, "runlog")
         if os.environ['GYRE_DIR'] is not None:
             if silent is False:
                 print("Running GYRE...")
-                res = self.run_subprocess(f'{gyre_ex} gyre.in', os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
+                res = self.run_subprocess(f'{gyre_ex} gyre.in', LOGS_dir, silent, runlog=runlog)
             elif silent is True:
                 with console.status("Running GYRE...", spinner="moon"):
-                    res = self.run_subprocess(f'{gyre_ex} gyre.in', os.path.join(self.work_dir, 'LOGS'), silent, runlog=runlog)
+                    res = self.run_subprocess(f'{gyre_ex} gyre.in', LOGS_dir, silent, runlog=runlog)
             else:
                 raise ValueError("Invalid input for argument 'silent'")   
             
