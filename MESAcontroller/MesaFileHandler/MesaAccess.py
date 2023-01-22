@@ -1,79 +1,91 @@
-from .MesaFileAccess import *
 from .support import *
-
-from collections import OrderedDict
+from .MesaEnvironmentHandler import MesaEnvironmentHandler
+from .AccessHelper import *
+from pprint import pprint
 
 class MesaAccess:
-    """Class to access MESA parameters.
-    """    
-    def __init__(self, project='work'):
-        """Constructor for MesaAccess class.
-
-        Args:
-            project (str, optional): Project name. Defaults to 'work'.
-        """        
-        self.mesaFileAccess = MesaFileAccess(project)
-        self._fullDict = self.stripFullDict()
-
-    def stripToDict(self, section):
-        """Strips a section of the MESA files to a dictionary.
-
-        Args:
-            section (str): Section to strip.
-
-        Returns:
-            dict: Dictionary of the section.
-        """        
-        retDict = OrderedDict()
-        for file, parameterDict in self.mesaFileAccess.dataDict[section].items():
-            for key, value in parameterDict.items():
-                retDict[key] = value
-
-        return retDict
-
-    def stripFullDict(self):
-        """Strips all sections of the MESA files to a dictionary.
-
-        Returns:
-            dict: Dictionary of all sections.
-        """        
-        retDict = OrderedDict()
-
-        for section in [sectionStarJob,sectionControl,sectionPgStar]:
-            retDict.update(self.stripToDict(section))
-
-        return retDict
-
-    def items(self):
-        """Returns a list of tuples of the full dictionary.
-
-        Returns:
-            list: List of tuples of the full dictionary.
-        """        
-        return self._fullDict.items()
-
-    def keys(self):
-        """Returns a list of keys of the full dictionary.
-
-        Returns:
-            list: List of keys of the full dictionary.
-        """        
-        return self._fullDict.keys()
-
-    def setitem(self, key, value):
-        """Sets a value in the full dictionary.
-
-        Args:
-            key (str): Key of the value to set.
-            value (str): Value to set.
-        """        
-        if key in self._fullDict.keys():
-            self.mesaFileAccess[key] = value
+    def __init__(self, project, binary, star):
+        self.project = project
+        self.binary = binary
+        self.star = star
+        self.projectDir = os.path.join(os.getcwd(), project)
+        if binary and star == 'binary':
+            envObj = MesaEnvironmentHandler(project, binary, star)
+            self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
+            self.sections, self.defaultsFileNames = sections_binary, defaultsFileNames_binary
+            self.inlist_filenames = ["inlist_project"]
+        elif binary and star != 'binary':
+            envObj = MesaEnvironmentHandler(project, binary, star)
+            self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
+            self.sections, self.defaultsFileNames = sections_star, defaultsFileNames_star
+            if self.star == '1':
+                self.inlist_filenames = ["inlist1"]
+            elif self.star == '2':
+                self.inlist_filenames = ["inlist2"]
         else:
-            self.mesaFileAccess.addValue(key,value)
-        self._fullDict = self.stripFullDict()
+            envObj = MesaEnvironmentHandler(project, binary, star)
+            self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
+            self.sections, self.defaultsFileNames = sections_star, defaultsFileNames_star
+            self.inlist_filenames = ["inlist_project", "inlist_pgstar"]
+        
+        
+    def generateDicts(self):
+        self.defaultsDict = {}
+        for section in self.sections:
+            self.defaultsDict[section] = readDefaults(self.defaultsFileNames[section], self.defaultsDir)
+        self.inlistDict = {}
+        self.inlistSections = {}
+        for filename in self.inlist_filenames:
+            self.inlistSections[filename], self.inlistDict[filename] = readFile(filename, self.projectDir)
+        # pprint(self.defaultsDict)
+   
+    
+    
+    def setitem(self, key, value):
+        default_section, default_val, default_type = matchtoDefaults(key, self.defaultsDict, self.sections)
+        if not isinstance(value, type(default_type)):
+            raise TypeError(f"Value {value} is not of default type {default_type}")
+        if not self.binary:
+            if default_section in ["star_job", "controls"]:
+                filename = "inlist_project"
+            elif default_section == "pgstar":
+                filename = "inlist_pgstar"
+        else:
+            filename = self.inlist_filenames[0]
+        exists, _ = matchtoFile(key, self.inlistDict[filename], self.inlistSections[filename], default_section)
+        writetoFile(self.projectDir, filename, key, value, exists, default_section, delete=False)
+            
+
+    def getitem(self, item):
+        default_section, default_val, default_type = matchtoDefaults(item, self.defaultsDict, self.sections)
+        if not self.binary:
+            if default_section in ["star_job", "controls"]:
+                filename = "inlist_project"
+            elif default_section == "pgstar":
+                filename = "inlist_pgstar"
+        else:
+            filename = self.inlist_filenames[0]
+        return matchtoFile(item, self.inlistDict[filename], self.inlistSections[filename], default_section)[1]
+    
+    def delitem(self, key):
+        default_section, default_val, default_type = matchtoDefaults(key, self.defaultsDict, self.sections)
+        if not self.binary:
+            if default_section in ["star_job", "controls"]:
+                filename = "inlist_project"
+            elif default_section == "pgstar":
+                filename = "inlist_pgstar"
+        else:
+            filename = self.inlist_filenames[0]
+        exists, _ = matchtoFile(key, self.inlistDict[filename], self.inlistSections[filename], default_section)
+        if exists:
+            writetoFile(self.projectDir, filename, key, _, exists, default_section, delete=True)
+        else:
+            raise KeyError(f"Parameter {key} does not exist in {filename}")
+        
 
 
+
+    
     def set(self, keys, values):
         """Sets a value in the full dictionary.
 
@@ -84,17 +96,20 @@ class MesaAccess:
         Raises:
             ValueError: Length of keys does not match length of values
             TypeError: Input parameter name(s) must be of type string or list of strings.
-        """        
-        if type(keys) == list:
+        """    
+        self.generateDicts()    
+        if isinstance(keys, list):
             if len(keys) == len(values):
                 for i in range(len(keys)):
                     self.setitem(keys[i], values[i])
             else:
                 raise ValueError(f"Length of keys {keys} does not match length of {values}")
-        elif type(keys) == str:
+        elif isinstance(keys, str):
             self.setitem(keys, values)
         else:
             raise TypeError("Input parameter name(s) must be of type string or list of strings.")
+
+
 
     def get(self, items):
         """Gets a value from the full dictionary.
@@ -108,18 +123,18 @@ class MesaAccess:
         Returns:
             str or list: Value or list of values.
         """        
-        if type(items) == list:
+        self.generateDicts()
+        if isinstance(items, list):
             got = []
             for item in items:
-                got.append(self._fullDict[item])
+                got.append(self.getitem(item))
             return got
-        elif type(items) == str:
-            return self._fullDict[items]
+        elif isinstance(items, str):
+            return self.getitem(items)
         else:
             raise TypeError("Input parameter name(s) must be of type string or list of strings.")
         
 
-    
     def delete(self, keys):
         """Deletes a value from the full dictionary.
 
@@ -128,13 +143,14 @@ class MesaAccess:
 
         Raises:
             TypeError: Input parameter name(s) must be of type string or list of strings.
-        """        
-        if type(keys) == list:
+        """       
+        self.generateDicts() 
+        if isinstance(keys, list):
             for key in keys:
-                if key in self._fullDict.keys():
-                    self.mesaFileAccess.removeValue(key)
-        elif type(keys) == str:
-            if keys in self._fullDict.keys():
-                    self.mesaFileAccess.removeValue(keys)
+                self.delitem(key)
+        elif isinstance(keys, str):
+            self.delitem(keys)
         else:
             raise TypeError("Input parameter name(s) must be of type string or list of strings.")
+    
+    

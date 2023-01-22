@@ -28,8 +28,7 @@ class ProjectOps:
             self.exists = True               ## Proj already present flag
         else:
             self.exists = False
-        self.envObject = MesaEnvironmentHandler(self.projName)
-        self.access = MesaAccess(self.projName)
+        self.envObject = MesaEnvironmentHandler(self.projName, binary=self.binary, star='')
     
 
     def create(self, overwrite=None, clean=None):       ### overwrite and clean are boolean arguments that are intentionally kept empty
@@ -62,11 +61,11 @@ class ProjectOps:
         def writeover():
             """A helper function to overwrite the existing project."""
             try:
-                shutil.rmtree(self.work_dir)
+                shutil.rmtree(self.projName)
                 if not self.binary:
-                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.work_dir)
+                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
                 else:
-                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'binary/work'), self.work_dir)
+                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'binary/work'), self.projName)
 
             except shutil.Error:
                 raise Exception(f"Could not overwrite the existing '{self.projName}' project!")
@@ -89,9 +88,9 @@ class ProjectOps:
         else:
             try:
                 if not self.binary:
-                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.work_dir)
+                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
                 else:
-                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'binary/work'), self.work_dir)
+                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'binary/work'), self.projName)
                 self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
                 self.exists = True
             except shutil.Error:
@@ -306,25 +305,26 @@ class ProjectOps:
             print("Run aborted!")
 
 
-    def load_InlistProject(self, inlistPath, star=None):
+    def load_InlistProject(self, inlistPath, typeof=None):
         """Loads the inlist file.
 
         Args:
             inlistPath (str): Path to the inlist file.
-            star (str, optional): If the project is a binary system, specify the star, 
-                                    i.e. 'primary' or 'secondary', for which the inlist 
-                                    is to be loaded. Defaults to None.
-                                    If the project is a single star, this argument is ignored.
+            typeof (str, optional): If the project is a binary system, specify the star 
+                                    or binary. Defaults to None.
+                                    Input can be 'primary', 'secondary' or 'binary'.
 
         Raises:
             ValueError: If the input for argument 'typeof' is invalid.
         """        
         self.check_exists()
         if self.binary:
-            if star == 'primary':
+            if typeof == 'primary':
                 load(inlistPath, self.work_dir, "inlist_project", binary=True, star='1')
-            elif star == 'secondary':
+            elif typeof == 'secondary':
                 load(inlistPath, self.work_dir, "inlist_project", binary=True, star='2')
+            elif typeof == 'binary':
+                load(inlistPath, self.work_dir, "inlist_project", binary=True, star='binary')
             else:
                 raise ValueError("Invalid input for argument 'typeof'")
         else:
@@ -344,14 +344,26 @@ class ProjectOps:
         load(inlistPath, self.work_dir, "inlist_pgstar")
         
 
-    def load_HistoryColumns(self, HistoryColumns):
+    def load_HistoryColumns(self, HistoryColumns, typeof=None):
         """Loads the history columns.
 
         Args:
             HistoryColumns (str): Path to the history columns file.
+            typeof (str, optional): If the project is a binary system, specify the star or binary.
+                                    Input 'primary', 'secondary' or 'binary'. Defaults to None.
         """        
         self.check_exists()
-        load(HistoryColumns, self.work_dir, "history_columns")
+        if self.binary:
+            if typeof == 'primary':
+                load(HistoryColumns, self.work_dir, "history_columns", binary=True, star='1')
+            elif typeof == 'secondary':
+                load(HistoryColumns, self.work_dir, "history_columns", binary=True, star='2')
+            elif typeof == 'binary':
+                load(HistoryColumns, self.work_dir, "history_columns", binary=True, star='binary')
+            else:
+                raise ValueError("Invalid input for argument 'typeof'")
+        else:
+            load(HistoryColumns, self.work_dir, "history_columns")
 
 
     def load_ProfileColumns(self, ProfileColumns):
