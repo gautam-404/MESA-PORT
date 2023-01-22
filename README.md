@@ -92,7 +92,7 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     proj.make()
     proj.run(silent=False)      ## Run MESA. Silent=True will suppress console output and write to a runlog file.
     proj.resume("photo_name", silent=False)
-    proj.resume("photo_name", silent=False, star="primary")  ## For binary systems. Can be "primary" or "secondary"
+    proj.resume("photo_name", silent=False, target="primary")  ## For binary systems. Can be "primary" or "secondary"
     proj.delete()  ## Deletes the project directory
     ```
     
