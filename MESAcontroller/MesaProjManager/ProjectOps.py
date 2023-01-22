@@ -324,9 +324,9 @@ class ProjectOps:
             load(inlistPath, self.work_dir, "inlist_pgstar")
         elif self.binary:
             if typeof == 'primary':
-                load(inlistPath, self.work_dir, "inlist_project", bianry=True, star='1')
+                load(inlistPath, self.work_dir, "inlist_project", binary=True, star='1')
             elif typeof == 'secondary':
-                load(inlistPath, self.work_dir, "inlist_project", bianry=True, star='2')
+                load(inlistPath, self.work_dir, "inlist_project", binary=True, star='2')
             else:
                 raise ValueError("Invalid input for argument 'typeof'")
         else:
