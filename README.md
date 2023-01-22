@@ -86,7 +86,7 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     ```python
     proj.clean()
     proj.make()
-    proj.run(silent=False)
+    proj.run(silent=False)      ## Run MESA. Silent=True will suppress console output and write to a runlog file.
     proj.resume("photo_name", silent=False)
     proj.resume("photo_name", silent=False, star="primary")  ## For binary systems. Can be "primary" or "secondary"
     proj.delete()  ## Deletes the project directory
@@ -95,9 +95,12 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   * Run GYRE:
     ```python
     proj.runGyre("gyre_input.in", silent=False)  
-    
     ## "gyre_input.in" can either be a path to your GYRE input file
     ## or it can also be the name of a file in your_project or your_project/LOGS directory
+    ```
+    GYRE can also be run for the primary or the secondary star in a binary system.
+    ```python
+    proj.runGyre("gyre_input.in", silent=False, star="primary")  ## Can be "primary" or "secondary"
     ```
 
 ### ***Using a `MesaAccess` class object:***
