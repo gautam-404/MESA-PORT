@@ -364,7 +364,7 @@ class ProjectOps:
         load(gyre_in, self.work_dir, "gyre.in")
 
 
-    def load_Extras(self, extras_path):
+    def load_StarExtras(self, extras_path):
         """Loads the extras file.
 
         Args:
@@ -372,3 +372,16 @@ class ProjectOps:
         """  
         self.check_exists()
         load(extras_path, self.work_dir, "extras")
+
+
+    def load_BinaryExtras(self, extras_path):
+        """Loads the extras file.
+
+        Args:
+            extras_path (str): Path to the extras file.
+        """  
+        self.check_exists()
+        if self.binary:
+            load(extras_path, self.work_dir, "extras", binary=True)
+        else:
+            raise ValueError(f"{self.projName} is not a binary system!")

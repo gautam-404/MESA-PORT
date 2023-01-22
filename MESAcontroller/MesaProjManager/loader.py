@@ -40,8 +40,10 @@ def load(infile, work_dir, typeof, binary=False, starno=''):
         dest = os.path.join(work_dir, "profile_columns.list")
         access = MesaAccess(work_dir)
         access.set("profile_columns_file", infile.split("/")[-1])
-    elif typeof == "run_star_extras.f90":
+    elif typeof == "extras" and binary==False:
         dest = os.path.join(work_dir, "src", "run_star_extras.f90")
+    elif typeof == "extras" and binary==True:
+        dest = os.path.join(work_dir, "src", "run_binary_extras.f90")
 
     try:
         if os.path.exists(infile):
