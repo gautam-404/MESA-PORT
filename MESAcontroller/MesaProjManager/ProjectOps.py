@@ -7,7 +7,7 @@ import sys
 import click
 from rich.console import Console
 
-from MESAcontroller.MesaFileHandler import *
+from MESAcontroller.MesaFileHandler import MesaAccess, MesaEnvironmentHandler
 
 console = Console()
 

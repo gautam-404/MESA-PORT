@@ -2,7 +2,9 @@
 build/*
 **/*egg*
 **/__pycache__/
-test/*
+*/test/*
+/test/*
+test.py
 
 # Gitpod
 .gitpod.yml
