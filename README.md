@@ -54,7 +54,10 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 ### ***Using a `ProjectOps` class object:***
   * Creating a new MESA work directory:
     ```python
-    proj = ProjectOps()                          ## This creates a default project directory named 'work'
+    proj = ProjectOps(name='work', binary = False)   ## Default project name is 'work'. 
+                                                     ## Default is single star evolution.
+
+    ## Create a new project
     proj.create(overwrite=False, clean=False)    ## CLI is shown if no arguments are passed                       
     ```
     For a custom name or to use an existing MESA work directory, pass its name as a string argument.
@@ -63,13 +66,18 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     ```
   * Load custom MESA input files:
     ```python
-    ### Arguments can be a path or the name of a file in my_project directory ###
+    ### Path arguments can be a path or the name of a file in 'my_project' directory ###
     
     proj.load_Extras("path/to/custom/run_star_extras_file")          ## Load custom run_star_extras.f90
-    proj.load_ProjInlist("/path/to/custom/inlist")                   ## Load custom inlist_pgstar   
-    proj.load_PGstarInlist("/path/to/custom/inlist")                 ## Load custom inlist_pgstar
+    proj.load_Inlist("/path/to/custom/inlist", typeof="project")     ## Load custom inlist_project 
+    proj.load_Inlist("/path/to/custom/inlist", typeof="pgstar")      ## Load custom inlist_pgstar    
     proj.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns
     proj.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
+    ```
+    When working with a binary system, you can load custom inlist files for the primary and secondary stars.
+    ```python
+    proj.load_Inlist("/path/to/custom/inlist", typeof="primary")     ## Load custom 'inlist1'
+    proj.load_Inlist("/path/to/custom/inlist", typeof="secondary")   ## Load custom 'inlist2'
     ```
     
   * Take control of your project; make, clean, run, resume and delete.
@@ -77,7 +85,8 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     proj.clean()
     proj.make()
     proj.run(silent=False)
-    proj.resume("photo_number", silent=False)
+    proj.resume("photo_name", silent=False)
+    proj.resume("photo_name", silent=False, star="primary")  ## For binary systems. Can be "primary" or "secondary"
     proj.delete()  ## Deletes the project directory
     ```
     
