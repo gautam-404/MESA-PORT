@@ -306,31 +306,42 @@ class ProjectOps:
             print("Run aborted!")
 
 
-    def load_Inlist(self, inlistPath, typeof):
+    def load_InlistProject(self, inlistPath, star=None):
         """Loads the inlist file.
 
         Args:
             inlistPath (str): Path to the inlist file.
-            typeof (str): Type of inlist file.
-                        Can be 'project', 'pgstar', 'primary' or 'secondary'.
+            star (str, optional): If the project is a binary system, specify the star, 
+                                    i.e. 'primary' or 'secondary', for which the inlist 
+                                    is to be loaded. Defaults to None.
+                                    If the project is a single star, this argument is ignored.
 
         Raises:
             ValueError: If the input for argument 'typeof' is invalid.
         """        
         self.check_exists()
-        if typeof == 'project':
-            load(inlistPath, self.work_dir, "inlist_project")
-        elif typeof == 'pgstar':
-            load(inlistPath, self.work_dir, "inlist_pgstar")
-        elif self.binary:
-            if typeof == 'primary':
+        if self.binary:
+            if star == 'primary':
                 load(inlistPath, self.work_dir, "inlist_project", binary=True, star='1')
-            elif typeof == 'secondary':
+            elif star == 'secondary':
                 load(inlistPath, self.work_dir, "inlist_project", binary=True, star='2')
             else:
                 raise ValueError("Invalid input for argument 'typeof'")
         else:
-            raise ValueError("Invalid input for argument 'typeof'")
+            load(inlistPath, self.work_dir, "inlist_project")
+            
+    
+    def load_InlistPG(self, inlistPath):
+        """Loads the inlist file.
+
+        Args:
+            inlistPath (str): Path to the inlist file.
+
+        Raises:
+            ValueError: If the input for argument 'typeof' is invalid.
+        """        
+        self.check_exists()
+        load(inlistPath, self.work_dir, "inlist_pgstar")
         
 
     def load_HistoryColumns(self, HistoryColumns):

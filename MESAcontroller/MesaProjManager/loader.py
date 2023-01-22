@@ -2,7 +2,7 @@ import os
 import shutil
 from MESAcontroller.MesaFileHandler.MesaAccess import MesaAccess
 
-def load(infile, work_dir, typeof, binary=False, starno=''):
+def load(infile, work_dir, typeof, binary=False, star=''):
     """Loads a file into the project directory.
 
     Args:
@@ -27,7 +27,7 @@ def load(infile, work_dir, typeof, binary=False, starno=''):
         if not binary:
             dest = os.path.join(work_dir, "inlist_project")
         else:
-            dest = os.path.join(work_dir, "inlist" + starno)        
+            dest = os.path.join(work_dir, "inlist" + star)        
     elif typeof == "inlist_pgstar":
         dest = os.path.join(work_dir, "inlist_pgstar")
     elif typeof == "gyre.in":

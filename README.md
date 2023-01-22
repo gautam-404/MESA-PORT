@@ -71,15 +71,15 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     ### Path arguments can be a path or the name of a file in 'my_project' directory ###
     
     proj.load_StarExtras("path/to/custom/run_star_extras_file")      ## Load custom run_star_extras.f90
-    proj.load_Inlist("/path/to/custom/inlist", typeof="project")     ## Load custom inlist_project 
-    proj.load_Inlist("/path/to/custom/inlist", typeof="pgstar")      ## Load custom inlist_pgstar    
+    proj.load_InlistProject("/path/to/custom/inlist")                       ## Load custom inlist_project 
+    proj.load_InlistPG("/path/to/custom/inlist")                       ## Load custom inlist_pgstar    
     proj.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns
     proj.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
     ```
     When working with a binary system, you can load custom files for the primary and secondary stars.
     ```python
-    proj.load_Inlist("/path/to/custom/inlist", typeof="primary")     ## Load custom 'inlist1'
-    proj.load_Inlist("/path/to/custom/inlist", typeof="secondary")   ## Load custom 'inlist2'
+    proj.load_InlistProject("/path/to/custom/inlist", typeof="primary")     ## Load custom 'inlist1'
+    proj.load_InlistProject("/path/to/custom/inlist", typeof="secondary")   ## Load custom 'inlist2'
     proj.load_BinaryExtras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
     ```
 
