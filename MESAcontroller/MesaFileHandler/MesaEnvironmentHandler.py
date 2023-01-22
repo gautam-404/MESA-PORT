@@ -3,8 +3,8 @@ import os
 from .support import *
 
 class MesaEnvironmentHandler():
-    def __init__(self, project, binary, star, mesa_env="MESA_DIR"):
-        if binary and star == 'binary':
+    def __init__(self, binary=False, target='', mesa_env="MESA_DIR"):
+        if binary and target == 'binary':
             self.sections, self.defaultsPath = sections_binary, defaultsPath_binary
         else:
             self.sections, self.defaultsPath = sections_star, defaultsPath_star

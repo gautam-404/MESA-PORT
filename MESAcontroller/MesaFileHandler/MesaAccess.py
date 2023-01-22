@@ -4,29 +4,28 @@ from .AccessHelper import *
 from pprint import pprint
 
 class MesaAccess:
-    def __init__(self, project, binary, star):
+    def __init__(self, project, binary=False, target=''):
         self.project = project
         self.binary = binary
-        self.star = star
+        self.target = target
         self.projectDir = os.path.join(os.getcwd(), project)
-        if binary and star == 'binary':
-            envObj = MesaEnvironmentHandler(project, binary, star)
+        envObj = MesaEnvironmentHandler(binary, target)
+        if binary and target == 'binary':
             self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
             self.sections, self.defaultsFileNames = sections_binary, defaultsFileNames_binary
             self.inlist_filenames = ["inlist_project"]
-        elif binary and star != 'binary':
-            envObj = MesaEnvironmentHandler(project, binary, star)
+        elif binary and target != 'binary':
             self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
             self.sections, self.defaultsFileNames = sections_star, defaultsFileNames_star
-            if self.star == '1':
+            if self.target == 'primary':
                 self.inlist_filenames = ["inlist1"]
-            elif self.star == '2':
+            elif self.target == 'secondary':
                 self.inlist_filenames = ["inlist2"]
         else:
-            envObj = MesaEnvironmentHandler(project, binary, star)
             self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
             self.sections, self.defaultsFileNames = sections_star, defaultsFileNames_star
             self.inlist_filenames = ["inlist_project", "inlist_pgstar"]
+        
         
         
     def generateDicts(self):

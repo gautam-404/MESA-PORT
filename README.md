@@ -78,8 +78,9 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     ```
     When working with a binary system, you can load custom files for the primary and secondary stars.
     ```python
-    proj.load_InlistProject("/path/to/custom/inlist", typeof="primary")     ## Load custom 'inlist1'
-    proj.load_InlistProject("/path/to/custom/inlist", typeof="secondary")   ## Load custom 'inlist2'
+    proj.load_InlistProject("/path/to/custom/inlist", target="primary")     ## Load custom 'inlist1'
+    proj.load_InlistProject("/path/to/custom/inlist", target="secondary")   ## Load custom 'inlist2'
+    proj.load_InlistProject("/path/to/custom/inlist", target="binary")      ## Load custom 'inlist_pgstar'
     proj.load_BinaryExtras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
     ```
 
@@ -103,12 +104,14 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     ```
     GYRE can also be run for the primary or the secondary star in a binary system.
     ```python
-    proj.runGyre("gyre_input.in", silent=False, star="primary")  ## Can be "primary" or "secondary"
+    proj.runGyre("gyre_input.in", silent=False, target="primary")  ## Target can be "primary" or "secondary"
     ```
 
 ### ***Using a `MesaAccess` class object:***
   ```python
-  access = MesaAccess("your_project")  ## Use MesaAccess() for the default project name 'work'
+  access = MesaAccess("your_project")  
+  ## Use MesaAccess("your_project", binary=True, target='binary') for the default project name 'work'.
+  ## Use target='primary', target='secondary' or target='binary' for binary systems.
 
   ## Write
   access.set(parameters, values)              

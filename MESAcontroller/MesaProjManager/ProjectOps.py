@@ -24,11 +24,15 @@ class ProjectOps:
         """        
         self.projName = name
         self.binary = binary
+        if self.binary:
+            self.envObject = MesaEnvironmentHandler(binary=self.binary, target='binary')
+        else:
+            self.envObject = MesaEnvironmentHandler()
         if os.path.exists(self.projName):
             self.exists = True               ## Proj already present flag
         else:
             self.exists = False
-        self.envObject = MesaEnvironmentHandler(self.projName, binary=self.binary, star='')
+        
     
 
     def create(self, overwrite=None, clean=None):       ### overwrite and clean are boolean arguments that are intentionally kept empty
@@ -198,7 +202,8 @@ class ProjectOps:
         """        
         self.check_exists()
         runlog = os.path.join(self.work_dir, "runlog")
-        if not os.path.exists(os.path.join(self.work_dir, "star")):
+        if not os.path.exists(os.path.join(self.work_dir, "star")) and \
+            not os.path.exists(os.path.join(self.work_dir, "binary")):
             raise Exception("The project is not made yet...please make it first!") 
         else:
             if silent is False:
@@ -218,7 +223,7 @@ class ProjectOps:
 
         
     
-    def resume(self, photo, silent=False, star=None):
+    def resume(self, photo, silent=False, target=None):
         """Resumes the run from a given photo.
 
         Args:
@@ -231,12 +236,12 @@ class ProjectOps:
         """
         self.check_exists()
         if self.binary:
-            if star == 'primary':
+            if target == 'primary':
                 photo_path = os.path.join(self.work_dir, "photos1", photo)
-            elif star == 'secondary':
+            elif target == 'secondary':
                 photo_path = os.path.join(self.work_dir, "photos2", photo)
             else:
-                raise ValueError('''Invalid input for argument 'star'.  
+                raise ValueError('''Invalid input for argument 'target'.  
                                 Please use 'primary' or 'secondary' or 1 or 2.''')
         else:
             photo_path = os.path.join(self.work_dir, "photos", photo)
@@ -260,13 +265,13 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, silent=False, star=None):
+    def runGyre(self, gyre_in, silent=False, target=None):
         """Runs GYRE.
 
         Args:
             gyre_in (str): GYRE input file.
             silent (bool, optional): Run the command silently. Defaults to False.
-            star (str, optional): If the project is a binary system, specify the star 
+            target (str, optional): If the project is a binary system, specify the star 
                                     for which GYRE is to be run. Defaults to None.
 
         Raises:
@@ -276,9 +281,9 @@ class ProjectOps:
         self.load_GyreInput(gyre_in)
         gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
         if self.binary:
-            if star == 'primary':
+            if target == 'primary':
                 LOGS_dir = os.path.join(self.work_dir, "LOGS1")
-            elif star == 'secondary':
+            elif target == 'secondary':
                 LOGS_dir = os.path.join(self.work_dir, "LOGS2")
             else:
                 raise ValueError('''Invalid input for argument 'star'.  
@@ -305,12 +310,12 @@ class ProjectOps:
             print("Run aborted!")
 
 
-    def load_InlistProject(self, inlistPath, typeof=None):
+    def load_InlistProject(self, inlistPath, target=None):
         """Loads the inlist file.
 
         Args:
             inlistPath (str): Path to the inlist file.
-            typeof (str, optional): If the project is a binary system, specify the star 
+            target (str, optional): If the project is a binary system, specify the star 
                                     or binary. Defaults to None.
                                     Input can be 'primary', 'secondary' or 'binary'.
 
@@ -318,17 +323,9 @@ class ProjectOps:
             ValueError: If the input for argument 'typeof' is invalid.
         """        
         self.check_exists()
-        if self.binary:
-            if typeof == 'primary':
-                load(inlistPath, self.work_dir, "inlist_project", binary=True, star='1')
-            elif typeof == 'secondary':
-                load(inlistPath, self.work_dir, "inlist_project", binary=True, star='2')
-            elif typeof == 'binary':
-                load(inlistPath, self.work_dir, "inlist_project", binary=True, star='binary')
-            else:
-                raise ValueError("Invalid input for argument 'typeof'")
-        else:
-            load(inlistPath, self.work_dir, "inlist_project")
+        if target not in [None, 'primary', 'secondary', 'binary']:
+            raise ValueError("Invalid input for argument 'typeof'")
+        load(inlistPath, self.work_dir, "inlist_project", self.binary, target)
             
     
     def load_InlistPG(self, inlistPath):
@@ -344,26 +341,18 @@ class ProjectOps:
         load(inlistPath, self.work_dir, "inlist_pgstar")
         
 
-    def load_HistoryColumns(self, HistoryColumns, typeof=None):
+    def load_HistoryColumns(self, HistoryColumns, target=None):
         """Loads the history columns.
 
         Args:
             HistoryColumns (str): Path to the history columns file.
-            typeof (str, optional): If the project is a binary system, specify the star or binary.
+            target (str, optional): If the project is a binary system, specify the star or binary.
                                     Input 'primary', 'secondary' or 'binary'. Defaults to None.
         """        
         self.check_exists()
-        if self.binary:
-            if typeof == 'primary':
-                load(HistoryColumns, self.work_dir, "history_columns", binary=True, star='1')
-            elif typeof == 'secondary':
-                load(HistoryColumns, self.work_dir, "history_columns", binary=True, star='2')
-            elif typeof == 'binary':
-                load(HistoryColumns, self.work_dir, "history_columns", binary=True, star='binary')
-            else:
-                raise ValueError("Invalid input for argument 'typeof'")
-        else:
-            load(HistoryColumns, self.work_dir, "history_columns")
+        if target not in ['primary', 'secondary', 'binary']:
+            raise ValueError("Invalid input for argument 'typeof'")
+        load(HistoryColumns, self.work_dir, "history_columns", self.binary, target)
 
 
     def load_ProfileColumns(self, ProfileColumns):

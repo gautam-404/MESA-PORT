@@ -2,7 +2,7 @@ import os
 import shutil
 from MESAcontroller.MesaFileHandler.MesaAccess import MesaAccess
 
-def load(infile, work_dir, typeof, binary=False, star=''):
+def load(infile, work_dir, typeof, binary=False, target=''):
     """Loads a file into the project directory.
 
     Args:
@@ -16,8 +16,8 @@ def load(infile, work_dir, typeof, binary=False, star=''):
                             - history_columns
                             - profile_columns
                             - run_star_extras.f90
-        binary (bool, optional): True for a binary star system. Defaults to False.
-        star (str, optional): Which star to load the file for. Defaults to ''.
+        binary (bool, optional): True for a binary target system. Defaults to False.
+        target (str, optional): Which target to load the file for. Defaults to ''.
                               Can be one of the following:
                                 - primary
                                 - secondary
@@ -30,11 +30,11 @@ def load(infile, work_dir, typeof, binary=False, star=''):
     if typeof == "inlist_project":
         if not binary:
             dest = os.path.join(work_dir, "inlist_project")
-        elif binary and star == "1":
+        elif binary and target == "primary":
             dest = os.path.join(work_dir, "inlist1")
-        elif binary and star == "2":
+        elif binary and target == "secondary":
             dest = os.path.join(work_dir, "inlist2")
-        elif binary and star == "binary":
+        elif binary and target == "binary":
             dest = os.path.join(work_dir, "inlist_project")
 
     elif typeof == "inlist_pgstar":
@@ -44,23 +44,9 @@ def load(infile, work_dir, typeof, binary=False, star=''):
         dest = os.path.join(work_dir, "LOGS", "gyre.in")
 
     elif typeof == "history_columns":
-        if binary:
-            if star == "1":
-                dest = os.path.join(work_dir, "history_columns.list")
-                access = MesaAccess(work_dir, binary=True, star=star)
-                access.set("history_columns_file", dest.split("/")[-1])
-            elif star == "2":
-                dest = os.path.join(work_dir, "history_columns.list")
-                access = MesaAccess(work_dir, binary=True, star=star)
-                access.set("history_columns_file", dest.split("/")[-1])
-            elif star == "binary":
-                dest = os.path.join(work_dir, "history_columns.list")
-                access = MesaAccess(work_dir, binary=True, star=star)
-                access.set("binary_history_columns_file", dest.split("/")[-1])
-        else:
-            dest = os.path.join(work_dir, "history_columns.list")
-            access = MesaAccess(work_dir)
-            access.set("history_columns_file", dest.split("/")[-1])
+        dest = os.path.join(work_dir, "history_columns.list")
+        access = MesaAccess(work_dir, binary, target)
+        access.set("history_columns_file", dest.split("/")[-1])
 
     elif typeof == "profile_columns":
         dest = os.path.join(work_dir, "profile_columns.list")
@@ -69,7 +55,7 @@ def load(infile, work_dir, typeof, binary=False, star=''):
 
     elif typeof == "extras" and binary==False:
         dest = os.path.join(work_dir, "src", "run_star_extras.f90")
-        
+
     elif typeof == "extras" and binary==True:
         dest = os.path.join(work_dir, "src", "run_binary_extras.f90")
 
