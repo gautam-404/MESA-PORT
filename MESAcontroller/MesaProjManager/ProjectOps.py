@@ -72,6 +72,7 @@ class ProjectOps:
                 raise Exception(f"Could not overwrite the existing '{self.projName}' project!")
 
         if self.exists is True:
+            self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
             if overwrite is True:
                 writeover()
             elif overwrite is False:
@@ -84,9 +85,7 @@ class ProjectOps:
                     else:
                         cleanCheck()
             else:
-                raise ValueError("Invalid input for argument 'overwrite'.")
-            
-            self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
+                raise ValueError("Invalid input for argument 'overwrite'.") 
         else:
             try:
                 if not self.binary:
