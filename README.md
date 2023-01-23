@@ -56,7 +56,7 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 ### ***Using a `ProjectOps` class object:***
   * Creating a new MESA work directory:
     ```python
-    proj = ProjectOps(name='work', binary = False)   ## Default project name is 'work'. 
+    proj = ProjectOps(name='work', astero=False, binary=False)   ## Default project name is 'work'. 
                                                      ## Default is single star evolution.
 
     ## Create a new project
@@ -79,8 +79,8 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     
   * Run GYRE:
     ```python
-    proj.runGyre("gyre_input.in", silent=False)  
-    ## "gyre_input.in" can either be a path to your GYRE input file
+    proj.runGyre("gyre/input", silent=False)  
+    ## "gyre/input" can either be a path to your GYRE input file
     ## or it can also be the name of a file in your_project or your_project/LOGS directory
     ```
     GYRE can also be run for the primary or the secondary star in a binary system.
@@ -90,9 +90,8 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 
 ### ***Using a `MesaAccess` class object:***
   ```python
-  star = MesaAccess("your_project", binary=False)  
-  ## Use MesaAccess("your_project", binary=True, target='binary') for the default project name 'work'.
-  ## Use target='primary', target='secondary' or target='binary' for binary systems.
+  star = MesaAccess("your_project")
+  ## Use star = MesaAccess("your_project", astero=True) when working with an astero project
 
   ## Write
   star.set(parameters, values)              
@@ -115,23 +114,24 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   star.setDefualt(parameters)
   ```
 
-  In addition to the above, you can also use the `MesaAccess` class to load your customised input files.
+  In addition to the above, you can also use the `MesaAccess` class to load your customised pre-prepared input files.
   
   ```python
   ### Path arguments can be a path or the name of a file in 'my_project' directory ###
 
   star.load_StarExtras("path/to/custom/run_star_extras_file")      ## Load custom run_star_extras.f90
-  star.load_InlistProject("/path/to/custom/inlist")                       ## Load custom inlist_project 
-  star.load_InlistPG("/path/to/custom/inlist")                       ## Load custom inlist_pgstar    
+  star.load_InlistProject("/path/to/custom/inlist")                ## Load custom inlist_project 
+  star.load_InlistPG("/path/to/custom/inlist")                     ## Load custom inlist_pgstar    
   star.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns
   star.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
+  star.load_InlistAsteroSearch("path/to/inlist")                   ## Load custom inlist_astero_search_controls
   ```
 
 
   When working with a binary system, you can create multiple `MesaAccess` objects for each star and the binary system.
   ```python
-  binary = MesaAccess("your_project", binary=True, target='binary')  ## For the binary system
-  primary = MesaAccess("your_project", binary=True, target='primary')  ## For the primary star
+  binary = MesaAccess("your_project", binary=True, target='binary')        ## For the binary system
+  primary = MesaAccess("your_project", binary=True, target='primary')      ## For the primary star
   secondary = MesaAccess("your_project", binary=True, target='secondary')  ## For the secondary star
   
   ## Parameters can be accessed using the same methods as above

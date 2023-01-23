@@ -57,6 +57,19 @@ def matchtoDefaults(parameter, defaultsDict, sections):
     else:
         raise KeyError(f"Parameter {parameter} does not exist in the defaults files.")
 
+def getFilename(astero, binary, default_section, inlist_filenames):
+        if not binary:
+            if default_section in ["star_job", "controls"]:
+                filename = "inlist_project"
+            elif default_section == "pgstar":
+                filename = "inlist_pgstar"
+        if astero:
+            if default_section == "astero_search_controls" or default_section == "astero_pgstar_controls":
+                filename = "inlist_astero_search_controls"
+        else:
+            filename = inlist_filenames[0]
+        return filename
+
 
 def toPythonType(data):
     """Returns the 'Python' type of the value.
