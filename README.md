@@ -56,7 +56,7 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 ### ***Using a `ProjectOps` class object:***
   * Creating a new MESA work directory:
     ```python
-    proj = ProjectOps(name='work', binary = False)   ## Default project name is 'work'. 
+    proj = ProjectOps(name='work', astero=False, binary=False)   ## Default project name is 'work'. 
                                                      ## Default is single star evolution.
 
     ## Create a new project

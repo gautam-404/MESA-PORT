@@ -14,7 +14,7 @@ console = Console()
 class ProjectOps:
     """This class handles MESA project operations.
     """    
-    def __init__(self, name='work', binary = False):
+    def __init__(self, name='work', astero=False, binary=False):
         """Constructor for ProjectOps class.
 
         Args:
@@ -23,10 +23,15 @@ class ProjectOps:
         """        
         self.projName = name
         self.binary = binary
+        self.astero = astero
+        self.envObject = MesaEnvironmentHandler()
         if self.binary:
-            self.envObject = MesaEnvironmentHandler(binary=self.binary, target='binary')
+            self.defaultWork = os.path.join(self.envObject.mesaDir, 'binary/work')
+        elif self.astero:
+            self.defaultWork = os.path.join(self.envObject.mesaDir, 'astero/work')
         else:
-            self.envObject = MesaEnvironmentHandler()
+            self.defaultWork = os.path.join(self.envObject.mesaDir, 'star/work')
+
         if os.path.exists(self.projName):
             self.exists = True               ## Proj already present flag
         else:
@@ -65,10 +70,7 @@ class ProjectOps:
             """A helper function to overwrite the existing project."""
             try:
                 shutil.rmtree(self.projName)
-                if not self.binary:
-                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
-                else:
-                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'binary/work'), self.projName)
+                shutil.copytree(self.defaultWork, self.projName)
 
             except shutil.Error:
                 raise Exception(f"Could not overwrite the existing '{self.projName}' project!")
@@ -90,10 +92,7 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'overwrite'.") 
         else:
             try:
-                if not self.binary:
-                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'star/work'), self.projName)
-                else:
-                    shutil.copytree(os.path.join(self.envObject.mesaDir, 'binary/work'), self.projName)
+                shutil.copytree(self.defaultWork, self.projName)
                 self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
                 self.exists = True
             except shutil.Error:

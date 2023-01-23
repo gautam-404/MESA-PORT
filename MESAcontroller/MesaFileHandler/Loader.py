@@ -3,7 +3,7 @@ import shutil
 from .MesaAccess import *
 from .support import *
 
-def load(infile, work_dir, typeof, binary=False, target=''):
+def load(infile, work_dir, typeof, astero=False, binary=False, target=''):
     """Loads a file into the project directory.
 
     Args:
@@ -13,6 +13,7 @@ def load(infile, work_dir, typeof, binary=False, target=''):
                         Can be one of the following:
                             - inlist_project
                             - inlist_pgstar
+                            - inlist_astero_search_controls
                             - gyre.in
                             - history_columns
                             - profile_columns
@@ -42,6 +43,9 @@ def load(infile, work_dir, typeof, binary=False, target=''):
     elif typeof == "inlist_pgstar":
         dest = os.path.join(work_dir, "inlist_pgstar")
 
+    elif typeof == "inlist_astero_search_controls":
+        dest = os.path.join(work_dir, "inlist_astero_search_controls")
+
     elif typeof == "gyre.in":
         if not binary:
             dest = os.path.join(work_dir, "LOGS", "gyre.in")
@@ -52,7 +56,7 @@ def load(infile, work_dir, typeof, binary=False, target=''):
 
     elif typeof == "history_columns":
         dest = os.path.join(work_dir, "history_columns.list")
-        access = MesaAccess(work_dir, binary, target)
+        access = MesaAccess(work_dir, binary=binary, target=target)
         access.set("history_columns_file", dest.split("/")[-1])
 
     elif typeof == "profile_columns":

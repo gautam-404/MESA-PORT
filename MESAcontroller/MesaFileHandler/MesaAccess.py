@@ -5,7 +5,7 @@ from .Loader import *
 from pprint import pprint
 
 class MesaAccess:
-    def __init__(self, project, binary=False, target=''):
+    def __init__(self, project, astero=False, binary=False, target=''):
         """Initializes the MesaAccess class.
 
         Args:
@@ -14,10 +14,11 @@ class MesaAccess:
             target (str, optional): If the project is a binary, which star to access. Defaults to ''.
         """        
         self.project = project
+        self.astero = astero
         self.binary = binary
         self.target = target
         self.projectDir = os.path.join(os.getcwd(), project)
-        envObj = MesaEnvironmentHandler(binary, target)
+        envObj = MesaEnvironmentHandler(astero, binary, target)
         if binary and target == 'binary':
             self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
             self.sections, self.defaultsFileNames = sections_binary, defaultsFileNames_binary
@@ -29,6 +30,10 @@ class MesaAccess:
                 self.inlist_filenames = ["inlist1"]
             elif self.target == 'secondary':
                 self.inlist_filenames = ["inlist2"]
+        elif astero:
+            self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
+            self.sections, self.defaultsFileNames = sections_astero, defaultsFileNames_astero
+            self.inlist_filenames = ["inlist_project", "inlist_pgstar", "inlist_astero_search_controls"]
         else:
             self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
             self.sections, self.defaultsFileNames = sections_star, defaultsFileNames_star
@@ -46,9 +51,9 @@ class MesaAccess:
         self.inlistSections = {}
         for filename in self.inlist_filenames:
             self.inlistSections[filename], self.inlistDict[filename] = readFile(filename, self.projectDir)
-        # pprint(self.defaultsDict)
-   
-    
+        # pprint(self.inlistDict)
+
+
     
     def setitem(self, key, value, default=False):
         """Sets a value in the full dictionary.
@@ -63,13 +68,7 @@ class MesaAccess:
         default_section, default_val, default_type = matchtoDefaults(key, self.defaultsDict, self.sections)
         if default:
             value = default_val
-        if not self.binary:
-            if default_section in ["star_job", "controls"]:
-                filename = "inlist_project"
-            elif default_section == "pgstar":
-                filename = "inlist_pgstar"
-        else:
-            filename = self.inlist_filenames[0]
+        filename = getFilename(self.astero, self.binary, default_section, self.inlist_filenames)
         exists, _ = matchtoFile(key, self.inlistDict[filename], self.inlistSections[filename], default_section)
         if not matchTypes(type(value), default_type):
             raise TypeError(f"Value {value} is not of default type {default_type}")
@@ -87,13 +86,7 @@ class MesaAccess:
             str: Value of the key
         """        
         default_section, default_val, default_type = matchtoDefaults(item, self.defaultsDict, self.sections)
-        if not self.binary:
-            if default_section in ["star_job", "controls"]:
-                filename = "inlist_project"
-            elif default_section == "pgstar":
-                filename = "inlist_pgstar"
-        else:
-            filename = self.inlist_filenames[0]
+        filename = getFilename(self.astero, self.binary, default_section, self.inlist_filenames)
         return matchtoFile(item, self.inlistDict[filename], self.inlistSections[filename], default_section)[1]
     
 
@@ -108,13 +101,7 @@ class MesaAccess:
             KeyError: Parameter does not exist in inlist file
         """        
         default_section, default_val, default_type = matchtoDefaults(key, self.defaultsDict, self.sections)
-        if not self.binary:
-            if default_section in ["star_job", "controls"]:
-                filename = "inlist_project"
-            elif default_section == "pgstar":
-                filename = "inlist_pgstar"
-        else:
-            filename = self.inlist_filenames[0]
+        filename = getFilename(self.astero, self.binary, default_section, self.inlist_filenames)
         exists, _ = matchtoFile(key, self.inlistDict[filename], self.inlistSections[filename], default_section)
         if exists:
             writetoFile(self.projectDir, filename, key, _, exists, default_section, delete=True)
@@ -236,7 +223,16 @@ class MesaAccess:
         self.check_exists()
         if self.target not in [None, 'primary', 'secondary', 'binary']:
             raise ValueError("Invalid input for argument 'typeof'")
-        load(inlistPath, self.projectDir, "inlist_project", self.binary, self.target)
+        load(inlistPath, self.projectDir, "inlist_project", binary=self.binary, target=self.target)
+
+    def load_InlistAsteroSearch(self, inlistPath):
+        """Loads the astero_search_controls inlist file.
+
+        Args:
+            inlistPath (str): Path to the inlist file.
+        """        
+        self.check_exists()
+        load(inlistPath, self.projectDir, "inlist_astero_search_controls")
             
     
     def load_InlistPG(self, inlistPath):
@@ -263,7 +259,7 @@ class MesaAccess:
         self.check_exists()
         if self.target not in ['primary', 'secondary', 'binary']:
             raise ValueError("Invalid input for argument 'typeof'")
-        load(HistoryColumns, self.projectDir, "history_columns", self.binary, self.target)
+        load(HistoryColumns, self.projectDir, "history_columns", binary=self.binary, target=self.target)
 
 
     def load_ProfileColumns(self, ProfileColumns):
@@ -283,7 +279,7 @@ class MesaAccess:
             gyre_in (str): Path to the GYRE input file.
         """ 
         self.check_exists()       
-        load(gyre_in, self.projectDir, "gyre.in", self.binary, self.target)
+        load(gyre_in, self.projectDir, "gyre.in", binary=self.binary, target=self.target)
 
 
     def load_Extras(self, extras_path):
@@ -293,4 +289,4 @@ class MesaAccess:
             extras_path (str): Path to the extras file.
         """  
         self.check_exists()
-        load(extras_path, self.projectDir, "extras", self.binary, self.target)
+        load(extras_path, self.projectDir, "extras", binary=self.binary, target=self.target)
