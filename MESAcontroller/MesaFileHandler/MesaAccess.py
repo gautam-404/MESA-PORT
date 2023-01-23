@@ -1,10 +1,18 @@
 from .support import *
 from .MesaEnvironmentHandler import MesaEnvironmentHandler
 from .AccessHelper import *
+import ast
 from pprint import pprint
 
 class MesaAccess:
     def __init__(self, project, binary=False, target=''):
+        """Initializes the MesaAccess class.
+
+        Args:
+            project (str): _description_.
+            binary (bool, optional): If the project is a binary. Defaults to False.
+            target (str, optional): If the project is a binary, which star to access. Defaults to ''.
+        """        
         self.project = project
         self.binary = binary
         self.target = target
@@ -25,13 +33,15 @@ class MesaAccess:
             self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
             self.sections, self.defaultsFileNames = sections_star, defaultsFileNames_star
             self.inlist_filenames = ["inlist_project", "inlist_pgstar"]
+        self.defaultsDict = {}
+        for section in self.sections:
+            self.defaultsDict[section] = readDefaults(self.defaultsFileNames[section], self.defaultsDir)
         
         
         
     def generateDicts(self):
-        self.defaultsDict = {}
-        for section in self.sections:
-            self.defaultsDict[section] = readDefaults(self.defaultsFileNames[section], self.defaultsDir)
+        """Generates the dictionaries for the inlist files.
+        """        
         self.inlistDict = {}
         self.inlistSections = {}
         for filename in self.inlist_filenames:
@@ -41,9 +51,16 @@ class MesaAccess:
     
     
     def setitem(self, key, value):
+        """Sets a value in the full dictionary.
+
+        Args:
+            key (str): Key of the value to set.
+            value (str): Value to set.
+
+        Raises:
+            TypeError: Value is not of default type
+        """        
         default_section, default_val, default_type = matchtoDefaults(key, self.defaultsDict, self.sections)
-        if not isinstance(value, type(default_type)):
-            raise TypeError(f"Value {value} is not of default type {default_type}")
         if not self.binary:
             if default_section in ["star_job", "controls"]:
                 filename = "inlist_project"
@@ -52,10 +69,22 @@ class MesaAccess:
         else:
             filename = self.inlist_filenames[0]
         exists, _ = matchtoFile(key, self.inlistDict[filename], self.inlistSections[filename], default_section)
+        ## type checking the value not implemented yet
+        if not matchTypes(type(value), default_type):
+            raise TypeError(f"Value {value} is not of default type {default_type}")
         writetoFile(self.projectDir, filename, key, value, exists, default_section, delete=False)
             
 
+
     def getitem(self, item):
+        """Gets a value from the full dictionary.
+
+        Args:
+            item (str): Key of the value to get.
+
+        Returns:
+            str: Value of the key
+        """        
         default_section, default_val, default_type = matchtoDefaults(item, self.defaultsDict, self.sections)
         if not self.binary:
             if default_section in ["star_job", "controls"]:
@@ -66,7 +95,17 @@ class MesaAccess:
             filename = self.inlist_filenames[0]
         return matchtoFile(item, self.inlistDict[filename], self.inlistSections[filename], default_section)[1]
     
+
+
     def delitem(self, key):
+        """Deletes a value from the full dictionary.
+
+        Args:
+            key (str): Key of the value to delete.
+
+        Raises:
+            KeyError: Parameter does not exist in inlist file
+        """        
         default_section, default_val, default_type = matchtoDefaults(key, self.defaultsDict, self.sections)
         if not self.binary:
             if default_section in ["star_job", "controls"]:
@@ -80,11 +119,9 @@ class MesaAccess:
             writetoFile(self.projectDir, filename, key, _, exists, default_section, delete=True)
         else:
             raise KeyError(f"Parameter {key} does not exist in {filename}")
-        
 
 
 
-    
     def set(self, keys, values):
         """Sets a value in the full dictionary.
 
@@ -133,6 +170,7 @@ class MesaAccess:
         else:
             raise TypeError("Input parameter name(s) must be of type string or list of strings.")
         
+
 
     def delete(self, keys):
         """Deletes a value from the full dictionary.
