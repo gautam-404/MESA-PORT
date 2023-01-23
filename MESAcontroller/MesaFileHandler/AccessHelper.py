@@ -52,7 +52,8 @@ def matchtoDefaults(parameter, defaultsDict, sections):
     """    
     for section in sections:
         if parameter in defaultsDict[section]:
-            return section, defaultsDict[section][parameter], type(toPythonType(defaultsDict[section][parameter]))
+            return section, toPythonType(defaultsDict[section][parameter]),\
+                     type(toPythonType(defaultsDict[section][parameter]))
     else:
         raise KeyError(f"Parameter {parameter} does not exist in the defaults files.")
 

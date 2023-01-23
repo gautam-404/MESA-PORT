@@ -7,8 +7,7 @@ import sys
 import click
 from rich.console import Console
 
-from MESAcontroller.MesaFileHandler import MesaAccess, MesaEnvironmentHandler
-from .loader import load
+from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
 
 console = Console()
 
@@ -245,6 +244,7 @@ class ProjectOps:
                                 Please use 'primary' or 'secondary' or 1 or 2.''')
         else:
             photo_path = os.path.join(self.work_dir, "photos", photo)
+            
         runlog = os.path.join(self.work_dir, "runlog")
         if not os.path.isfile(photo_path):
             raise FileNotFoundError(f"Photo '{photo}' could not be exists.")
@@ -308,91 +308,3 @@ class ProjectOps:
         else:
             print("Check if $GYRE_DIR is set in environment variables...could not run!")
             print("Run aborted!")
-
-
-    def load_InlistProject(self, inlistPath, target=None):
-        """Loads the inlist file.
-
-        Args:
-            inlistPath (str): Path to the inlist file.
-            target (str, optional): If the project is a binary system, specify the star 
-                                    or binary. Defaults to None.
-                                    Input can be 'primary', 'secondary' or 'binary'.
-
-        Raises:
-            ValueError: If the input for argument 'typeof' is invalid.
-        """        
-        self.check_exists()
-        if target not in [None, 'primary', 'secondary', 'binary']:
-            raise ValueError("Invalid input for argument 'typeof'")
-        load(inlistPath, self.work_dir, "inlist_project", self.binary, target)
-            
-    
-    def load_InlistPG(self, inlistPath):
-        """Loads the inlist file.
-
-        Args:
-            inlistPath (str): Path to the inlist file.
-
-        Raises:
-            ValueError: If the input for argument 'typeof' is invalid.
-        """        
-        self.check_exists()
-        load(inlistPath, self.work_dir, "inlist_pgstar")
-        
-
-    def load_HistoryColumns(self, HistoryColumns, target=None):
-        """Loads the history columns.
-
-        Args:
-            HistoryColumns (str): Path to the history columns file.
-            target (str, optional): If the project is a binary system, specify the star or binary.
-                                    Input 'primary', 'secondary' or 'binary'. Defaults to None.
-        """        
-        self.check_exists()
-        if target not in ['primary', 'secondary', 'binary']:
-            raise ValueError("Invalid input for argument 'typeof'")
-        load(HistoryColumns, self.work_dir, "history_columns", self.binary, target)
-
-
-    def load_ProfileColumns(self, ProfileColumns):
-        """Loads the profile columns.
-
-        Args:
-            ProfileColumns (str): Path to the profile columns file.
-        """  
-        self.check_exists()      
-        load(ProfileColumns, self.work_dir, "profile_columns")
-
-
-    def load_GyreInput(self, gyre_in):
-        """Loads the GYRE input file.
-
-        Args:
-            gyre_in (str): Path to the GYRE input file.
-        """ 
-        self.check_exists()       
-        load(gyre_in, self.work_dir, "gyre.in")
-
-
-    def load_StarExtras(self, extras_path):
-        """Loads the extras file.
-
-        Args:
-            extras_path (str): Path to the extras file.
-        """  
-        self.check_exists()
-        load(extras_path, self.work_dir, "extras")
-
-
-    def load_BinaryExtras(self, extras_path):
-        """Loads the extras file.
-
-        Args:
-            extras_path (str): Path to the extras file.
-        """  
-        self.check_exists()
-        if self.binary:
-            load(extras_path, self.work_dir, "extras", binary=True)
-        else:
-            raise ValueError(f"{self.projName} is not a binary system!")
