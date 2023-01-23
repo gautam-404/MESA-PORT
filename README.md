@@ -141,8 +141,8 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   secondary.set("history_interval", 1)
 
   ## Load custom input files 
-  proj.load_InlistProject("/path/to/custom/inlist", target="primary")     ## Load custom 'inlist1'
-  proj.load_InlistProject("/path/to/custom/inlist", target="secondary")   ## Load custom 'inlist2'
-  proj.load_InlistProject("/path/to/custom/inlist", target="binary")      ## Load custom 'inlist_pgstar'
-  proj.load_BinaryExtras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
+  primary.load_InlistProject("/path/to/custom/inlist")               ## Load custom 'inlist1'
+  secondary.load_InlistProject("/path/to/custom/inlist")             ## Load custom 'inlist2'
+  binary.load_InlistProject("/path/to/custom/inlist")                ## Load custom 'inlist_project' for the binary system
+  binary.load_BinaryExtras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
   ```
