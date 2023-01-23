@@ -52,7 +52,7 @@ def matchtoDefaults(parameter, defaultsDict, sections):
     """    
     for section in sections:
         if parameter in defaultsDict[section]:
-            return section, defaultsDict[section][parameter], toPythonType(defaultsDict[section][parameter])
+            return section, defaultsDict[section][parameter], type(toPythonType(defaultsDict[section][parameter]))
     else:
         raise KeyError(f"Parameter {parameter} does not exist in the defaults files.")
 
@@ -110,6 +110,27 @@ def toFortranType(data):
         return str(data)
     else:
         raise AttributeError(f"Cannot convert type {str(type(data))} to known type")
+
+
+def matchTypes(inputType, defaultType):
+    """Checks if the input type is the same as the default type.
+
+    Args:
+        inputType (type): The type of the input value.
+        defaultType (type): The type of the default value.
+
+    Raises:
+        TypeError: If the input type is not the same as the default type.
+
+    Returns:
+        bool: True if the types match, False otherwise.
+    """    
+    if inputType == defaultType:
+        return True
+    elif inputType == float and defaultType == int or inputType == int and defaultType == float:
+        return True
+    else:
+        return False
 
 
 def matchtoFile(parameter, inlistDict, sections, default_section):
