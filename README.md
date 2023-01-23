@@ -66,23 +66,6 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     ```python
     proj = ProjectOps("my_project")
     ```
-  * Load custom MESA input files:
-    ```python
-    ### Path arguments can be a path or the name of a file in 'my_project' directory ###
-    
-    proj.load_StarExtras("path/to/custom/run_star_extras_file")      ## Load custom run_star_extras.f90
-    proj.load_InlistProject("/path/to/custom/inlist")                       ## Load custom inlist_project 
-    proj.load_InlistPG("/path/to/custom/inlist")                       ## Load custom inlist_pgstar    
-    proj.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns
-    proj.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
-    ```
-    When working with a binary system, you can load custom files for the primary and secondary stars.
-    ```python
-    proj.load_InlistProject("/path/to/custom/inlist", target="primary")     ## Load custom 'inlist1'
-    proj.load_InlistProject("/path/to/custom/inlist", target="secondary")   ## Load custom 'inlist2'
-    proj.load_InlistProject("/path/to/custom/inlist", target="binary")      ## Load custom 'inlist_pgstar'
-    proj.load_BinaryExtras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
-    ```
     
   * Take control of your project; make, clean, run, resume and delete.
     ```python
@@ -107,20 +90,59 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 
 ### ***Using a `MesaAccess` class object:***
   ```python
-  access = MesaAccess("your_project")  
+  star = MesaAccess("your_project", binary=False)  
   ## Use MesaAccess("your_project", binary=True, target='binary') for the default project name 'work'.
   ## Use target='primary', target='secondary' or target='binary' for binary systems.
 
   ## Write
-  access.set(parameters, values)              
+  star.set(parameters, values)              
   ## Inputs paramets can be a string or a list of strings
   ## Input values can be a single value or a list of values
+  ## If a list of values is passed, the length of the list must be equal to the length of the parameters list.
+
+  ## While using the 'set' method, you can also pass a dictionary.
+  star.set({"parameter1":value1, "parameter2":value2, "parameter3":value3})
   
   ## Read
-  value = access.get(parameters)   
+  value = star.get(parameters)   
   ## Inputs paramets can be a string or a list of strings
 
   ## Delete
-  access.delete(parameters)
+  star.delete(parameters)
   ## Inputs paramets can be a string or a list of strings
+
+  ## Set to default
+  star.setDefualt(parameters)
+  ```
+
+  In addition to the above, you can also use the `MesaAccess` class to load your customised input files.
+  
+  ```python
+  ### Path arguments can be a path or the name of a file in 'my_project' directory ###
+
+  star.load_StarExtras("path/to/custom/run_star_extras_file")      ## Load custom run_star_extras.f90
+  star.load_InlistProject("/path/to/custom/inlist")                       ## Load custom inlist_project 
+  star.load_InlistPG("/path/to/custom/inlist")                       ## Load custom inlist_pgstar    
+  star.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns
+  star.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
+  ```
+
+
+  When working with a binary system, you can create multiple `MesaAccess` objects for each star and the binary system.
+  ```python
+  binary = MesaAccess("your_project", binary=True, target='binary')  ## For the binary system
+  primary = MesaAccess("your_project", binary=True, target='primary')  ## For the primary star
+  secondary = MesaAccess("your_project", binary=True, target='secondary')  ## For the secondary star
+  
+  ## Parameters can be accessed using the same methods as above
+  ## For example:
+  binary.set("binary_mass_ratio", 0.5)
+  primary.set("profile_interval", 50)
+  secondary.set("history_interval", 1)
+
+  ## Load custom input files 
+  proj.load_InlistProject("/path/to/custom/inlist", target="primary")     ## Load custom 'inlist1'
+  proj.load_InlistProject("/path/to/custom/inlist", target="secondary")   ## Load custom 'inlist2'
+  proj.load_InlistProject("/path/to/custom/inlist", target="binary")      ## Load custom 'inlist_pgstar'
+  proj.load_BinaryExtras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
   ```
