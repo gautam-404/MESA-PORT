@@ -83,8 +83,6 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     proj.load_InlistProject("/path/to/custom/inlist", target="binary")      ## Load custom 'inlist_pgstar'
     proj.load_BinaryExtras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
     ```
-
-    ```
     
   * Take control of your project; make, clean, run, resume and delete.
     ```python
