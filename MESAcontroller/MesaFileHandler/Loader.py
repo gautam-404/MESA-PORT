@@ -1,6 +1,6 @@
 import os
 import shutil
-from .MesaAccess import *
+from . import MesaAccess
 from .support import *
 
 def load(infile, work_dir, typeof, astero=False, binary=False, target=''):
