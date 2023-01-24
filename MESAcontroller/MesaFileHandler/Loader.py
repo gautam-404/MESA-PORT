@@ -70,16 +70,16 @@ def load(infile, work_dir, typeof, astero=False, binary=False, target=''):
     elif typeof == "extras" and binary==True:
         dest = os.path.join(work_dir, "src", "run_binary_extras.f90")
 
-    with cd(work_dir):
-        try:
-            if os.path.exists(infile):
-                shutil.copy(infile, dest)
-            elif os.path.exists(os.path.join(work_dir, infile)):
-                infile = os.path.join(work_dir, infile)
-                shutil.copy(infile, dest)
-            elif typeof == "gyre.in" and os.path.exists(os.path.join("LOGS", gyre_in)):
-                    gyre_in = os.path.join("LOGS", gyre_in)
-            else:
-                raise FileNotFoundError(f"Could not find the your specified {typeof} file, '{infile}'. Aborting...")
-        except shutil.Error:
-            raise Exception(f"File loading {typeof} failed!")
+#     with cd(work_dir):
+    try:
+        if os.path.exists(infile):
+            shutil.copy(infile, dest)
+        elif os.path.exists(os.path.join(work_dir, infile)):
+            infile = os.path.join(work_dir, infile)
+            shutil.copy(infile, dest)
+        elif typeof == "gyre.in" and os.path.exists(os.path.join("LOGS", gyre_in)):
+                gyre_in = os.path.join("LOGS", gyre_in)
+        else:
+            raise FileNotFoundError(f"Could not find the your specified {typeof} file, '{infile}'. Aborting...")
+    except shutil.Error:
+        raise Exception(f"File loading {typeof} failed!")
