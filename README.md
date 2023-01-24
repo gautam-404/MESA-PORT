@@ -144,5 +144,5 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   primary.load_InlistProject("/path/to/custom/inlist")               ## Load custom 'inlist1'
   secondary.load_InlistProject("/path/to/custom/inlist")             ## Load custom 'inlist2'
   binary.load_InlistProject("/path/to/custom/inlist")                ## Load custom 'inlist_project' for the binary system
-  binary.load_BinaryExtras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
+  binary.load_Extras("path/to/custom/run_binary_extras_file")  ## Load custom run_binary_extras.f90
   ```
