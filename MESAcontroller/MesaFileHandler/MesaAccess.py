@@ -13,6 +13,8 @@ class MesaAccess:
             binary (bool, optional): If the project is a binary. Defaults to False.
             target (str, optional): If the project is a binary, which star to access. Defaults to ''.
         """        
+        if binary and target not in [None, 'primary', 'secondary', 'binary']:
+            raise ValueError("Invalid input for argument 'target'")
         self.project = project
         self.astero = astero
         self.binary = binary
@@ -218,11 +220,9 @@ class MesaAccess:
                                     Input can be 'primary', 'secondary' or 'binary'.
 
         Raises:
-            ValueError: If the input for argument 'typeof' is invalid.
+            ValueError: If the input for argument 'target' is invalid.
         """        
         self.check_exists()
-        if self.target not in [None, 'primary', 'secondary', 'binary']:
-            raise ValueError("Invalid input for argument 'typeof'")
         load(inlistPath, self.projectDir, "inlist_project", binary=self.binary, target=self.target)
 
     def load_InlistAsteroSearch(self, inlistPath):
@@ -257,8 +257,6 @@ class MesaAccess:
                                     Input 'primary', 'secondary' or 'binary'. Defaults to None.
         """        
         self.check_exists()
-        if self.target not in ['primary', 'secondary', 'binary']:
-            raise ValueError("Invalid input for argument 'typeof'")
         load(HistoryColumns, self.projectDir, "history_columns", binary=self.binary, target=self.target)
 
 
