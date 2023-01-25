@@ -6,7 +6,6 @@ import sys
 
 import click
 from rich.console import Console
-from alive_progress import alive_bar, alive_it
 
 from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
 from . import progressbar
@@ -130,29 +129,22 @@ class ProjectOps:
         """      
         with subprocess.Popen(shlex.split(commands), cwd=dir,
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
-            total = progressbar.total(self.work_dir, self.projName, self.astero, self.binary)
-            step, catch = 1, False
-            with alive_bar(total, monitor=True) as bar:
-                with open(runlog, "a+") as file:
-                    for outline in proc.stdout:
-                        file.write(outline)
-                        step, catch, log_dt = progressbar.process_outline(outline, step, catch)
-                        if log_dt is not None:
-                            jump = int(10**log_dt)
-                            bar(jump)
-                        if silent is False:
-                            sys.stdout.write(outline)
-                    for errline in proc.stderr:
-                        file.write(errline)
-                        sys.stdout.write(errline)
-                    file.write( "\n\n"+("*"*100)+"\n\n" )
+            with open(runlog, "a+") as file:
+                for outline in proc.stdout:
+                    file.write(outline)
+                    if silent is False:
+                        sys.stdout.write(outline)
+                for errline in proc.stderr:
+                    file.write(errline)
+                    sys.stdout.write(errline)
+                file.write( "\n\n"+("*"*100)+"\n\n" )
 
-                _data, error = proc.communicate()
-                if proc.returncode or error:
-                    print('The process raised an error:', proc.returncode, error)
-                    return False
-                else:
-                    return True
+            _data, error = proc.communicate()
+            if proc.returncode or error:
+                print('The process raised an error:', proc.returncode, error)
+                return False
+            else:
+                return True
 
 
     def clean(self):
@@ -210,7 +202,7 @@ class ProjectOps:
                 print("Running...")
                 res = self.run_subprocess('./rn', self.work_dir, silent, runlog=runlog)
             elif silent is True:
-                # with console.status("Running...", spinner="moon"):
+                with console.status("Running...", spinner="moon"):
                     res = self.run_subprocess('./rn', self.work_dir, silent, runlog=runlog) 
             else:
                 raise ValueError("Invalid input for argument 'silent'")
