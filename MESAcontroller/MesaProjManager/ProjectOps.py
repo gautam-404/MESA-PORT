@@ -143,7 +143,7 @@ class ProjectOps:
                             sys.stdout.write(outline)
                     for errline in proc.stderr:
                         file.write(errline)
-                        sys.stdout.write(outline)
+                        sys.stdout.write(errline)
                     file.write( "\n\n"+("*"*100)+"\n\n" )
 
             _data, error = proc.communicate()
