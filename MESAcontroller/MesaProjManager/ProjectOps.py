@@ -240,7 +240,7 @@ class ProjectOps:
                 photo_path = os.path.join(self.work_dir, "photos2", photo)
             else:
                 raise ValueError('''Invalid input for argument 'target'.  
-                                Please use 'primary' or 'secondary' or 1 or 2.''')
+                                Please use 'primary' or 'secondary' ''')
         else:
             photo_path = os.path.join(self.work_dir, "photos", photo)
             
@@ -277,7 +277,8 @@ class ProjectOps:
             ValueError: If the input for argument 'silent' is invalid.
         """        
         self.check_exists()
-        self.load_GyreInput(gyre_in)
+        star = MesaAccess(self.projName, self.astero, self.binary, target)
+        star.load_GyreInput(gyre_in)
         gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
         if self.binary:
             if target == 'primary':
