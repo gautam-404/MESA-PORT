@@ -34,6 +34,7 @@ class ProjectOps:
 
         if os.path.exists(self.projName):
             self.exists = True               ## Proj already present flag
+            self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
         else:
             self.exists = False
         
