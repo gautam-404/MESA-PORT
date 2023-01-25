@@ -83,7 +83,7 @@ def toPythonType(data):
     Returns:
         type: The type of the value.
     """
-    regex_floatingValue = r"([-\d\.\d]+)[deDE]([\-\d]*)" # regex for floating point values
+    regex_floatingValue = r"([-\d\.\d]+)[deDE]([\+\-\d]*)" # regex for floating point values
     if data[0] == "." and data[-1] == ".": # return boolean
         return True if data[1:-1] == "true" else False
     elif data[0] == "'": # return string
@@ -94,9 +94,12 @@ def toPythonType(data):
             power = 0
         else:
             power = float(matches[0][1])
-        return float(matches[0][0])*pow(10,power)
+        return float(matches[0][0])*pow(10, power)
     elif "." in data:
-        return float(data)
+        try:
+            return float(data)
+        except:
+            return str(data)
     else:
         try:
             return int(data)
@@ -120,7 +123,14 @@ def toFortranType(data):
         return "." + ("true" if data else "false") + "."
     elif isinstance(data, str):
         return "'"+data+"'"
-    elif isinstance(data, float) or isinstance(data, int):
+    elif isinstance(data, float):
+        if "e" in str(data):
+            return str(data).replace("e", "d")
+        elif "E" in str(data):
+            return str(data).replace("E", "d")
+        else:
+            return str(data)
+    elif isinstance(data, int):
         return str(data)
     else:
         raise AttributeError(f"Cannot convert type {str(type(data))} to known type")
@@ -161,7 +171,7 @@ def matchtoFile(parameter, inlistDict, sections, default_section):
     """    
     for section in sections:
         if parameter in inlistDict[section] and section == default_section:
-            return True, inlistDict[section][parameter]
+            return True, toPythonType(inlistDict[section][parameter])
     else:
         return False, None
 

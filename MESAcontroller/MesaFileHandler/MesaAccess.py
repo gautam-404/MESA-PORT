@@ -155,6 +155,32 @@ class MesaAccess:
                 self.setitem(key, '', default=True)
         elif isinstance(keys, str):
             self.setitem(keys, '', default=True)
+
+
+    def getDefault(self, keys):
+        """Gets default value from the full dictionary.
+
+        Args:
+            keys (str or list): Key of the value to get.
+
+        Raises:
+            TypeError: Input parameter name(s) must be of type string or list of strings.
+
+        Returns:
+            str or list: Value or list of values.
+        """        
+        self.generateDicts()
+        if isinstance(keys, list):
+            got = []
+            for key in keys:
+                default_section, default_val, default_type = matchtoDefaults(key, self.defaultsDict, self.sections)
+                got.append(default_val)
+            return got
+        elif isinstance(keys, str):
+            default_section, default_val, default_type = matchtoDefaults(keys, self.defaultsDict, self.sections)
+            return default_val
+        else:
+            raise TypeError("Input parameter name(s) must be of type string or list of strings.")
         
 
 
