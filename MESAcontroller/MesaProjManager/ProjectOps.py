@@ -132,7 +132,7 @@ class ProjectOps:
             stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
             total = progressbar.total(self.work_dir, self.projName, self.astero, self.binary)
             step, catch = 1, False
-            with alive_bar(total, monitor='{percent}') as bar:
+            with alive_bar(total, monitor=False) as bar:
                 with open(runlog, "a+") as file:
                     for outline in proc.stdout:
                         file.write(outline)
