@@ -8,7 +8,6 @@ import click
 from rich.console import Console
 
 from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
-from . import progressbar
 
 console = Console()
 
