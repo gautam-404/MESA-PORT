@@ -140,6 +140,7 @@ class ProjectOps:
                         if log_dt is not None:
                             jump = int(10**log_dt)
                             bar(jump)
+                            print(jump, log_dt, step, catch)
                         if silent is False:
                             sys.stdout.write(outline)
                     for errline in proc.stderr:
