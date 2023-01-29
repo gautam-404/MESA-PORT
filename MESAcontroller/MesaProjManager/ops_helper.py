@@ -32,11 +32,11 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
                     sys.stdout.write(outline)
                 elif age is not None:
                     if age < 1/365:
-                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age*365*24}[/cyan] hours")
+                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age*365*24:.4f}[/cyan] hours")
                     elif 1/365 < age < 1:
-                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age*365}[/cyan] days")
+                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age*365:.4f}[/cyan] days")
                     else:
-                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age}[/cyan] years")
+                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age:.4f}[/cyan] years")
             for errline in proc.stderr:
                 file.write(errline)
                 sys.stdout.write(errline)
