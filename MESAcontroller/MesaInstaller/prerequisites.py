@@ -2,8 +2,7 @@ import os
 import shlex
 import subprocess
 
-from .mesaurls import *
-
+from . import mesaurls
 
 def install_prerequisites(directory, ostype, cleanAfter, logfile):
         """Install the pre-requisites for MESA.
@@ -31,7 +30,7 @@ def install_prerequisites(directory, ostype, cleanAfter, logfile):
             subprocess.Popen(shlex.split("sudo xcode-select --install"), stdout=logfile, stderr=logfile).wait()
             
             if not os.path.exists("/Applications/Utilities/XQuartz.app"):
-                xquartz = os.path.join(directory, url_xquartz.split('/')[-1])   
+                xquartz = os.path.join(directory, mesaurls.url_xquartz.split('/')[-1])   
 
                 print("Installing XQuartz...")
                 subprocess.Popen(shlex.split(f"sudo installer -pkg {xquartz} -target /"), stdout=logfile, stderr=logfile).wait()

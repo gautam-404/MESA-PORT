@@ -22,4 +22,4 @@ mac_intel_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/d
 mac_arm_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-aarch64-macos-22.10.1.pkg",
                     "22.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-aarch64-macos-22.10.1.pkg"}
 
-url_xquartz = "https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.4/XQuartz-2.8.4.pkg"
+url_xquartz = "https://github.com/XQuartz/XQuartz/releases/download/XQuartz-2.8.5/XQuartz-2.8.5.pkg"
