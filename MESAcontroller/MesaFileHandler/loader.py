@@ -1,6 +1,6 @@
 import os
 import shutil
-from . import MesaAccess
+from . import mesa_access
 from .support import *
 
 def load(infile, work_dir, typeof, astero=False, binary=False, target=''):
@@ -56,12 +56,12 @@ def load(infile, work_dir, typeof, astero=False, binary=False, target=''):
 
     elif typeof == "history_columns":
         dest = os.path.join(work_dir, "history_columns.list")
-        access = MesaAccess.MesaAccess(work_dir, binary=binary, target=target)
+        access = mesa_access.MesaAccess(work_dir, binary=binary, target=target)
         access.set("history_columns_file", dest.split("/")[-1])
 
     elif typeof == "profile_columns":
         dest = os.path.join(work_dir, "profile_columns.list")
-        access = MesaAccess.MesaAccess(work_dir)
+        access = mesa_access.MesaAccess(work_dir)
         access.set("profile_columns_file", infile.split("/")[-1])
 
     elif typeof == "extras" and binary==False:

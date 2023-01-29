@@ -9,7 +9,6 @@ progress_columns = (progress.DownloadColumn(),
 
 from . import mesaurls
 
-
 class Download:
     """Class for downloading the MESA SDK and MESA zip files."""
     def __init__(self, directory, version, ostype):

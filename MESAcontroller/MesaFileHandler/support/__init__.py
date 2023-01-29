@@ -1,2 +1,2 @@
 from .definitions import *
-from .supportFunctions import *
+from .supportfunctions import *

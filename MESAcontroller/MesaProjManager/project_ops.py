@@ -6,7 +6,7 @@ from rich import prompt, status, print
 from rich.console import Console
 
 from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
-from . import OpsHelper
+from . import ops_helper
 
 class ProjectOps:
     """This class handles MESA project operations.
@@ -111,7 +111,7 @@ class ProjectOps:
         Raises:
             Exception: If the clean fails.
         """        
-        OpsHelper.check_exists(self.exists, self.projName)
+        ops_helper.check_exists(self.exists, self.projName)
         ## clean files are missing a shebang (#!/bin/bash) and hence need to be run with bash
         res = subprocess.call('/bin/bash ./clean', cwd=self.work_dir, shell=True, stderr=subprocess.STDOUT)
         runlog = os.path.join(self.work_dir, "runlog")
@@ -129,7 +129,7 @@ class ProjectOps:
         Raises:
             Exception: If the make fails.
         """        
-        OpsHelper.check_exists(self.exists, self.projName)
+        ops_helper.check_exists(self.exists, self.projName)
         with status.Status("[b i]Making...", spinner="moon"):
             res = subprocess.call('./mk', cwd=self.work_dir, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         if res is False:
@@ -150,7 +150,7 @@ class ProjectOps:
             ValueError: If the input for argument 'silent' is invalid.
             Exception: If the run fails.
         """        
-        OpsHelper.check_exists(self.exists, self.projName)
+        ops_helper.check_exists(self.exists, self.projName)
         runlog = os.path.join(self.work_dir, "runlog")
         if not os.path.exists(os.path.join(self.work_dir, "star")) and \
             not os.path.exists(os.path.join(self.work_dir, "binary")):
@@ -160,7 +160,7 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'silent'")
             else:
                 with status.Status("[b i]Running...", spinner="moon") as status_:
-                    res = OpsHelper.run_subprocess(commands='./rn', dir=self.work_dir, 
+                    res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
                                 silent=silent, runlog=runlog, status=status_) 
             if res is False:
                 raise Exception("Run failed! Check runlog.")
@@ -181,7 +181,7 @@ class ProjectOps:
             FileNotFoundError: If the photo does not exist.
             ValueError: If the input for argument 'silent' is invalid.
         """
-        OpsHelper.check_exists(self.exists, self.projName)
+        ops_helper.check_exists(self.exists, self.projName)
         if self.binary:
             if target == 'primary':
                 photo_path = os.path.join(self.work_dir, "photos1", photo)
@@ -202,7 +202,7 @@ class ProjectOps:
             else:
                 print(f"Resuming run from photo {photo}.")
                 with status.Status("Running...", spinner="moon") as status_:
-                    res = OpsHelper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
+                    res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
                             silent=silent, runlog=runlog, status=status_)
             if res is False:
                 print("Resume from photo failed! Check runlog.")
