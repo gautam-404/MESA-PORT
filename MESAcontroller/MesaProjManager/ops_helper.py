@@ -67,7 +67,7 @@ def process_outline(outline, step):
         return step, None
 
 
-def writetoGyreFile(projectDir, parameter, value):
+def writetoGyreFile(dir, parameter, value):
     """Writes the parameter and its value to the inlist file.
 
     Args:
@@ -81,7 +81,7 @@ def writetoGyreFile(projectDir, parameter, value):
     filename = "gyre.in"
     default_section = "model"
     this_section = False
-    with cd(projectDir):
+    with cd(dir):
         with open(filename, "r") as file:
             lines = file.readlines()
         with open(filename, "w+") as f:
@@ -104,3 +104,8 @@ def writetoGyreFile(projectDir, parameter, value):
                 if not edited:
                     f.write(line)
             f.write("\n")   
+
+def modify_gyre_params(LOGS_dir, filename):
+    writetoGyreFile(LOGS_dir, parameter='model_type', value='\'EVOL\'')
+    writetoGyreFile(LOGS_dir, parameter='file_format', value='\'FGONG\'')
+    writetoGyreFile(LOGS_dir, parameter='file', value=f'\'{filename}\'')

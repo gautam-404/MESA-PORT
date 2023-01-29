@@ -4,6 +4,10 @@ import subprocess
 import glob
 
 from rich import print, progress, prompt, status
+progress_columns = (progress.SpinnerColumn(spinner_name="moon"),
+                    progress.MofNCompleteColumn(),
+                    *progress.Progress.get_default_columns(),
+                    progress.TimeElapsedColumn())
 
 from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
 from . import ops_helper
@@ -254,38 +258,36 @@ class ProjectOps:
                 if len(filenames) == 0:
                     raise ValueError("No FGONG files found in LOGS directory.")
                 else:
-                    ops_helper.writetoGyreFile(self.projName, parameter='model_type', value='EVOL')
-                    ops_helper.writetoGyreFile(self.projName, parameter='file_format', value='FGONG')
-                    for filename in progress.track(filenames, description="[b i cyan3]Running GYRE..."):
-                        ops_helper.writetoGyreFile(self.projName, parameter='file', value=filename)
-                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                silent=silent, runlog=runlog, status=status_, gyre=True)
+                    with progress.Progress(*progress_columns) as progressbar:
+                        task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
+                        for filename in filenames:
+                            filename = filename.split('/')[-1]
+                            ops_helper.modify_gyre_params(LOGS_dir, filename)
+                            res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                    silent=silent, runlog=runlog, gyre=True)
+                            progressbar.update(task_id=task, advance=1)
 
-            elif type(files) == list:
-                ops_helper.writetoGyreFile(self.projName, parameter='model_type', value='EVOL')
-                ops_helper.writetoGyreFile(self.projName, parameter='file_format', value='FGONG')
-                for file in progress.track(files, description="[b i cyan3]Running GYRE..."):
-                    if not os.path.isfile(os.path.join(LOGS_dir, file)):
-                        raise FileNotFoundError(f"File '{file}' does not exist.")
-                    else:    
-                        ops_helper.writetoGyreFile(self.projName, parameter='file', value=file)
-                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                            silent=silent, runlog=runlog, status=status_, gyre=True)
-
-            elif type(files) == str and files != '':
-                ops_helper.writetoGyreFile(self.projName, parameter='model_type', value='EVOL')
-                ops_helper.writetoGyreFile(self.projName, parameter='file_format', value='FGONG')
-                if not os.path.isfile(os.path.join(LOGS_dir, files)):
-                    raise FileNotFoundError(f"File '{files}' does not exist.")
+            elif type(files) == list or type(files) == str:
+                if type(files) == str:
+                    files = [files]
+                if len(files) == 0:
+                    raise ValueError("No files provided.")
                 else:
-                    ops_helper.writetoGyreFile(self.projName, parameter='file', value=files)
-                    with status.Status("[b i  cyan3]Running GYRE...", spinner="moon") as status_:
-                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                silent=silent, runlog=runlog, status=status_, gyre=True)
+                    with progress.Progress(*progress_columns) as progressbar:
+                        task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
+                        for file in progress.track(files, description="[b i cyan3]Running GYRE..."):
+                            if not os.path.isfile(os.path.join(LOGS_dir, file)):
+                                raise FileNotFoundError(f"File '{file}' does not exist.")
+                            else:    
+                                ops_helper.ops_helper.modify_gyre_params(LOGS_dir, file)
+                                res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                    silent=silent, runlog=runlog, gyre=True)
+                                progressbar.update(task_id=task, advance=1)
                                 
             elif files == '':
-                res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                silent=silent, runlog=runlog, status=status_, gyre=True)
+                with status.Status("[b i  cyan3]Running GYRE...", spinner="moon") as status_:
+                    res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                    silent=silent, runlog=runlog, status=status_, gyre=True)
             else:
                 raise ValueError("Invalid input for argument 'files'")
 

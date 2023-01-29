@@ -218,12 +218,13 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
     """Writes the parameter and its value to the inlist file.
 
     Args:
-        filename (str): The path to the inlist file.
-        parameter (str): The parameter to be written.
-        value (str): The value of the parameter to be written.
-        inlistDict (dict): A dictionary with all the parameters and their values.
-        defaultsDict (dict): A dictionary with all the parameters and their values.
-        sections (list): A list with the sections of the inlist file.
+        projectDir (str): The path to the project directory.
+        filename (str): The name of the inlist file.
+        parameter (str): The parameter to be written to the inlist file.
+        value (str): The value of the parameter to be written to the inlist file.
+        exists (bool): A boolean indicating if the parameter exists in the inlist file.
+        default_section (str): The default section of the inlist file.
+        delete (bool, optional): A boolean indicating if the parameter should be deleted from the inlist file. Defaults to False.
     """    
     value = toFortranType(value)
     this_section = False
