@@ -73,7 +73,7 @@ class Download:
                     if chunk:
                         size_ = file.write(chunk)
                         progressbar.update(task_id=task, advance=size_)
-                progressbar.update(task, description=text+"[blue]complete.[/blue]")
+                progressbar.update(task, description=text+"[bright_blue b]Done![/bright_blue b]")
             print("\n", end="")
 
     def download(self, sdk_url, mesa_url):
@@ -87,8 +87,8 @@ class Download:
             tuple: Paths to the downloaded MESA SDK and MESA zip files.
         """        
         sdk_download = os.path.join(self.directory, sdk_url.split('/')[-1])
-        self.check_n_download(sdk_download, sdk_url, "[green]Downloading MESA SDK...")
+        self.check_n_download(sdk_download, sdk_url, "[green b]Downloading MESA SDK...[/green b]")
 
         mesa_zip = os.path.join(self.directory, mesa_url.split('/')[-1])
-        self.check_n_download(mesa_zip, mesa_url, "[green]Downloading MESA...")
+        self.check_n_download(mesa_zip, mesa_url, "[green b]Downloading MESA...[/green b]")
         return sdk_download, mesa_zip
