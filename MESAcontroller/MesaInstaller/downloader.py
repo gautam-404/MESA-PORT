@@ -58,7 +58,7 @@ class Download:
         """        
         if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
             print(text)
-            print("[red]File already downloaded. Skipping download.[/red]\n")
+            print("[blue]File already downloaded. Skipping download.[/blue]\n")
         else:
             chunk_size = 1024*1024
             headers = {
