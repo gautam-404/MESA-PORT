@@ -84,13 +84,20 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     
   * Run GYRE:
     ```python
-    proj.runGyre("gyre/input", silent=False)  
+    proj.runGyre("gyre/input")  
     ## "gyre/input" can either be a path to your GYRE input file
     ## or it can also be the name of a file in your_project or your_project/LOGS directory
+
+    ## If you want to run a GYRE input file for all profile FGONG data files in your LOGS directory, 
+    ## pass files="all" as an argument.
+    proj.runGyre("gyre/input", files="all")
+
+    ## If you want to run GYRE for specific FGONG files, pass file names as an argument.
+    proj.runGyre("gyre/input", files=["profile1.data.FGONG", "profile2.data.FGONG"])
     ```
     GYRE can also be run for the primary or the secondary star in a binary system.
     ```python
-    proj.runGyre("gyre_input.in", silent=False, target="primary")  ## Target can be "primary" or "secondary"
+    proj.runGyre("gyre_input.in", target="primary")  ## Target can be "primary" or "secondary"
     ```
 
 ### ***Using a `MesaAccess` class object:***
