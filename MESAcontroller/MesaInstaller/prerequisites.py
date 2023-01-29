@@ -4,6 +4,7 @@ import subprocess
 
 from . import mesaurls
 
+
 def install_prerequisites(directory, ostype, cleanAfter, logfile):
         """Install the pre-requisites for MESA.
 
@@ -36,3 +37,4 @@ def install_prerequisites(directory, ostype, cleanAfter, logfile):
                 subprocess.Popen(shlex.split(f"sudo installer -pkg {xquartz} -target /"), stdout=logfile, stderr=logfile).wait()
                 if cleanAfter:
                     os.remove(xquartz)
+                    

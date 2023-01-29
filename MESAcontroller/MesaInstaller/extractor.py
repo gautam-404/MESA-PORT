@@ -39,3 +39,4 @@ def extract_mesa(directory, ostype, cleanAfter, sdk_download, mesa_zip, logfile)
         if cleanAfter:
             os.remove(mesa_zip)
     print("MESA extraction complete.\n")
+    

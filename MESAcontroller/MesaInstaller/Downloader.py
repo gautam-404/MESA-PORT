@@ -1,13 +1,14 @@
 import os
 
 import requests
-from rich import progress, print
+from rich import print, progress
 
 progress_columns = (progress.DownloadColumn(), 
                     *progress.Progress.get_default_columns(),
                     progress.TimeElapsedColumn())
 
 from . import mesaurls
+
 
 class Download:
     """Class for downloading the MESA SDK and MESA zip files."""

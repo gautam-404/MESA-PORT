@@ -1,7 +1,9 @@
 import os
 
+from rich import print, prompt
+
 from . import mesaurls
-from rich import prompt, print
+
 
 def choose_directory(directory=''):
     """Choose a directory to install MESA.
@@ -22,6 +24,7 @@ def choose_directory(directory=''):
     if not os.path.exists(software_directory):
         os.mkdir(software_directory)
     return os.path.abspath( software_directory )
+
 
 
 def choose_ver(ostype, ver=''):
