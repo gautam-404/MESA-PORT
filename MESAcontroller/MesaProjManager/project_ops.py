@@ -130,7 +130,7 @@ class ProjectOps:
             Exception: If the make fails.
         """        
         ops_helper.check_exists(self.exists, self.projName)
-        with status.Status("[b i]Making...", spinner="moon"):
+        with status.Status("[b i cyan3]Making...", spinner="moon"):
             res = subprocess.call('./mk', cwd=self.work_dir, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         if res is False:
             raise Exception("Make failed!")
@@ -159,7 +159,7 @@ class ProjectOps:
             if silent not in [True, False]:
                 raise ValueError("Invalid input for argument 'silent'")
             else:
-                with status.Status("[b i]Running...", spinner="moon") as status_:
+                with status.Status("[b i cyan3]Running...", spinner="moon") as status_:
                     res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
                                 silent=silent, runlog=runlog, status=status_) 
             if res is False:
@@ -200,8 +200,8 @@ class ProjectOps:
             if silent not in [True, False]:
                 raise ValueError("Invalid input for argument 'silent'.")
             else:
-                print(f"Resuming run from photo {photo}.")
-                with status.Status("Running...", spinner="moon") as status_:
+                print(f"[b i  cyan3]Resuming run from photo {photo}.")
+                with status.Status("[b i  cyan3]Running...", spinner="moon") as status_:
                     res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
                             silent=silent, runlog=runlog, status=status_)
             if res is False:
