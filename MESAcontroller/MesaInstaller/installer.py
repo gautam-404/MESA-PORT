@@ -69,7 +69,7 @@ class Installer:
                 run_in_shell = f'''
                 /bin/bash -c \"
                 export MESASDK_ROOT={sdk_dir} \\
-                && source {sdk_dir}/mesasdk_init.sh \\
+                && source {sdk_dir}/bin/mesasdk_init.sh \\
                 && export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
                 && chmod -R +x {mesa_dir} \\

@@ -5,7 +5,7 @@ import subprocess
 import tarfile
 import zipfile
 
-from rich import console
+from rich import console, print
 
 def extract_mesa(directory, ostype, cleanAfter, sdk_download, mesa_zip, logfile):
     """Extract the MESA SDK and MESA zip files.
