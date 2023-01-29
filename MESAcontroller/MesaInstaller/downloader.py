@@ -60,7 +60,7 @@ class Download:
             print(text)
             print("[red]File already downloaded. Skipping download.[/red]\n")
         else:
-            chunk_size = 3*1024*1024
+            chunk_size = 1024*1024
             headers = {
                         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
                     }
