@@ -74,7 +74,7 @@ class Download:
                         size_ = file.write(chunk)
                         progressbar.update(task_id=task, advance=size_)
                 progressbar.update(task, description=text+"[blue]complete.[/blue]")
-            print("\n")
+            print("\n", end="")
 
     def download(self, sdk_url, mesa_url):
         """Download the MESA SDK and MESA zip files.
