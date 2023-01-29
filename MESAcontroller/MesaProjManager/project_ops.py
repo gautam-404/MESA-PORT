@@ -47,13 +47,13 @@ class ProjectOps:
 
         def useExisting():
             """A helper function to use the existing project."""         
-            if not prompt.confirm(f"Use the already existing '{self.projName}' project as it is?", default=False):
+            if not prompt.Confirm.ask(f"Use the already existing '{self.projName}' project as it is?", default=False):
                 raise ValueError("Aborting!!! No project specified.")
 
         def cleanCheck():
             """A helper function to check if the user wants to clean the existing project."""
             if clean is None:
-                if prompt.confirm(f"Clean the existing '{self.projName}' project for re-use?", default=False):
+                if prompt.Confirm.ask(f"Clean the existing '{self.projName}' project for re-use?", default=False):
                     self.clean()
                 else:
                     useExisting()
@@ -81,8 +81,8 @@ class ProjectOps:
                 cleanCheck()
             elif overwrite is None:
                 print(f"Mesa project named '{self.projName}' already exists!")
-                if not prompt.confirm(f"Use the already existing '{self.projName}' project as it is?", default=False):
-                    if prompt.confirm("Do you wish to overwrite?", default=False):
+                if not prompt.Confirm.ask(f"Use the already existing '{self.projName}' project as it is?", default=False):
+                    if prompt.Confirm.ask("Do you wish to overwrite?", default=False):
                         writeover()
                     else:
                         cleanCheck()
