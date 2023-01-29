@@ -1,7 +1,7 @@
 import os
 
-from .mesaurls import *
-
+from . import mesaurls
+from rich import prompt, print
 
 def choose_directory(directory=''):
     """Choose a directory to install MESA.
@@ -12,11 +12,13 @@ def choose_directory(directory=''):
 
     Returns:
         str: Path to a directory to install MESA and MESA SDK.
-    """        
+    """   
+    directory = prompt.Prompt.ask("\n[bold cyan]Input path to a directory for installation[/bold cyan]")     
     while not os.path.exists(directory):
-        directory = input("\nInput path to a directory for installation...    ")
+        print("[red]Directory does not exist. Please try again.[/red]")
+        directory = prompt.Prompt.ask("\nInput path to a directory for installation...")
     software_directory = os.path.join(directory, "software")
-    print(f"MESA SDK and MESA will be installed at path: {directory}/software/\n")
+    print(f"[blue]MESA SDK and MESA will be installed at path: {directory}/software/ [/blue]\n")
     if not os.path.exists(software_directory):
         os.mkdir(software_directory)
     return os.path.abspath( software_directory )
@@ -33,15 +35,15 @@ def choose_ver(ostype, ver=''):
         str: Version of MESA to install.
     """        
     if ostype == "Linux":
-        versions = linux_versions
+        versions = mesaurls.linux_versions
     elif ostype == "macOS-Intel":
-        versions = mac_intel_versions
+        versions = mesaurls.mac_intel_versions
     elif ostype == "macOS-ARM":
-        versions = mac_arm_versions
+        versions = mesaurls.mac_arm_versions
     while ver not in versions:
         print("Versions available through this insaller are:")
         print(versions, '\n')
-        ver = input("Input the desired version...")
+        ver = prompt.Prompt.ask("[bold cyan]Input the version of MESA to install[/bold cyan]")
         if ver not in versions:
             print("Version not recognised, try again.\n")
     return ver
