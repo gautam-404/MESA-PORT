@@ -35,6 +35,8 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
                         status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age*365*24:.4f}[/cyan] hours")
                     elif 1/365 < age < 1:
                         status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age*365:.4f}[/cyan] days")
+                    elif 1 < age < 1000:
+                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age:.3f}[/cyan] years")
                     else:
                         status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age:.3e}[/cyan] years")
             for errline in proc.stderr:
