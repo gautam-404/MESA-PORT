@@ -13,16 +13,19 @@ def choose_directory(directory=''):
 
     Returns:
         str: Path to a directory to install MESA and MESA SDK.
-    """   
-    directory = prompt.Prompt.ask("\n[bold cyan]Input path to a directory for installation[/bold cyan]")     
+    """  
+    if directory == '':
+        directory = prompt.Prompt.ask("\n[bold cyan]Input path to a directory for installation[/bold cyan]")   
     while not os.path.exists(directory):
         print("[red]Directory does not exist. Please try again.[/red]")
+        if prompt.Confirm.ask("\n[cyan]Would you like to create the directory?[/cyan]"):
+            os.mkdir(directory)
         directory = prompt.Prompt.ask("\n[bold cyan]Input path to a directory for installation[/bold cyan]")
-    software_directory = os.path.join(directory, "software")
-    print(f"MESA will be installed at path: [green]{directory}/software/ [/green]\n")
+    software_directory = os.path.abspath(os.path.join(directory, "software"))
+    print(f"MESA will be installed at path: [green]{software_directory}[/green]\n")
     if not os.path.exists(software_directory):
         os.mkdir(software_directory)
-    return os.path.abspath( software_directory )
+    return software_directory
 
 
 

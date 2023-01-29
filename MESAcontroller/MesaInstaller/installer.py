@@ -48,18 +48,18 @@ class Installer:
         with open(f"install_log.txt", "w+") as logfile:
             ## to get sudo password prompt out of the way
             subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()    
-            with console.Console().status("Installing pre-requisites", spinner="moon"):
+            with console.Console().status("[green b]Installing pre-requisites", spinner="moon"):
                 prerequisites.install_prerequisites(directory, ostype, cleanAfter, logfile)
             extractor.extract_mesa(directory, ostype, cleanAfter, sdk_download, mesa_zip, logfile)
 
-            with console.Console().status("Installing MESA", spinner="moon"):
+            with console.Console().status("[green b]Installing MESA", spinner="moon"):
                 if ostype == "Linux":
                     sdk_dir = os.path.join(directory, 'mesasdk')
                 elif "macOS" in ostype:
                     sdk_dir = '/Applications/mesasdk'
 
                 with subprocess.Popen(f"/bin/bash -c \"export MESASDK_ROOT={sdk_dir} && \
-                            source $MESASDK_ROOT/bin/mesasdk_init.sh && gfortran --version\"",
+                            source {sdk_dir}/bin/mesasdk_init.sh && gfortran --version\"",
                             shell=True, stdout=logfile, stderr=logfile) as proc:
                     proc.wait()
                     if proc.returncode != 0:
@@ -69,7 +69,7 @@ class Installer:
                 run_in_shell = f'''
                 /bin/bash -c \"
                 export MESASDK_ROOT={sdk_dir} \\
-                && source $MESASDK_ROOT/bin/mesasdk_init.sh \\
+                && source {sdk_dir}/bin/mesasdk_init.sh \\
                 && export MESA_DIR={mesa_dir} \\
                 && export OMP_NUM_THREADS=2 \\
                 && chmod -R +x {mesa_dir} \\

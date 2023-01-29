@@ -4,8 +4,8 @@ mac_arm_versions = ["latest", "22.05.1"]
 
 linux_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz",
             "22.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz",
-            "15140": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-15140.tar.gz",
-            "12778": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-12778.tar.gz"}
+            "15140": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-21.4.1.tar.gz",
+            "12778": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-20.3.2.tar.gz"}
 
 mesa_urls = {"latest": "https://zenodo.org/record/7319739/files/mesa-r22.11.1.zip",
             "22.11.1": "https://zenodo.org/record/7319739/files/mesa-r22.11.1.zip",
