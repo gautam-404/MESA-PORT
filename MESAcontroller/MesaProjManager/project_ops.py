@@ -1,12 +1,13 @@
 import os
 import shutil
 import subprocess
+import glob
 
-from rich import prompt, status, print
-from rich.console import Console
+from rich import print, progress, prompt, status
 
 from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
 from . import ops_helper
+
 
 class ProjectOps:
     """This class handles MESA project operations.
@@ -211,47 +212,87 @@ class ProjectOps:
 
 
 
-    # def runGyre(self, gyre_in, silent=False, target=None):
-    #     """Runs GYRE.
 
-    #     Args:
-    #         gyre_in (str): GYRE input file.
-    #         silent (bool, optional): Run the command silently. Defaults to False.
-    #         target (str, optional): If the project is a binary system, specify the star 
-    #                                 for which GYRE is to be run. Defaults to None.
 
-    #     Raises:
-    #         ValueError: If the input for argument 'silent' is invalid.
-    #     """        
-    #     OpsHelper.check_exists(self.exists, self.projName)
-    #     star = MesaAccess(self.projName, self.astero, self.binary, target)
-    #     star.load_GyreInput(gyre_in)
-    #     gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
-    #     if self.binary:
-    #         if target == 'primary':
-    #             LOGS_dir = os.path.join(self.work_dir, "LOGS1")
-    #         elif target == 'secondary':
-    #             LOGS_dir = os.path.join(self.work_dir, "LOGS2")
-    #         else:
-    #             raise ValueError('''Invalid input for argument 'star'.  
-    #                             Please use 'primary' or 'secondary''')
-    #     else:
-    #         LOGS_dir = os.path.join(self.work_dir, "LOGS")
-    #     runlog = os.path.join(self.work_dir, "runlog")
-    #     if os.environ['GYRE_DIR'] is not None:
-    #         if silent is False:
-    #             print("Running GYRE...")
-    #             res = OpsHelper.run_subprocess(f'{gyre_ex} gyre.in', LOGS_dir, silent, runlog=runlog)
-    #         elif silent is True:
-    #             with console.Console().status("Running GYRE...", spinner="moon"):
-    #                 res = OpsHelper.run_subprocess(f'{gyre_ex} gyre.in', LOGS_dir, silent, runlog=runlog)
-    #         else:
-    #             raise ValueError("Invalid input for argument 'silent'")   
+    def runGyre(self, gyre_in, files='', silent=True, target=None):
+        """Runs GYRE.
+
+        Args:
+            gyre_in (str): GYRE input file.
+            files (str or list of strings, optional): Profile files in the LOGS directory 
+                                            to be processed by GYRE. Defaults to 'all'.
+            silent (bool, optional): Run the command silently. Defaults to True.
+            target (str, optional): Target star. Defaults to None.
+
+        Raises: 
+            FileNotFoundError: If the GYRE input file does not exist.
+            ValueError: If the input for argument 'silent' is invalid.
+            ValueError: If the input for argument 'files' is invalid.
+        """        
+        ops_helper.check_exists(self.exists, self.projName)
+        star = MesaAccess(self.projName, self.astero, self.binary, target)
+        star.load_GyreInput(gyre_in)
+        gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
+        if self.binary:
+            if target == 'primary':
+                LOGS_dir = os.path.join(self.work_dir, "LOGS1")
+            elif target == 'secondary':
+                LOGS_dir = os.path.join(self.work_dir, "LOGS2")
+            else:
+                raise ValueError('''Invalid input for argument 'star'.  
+                                Please use 'primary' or 'secondary''')
+        else:
+            LOGS_dir = os.path.join(self.work_dir, "LOGS")
+
+        runlog = os.path.join(self.work_dir, "runlog")
+        if os.environ['GYRE_DIR'] is not None:
+            if not silent in [True, False]:
+                raise ValueError("Invalid input for argument 'silent'")
             
-    #         if res is False:
-    #                 print("GYRE run failed! Check runlog.")
-    #         else:
-    #             print("GYRE run complete!\n") 
-    #     else:
-    #         print("Check if $GYRE_DIR is set in environment variables...could not run!")
-    #         print("Run aborted!")
+            if files == 'all':
+                filenames = glob.glob(os.path.join(LOGS_dir, "*.FGONG"))
+                if len(filenames) == 0:
+                    raise ValueError("No FGONG files found in LOGS directory.")
+                else:
+                    ops_helper.writetoGyreFile(self.projName, parameter='model_type', value='EVOL')
+                    ops_helper.writetoGyreFile(self.projName, parameter='file_format', value='FGONG')
+                    for filename in progress.track(filenames, description="[b i cyan3]Running GYRE..."):
+                        ops_helper.writetoGyreFile(self.projName, parameter='file', value=filename)
+                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                silent=silent, runlog=runlog, status=status_, gyre=True)
+
+            elif type(files) == list:
+                ops_helper.writetoGyreFile(self.projName, parameter='model_type', value='EVOL')
+                ops_helper.writetoGyreFile(self.projName, parameter='file_format', value='FGONG')
+                for file in progress.track(files, description="[b i cyan3]Running GYRE..."):
+                    if not os.path.isfile(os.path.join(LOGS_dir, file)):
+                        raise FileNotFoundError(f"File '{file}' does not exist.")
+                    else:    
+                        ops_helper.writetoGyreFile(self.projName, parameter='file', value=file)
+                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                            silent=silent, runlog=runlog, status=status_, gyre=True)
+
+            elif type(files) == str and files != '':
+                ops_helper.writetoGyreFile(self.projName, parameter='model_type', value='EVOL')
+                ops_helper.writetoGyreFile(self.projName, parameter='file_format', value='FGONG')
+                if not os.path.isfile(os.path.join(LOGS_dir, files)):
+                    raise FileNotFoundError(f"File '{files}' does not exist.")
+                else:
+                    ops_helper.writetoGyreFile(self.projName, parameter='file', value=files)
+                    with status.Status("[b i  cyan3]Running GYRE...", spinner="moon") as status_:
+                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                silent=silent, runlog=runlog, status=status_, gyre=True)
+                                
+            elif files == '':
+                res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                silent=silent, runlog=runlog, status=status_, gyre=True)
+            else:
+                raise ValueError("Invalid input for argument 'files'")
+
+            if res is False:
+                    print("GYRE run failed! Check runlog.")
+            else:
+                print("GYRE run complete!\n") 
+        else:
+            print("Check if $GYRE_DIR is set in environment variables...could not run!")
+            print("Run aborted!")

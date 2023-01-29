@@ -87,7 +87,7 @@ class Installer:
                 logfile.write("Build Successful.\n")
 
         self.write_env_vars(mesa_dir, sdk_dir)
-        print("Installation complete.\n")
+        print("[b i bright_cyan]Installation complete.\n")
 
         
 
@@ -111,24 +111,28 @@ class Installer:
 
         '''
 
-        env_shell = os.environ['SHELL'].split('/')[-1]
-        if env_shell == "bash":
-            env_file = os.path.join(os.environ['HOME'], ".bashrc")
-        elif env_shell == "zsh":
-            env_file = os.path.join(os.environ['HOME'], ".zshrc")
-        elif env_shell == "csh":
-            env_file = os.path.join(os.environ['HOME'], ".cshrc")
-        elif env_shell == "tcsh":
-            env_file = os.path.join(os.environ['HOME'], ".tcshrc")
+        env_shell = os.environ.get('SHELL')
+        if env_shell is None:
+            env_shell = "bash"
         else:
-            env_file = os.path.join(os.environ['HOME'], ".profile")
+            env_shell = env_shell.split('/')[-1]
+        if env_shell == "bash":
+            env_file = os.path.join(os.environ.get('HOME'), ".bashrc")
+        elif env_shell == "zsh":
+            env_file = os.path.join(os.environ.get('HOME'), ".zshrc")
+        elif env_shell == "csh":
+            env_file = os.path.join(os.environ.get('HOME'), ".cshrc")
+        elif env_shell == "tcsh":
+            env_file = os.path.join(os.environ.get('HOME'), ".tcshrc")
+        else:
+            env_file = os.path.join(os.environ.get('HOME'), ".profile")
         
-        with open(env_file, "a") as f:
+        with open(env_file, "a+") as f:
             f.write(source_this)
 
-        print(f"The following environment variables have been written to your ~/{env_file} file:")
+        print(f"The following environment variables have been written to your {env_file} file:")
         print(source_this)
         print("To activate these variables in your current shell, run the following command:\n")
-        print(f"source ~/{env_file}\n") 
+        print(f"[magenta]source {env_file}\n") 
 
         
