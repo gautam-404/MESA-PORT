@@ -4,7 +4,6 @@ from rich import print, prompt
 
 from . import mesaurls
 
-
 def choose_directory(directory=''):
     """Choose a directory to install MESA.
 

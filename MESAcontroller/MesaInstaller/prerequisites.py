@@ -4,7 +4,6 @@ import subprocess
 
 from . import mesaurls
 
-
 def install_prerequisites(directory, ostype, cleanAfter, logfile):
         """Install the pre-requisites for MESA.
 

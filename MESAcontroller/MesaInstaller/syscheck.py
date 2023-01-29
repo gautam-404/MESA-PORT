@@ -2,7 +2,6 @@ import platform
 
 import cpuinfo
 
-
 def whichos():
     """Determine the OS type.
 

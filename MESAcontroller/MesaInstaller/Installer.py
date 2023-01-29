@@ -6,7 +6,6 @@ from rich import console, print
 
 from . import Choice, Downloader, Extractor, Prerequisites, Syscheck, mesaurls
 
-
 class Installer:
     """Class for installing MESA and MESA SDK.
     """    
