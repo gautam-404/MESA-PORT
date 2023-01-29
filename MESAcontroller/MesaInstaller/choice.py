@@ -43,7 +43,7 @@ def choose_ver(ostype, ver=''):
     elif ostype == "macOS-ARM":
         versions = mesaurls.mac_arm_versions
     while ver not in versions:
-        print("Versions available through this insaller are:")
+        print("Versions available for your system through this insaller are:")
         print(versions, '\n')
         ver = prompt.Prompt.ask("[bold cyan]Input the version of MESA to install[/bold cyan]")
         if ver not in versions:
