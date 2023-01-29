@@ -87,7 +87,7 @@ class Installer:
                 logfile.write("Build Successful.\n")
 
         self.write_env_vars(mesa_dir, sdk_dir)
-        print("[b i bright_cyan]Installation complete.\n")
+        print("[b bright_cyan]Installation complete.\n")
 
         
 
@@ -133,6 +133,6 @@ class Installer:
         print(f"The following environment variables have been written to your {env_file} file:")
         print(source_this)
         print("To activate these variables in your current shell, run the following command:\n")
-        print(f"[magenta]source {env_file}\n") 
+        print(f"[yellow]source {env_file}\n") 
 
         
