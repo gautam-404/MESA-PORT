@@ -52,6 +52,11 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   ## cleanAfter=False by default to allow re-running installation without removing downloaded files, 
   ## this saves time when debugging a failed MESA build.
   ```
+  <details>
+  <summary><b><i>CLI example</b></i></summary>
+  <img src="imgs/installer.png">
+  </details>
+  <br>
   
 ### ***Using a `ProjectOps` class object:***
   * Creating a new MESA work directory:
