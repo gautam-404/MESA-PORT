@@ -1,12 +1,11 @@
 import os
 
 import requests
-from rich.progress import Progress, DownloadColumn, TimeElapsedColumn
-progress = Progress(
-    DownloadColumn(),
-    *Progress.get_default_columns(),
-    TimeElapsedColumn(),
-)
+from rich import progress, print
+
+progress_columns = (progress.DownloadColumn(), 
+                    *progress.Progress.get_default_columns(),
+                    progress.TimeElapsedColumn())
 
 from . import mesaurls
 
@@ -58,19 +57,22 @@ class Download:
             url (str): URL of the file to be downloaded.
         """        
         if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
-            print("Skipping download! File already downloaded.\n")
+            print(text)
+            print("[red]File already downloaded. Skipping download.[/red]\n")
         else:
             chunk_size = 11*1024*1024
-            response = requests.get(url, stream=True, timeout=10)
+            headers = {
+                        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
+                    }
+            response = requests.get(url, headers=headers, stream=True, timeout=10)
             total = int(response.headers.get('content-length', 0))
-            with open(filepath, 'wb') as file, progress:
-                task = progress.add_task(text, total=total)
+            with open(filepath, 'wb') as file, progress.Progress(*progress_columns) as progressbar:
+                task = progressbar.add_task(text, total=total)
                 for chunk in response.raw.stream(chunk_size, decode_content=False):
                     if chunk:
                         size_ = file.write(chunk)
-                        progress.update(task, advance=size_)
-            print("Download complete.\n")
-
+                        progressbar.update(task_id=task, advance=size_)
+                progressbar.update(task, description="[blue]Download complete.[/blue]")
 
     def download(self, sdk_url, mesa_url):
         """Download the MESA SDK and MESA zip files.
@@ -83,8 +85,8 @@ class Download:
             tuple: Paths to the downloaded MESA SDK and MESA zip files.
         """        
         sdk_download = os.path.join(self.directory, sdk_url.split('/')[-1])
-        self.check_n_download(sdk_download, sdk_url, "[cyan]Downloading MESA SDK...")
+        self.check_n_download(sdk_download, sdk_url, "[green]Downloading MESA SDK...")
 
         mesa_zip = os.path.join(self.directory, mesa_url.split('/')[-1])
-        self.check_n_download(mesa_zip, mesa_url, "[cyan]Downloading MESA...")
+        self.check_n_download(mesa_zip, mesa_url, "[green]Downloading MESA...")
         return sdk_download, mesa_zip

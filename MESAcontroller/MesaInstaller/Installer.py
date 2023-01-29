@@ -25,8 +25,8 @@ class Installer:
         """     
         ostype = Syscheck.whichos()
         directory = Choice.choose_directory(parentDir)
-        version = Choice.choose_ver(ostype, version)
         print(f"\nOS type: [orange3]{ostype}[/orange3]\n")
+        version = Choice.choose_ver(ostype, version)
         self.install(version, ostype, directory, cleanAfter)
 
 

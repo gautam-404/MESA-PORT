@@ -16,9 +16,9 @@ def choose_directory(directory=''):
     directory = prompt.Prompt.ask("\n[bold cyan]Input path to a directory for installation[/bold cyan]")     
     while not os.path.exists(directory):
         print("[red]Directory does not exist. Please try again.[/red]")
-        directory = prompt.Prompt.ask("\nInput path to a directory for installation...")
+        directory = prompt.Prompt.ask("\n[bold cyan]Input path to a directory for installation[/bold cyan]")
     software_directory = os.path.join(directory, "software")
-    print(f"[blue]MESA SDK and MESA will be installed at path: {directory}/software/ [/blue]\n")
+    print(f"[green]MESA SDK and MESA will be installed at path: {directory}/software/ [/green]\n")
     if not os.path.exists(software_directory):
         os.mkdir(software_directory)
     return os.path.abspath( software_directory )
@@ -45,5 +45,6 @@ def choose_ver(ostype, ver=''):
         print(versions, '\n')
         ver = prompt.Prompt.ask("[bold cyan]Input the version of MESA to install[/bold cyan]")
         if ver not in versions:
-            print("Version not recognised, try again.\n")
+            print("[red]Version not recognised, try again.[/red]\n")
+    print("\n")
     return ver
