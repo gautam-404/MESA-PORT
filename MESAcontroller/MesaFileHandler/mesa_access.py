@@ -1,7 +1,7 @@
 from .support import *
-from .MesaEnvironmentHandler import MesaEnvironmentHandler
-from .AccessHelper import *
-from .Loader import load
+from .envhandler import MesaEnvironmentHandler
+from .access_helper import *
+from .loader import load
 from pprint import pprint
 
 class MesaAccess:
