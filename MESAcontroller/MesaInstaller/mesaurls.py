@@ -11,7 +11,7 @@ mesa_urls = {"latest": "https://zenodo.org/record/7319739/files/mesa-r22.11.1.zi
             "22.11.1": "https://zenodo.org/record/7319739/files/mesa-r22.11.1.zip",
             "22.05.1": "https://zenodo.org/record/6547951/files/mesa-r22.05.1.zip",
             "21.12.1": "https://zenodo.org/record/7319739/files/mesa-r21.12.1.zip",
-            "15140": "https://zenodo.org/record/7319739/files/mesa-r15140.zip",
+            "15140": "https://zenodo.org/record/4311514/files/mesa-r15140.zip",
             "12778": "https://zenodo.org/record/7319739/files/mesa-r12778.zip"}
 
 mac_intel_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-macos-22.10.1.pkg",

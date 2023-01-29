@@ -24,8 +24,7 @@ class Download:
         self.sdk_download, self.mesa_zip = self.download(sdk_url, mesa_url)
         if self.ostype == "macOS-Intel":
             xquartz = os.path.join(directory, mesaurls.url_xquartz.split('/')[-1])
-            print("Downloading XQuartz...")
-            self.check_n_download(xquartz, mesaurls.url_xquartz)
+            self.check_n_download(xquartz, mesaurls.url_xquartz, "Downloading XQuartz...")
 
 
     def prep_urls(self, version):
@@ -72,7 +71,7 @@ class Download:
                     if chunk:
                         size_ = file.write(chunk)
                         progressbar.update(task_id=task, advance=size_)
-                progressbar.update(task, description="[blue]Download complete.[/blue]")
+                progressbar.update(task, description=text+"[blue]complete.[/blue]")
 
     def download(self, sdk_url, mesa_url):
         """Download the MESA SDK and MESA zip files.
