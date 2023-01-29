@@ -1,6 +1,7 @@
 import os
 
 import requests
+import shutil
 from rich import print, progress
 
 progress_columns = (progress.DownloadColumn(), 
@@ -59,11 +60,12 @@ class Download:
             print(text)
             print("[red]File already downloaded. Skipping download.[/red]\n")
         else:
-            chunk_size = 11*1024*1024
+            chunk_size = 3*1024*1024
             headers = {
                         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
                     }
             response = requests.get(url, headers=headers, stream=True, timeout=10)
+            response.raise_for_status()
             total = int(response.headers.get('content-length', 0))
             with open(filepath, 'wb') as file, progress.Progress(*progress_columns) as progressbar:
                 task = progressbar.add_task(text, total=total)
@@ -72,6 +74,7 @@ class Download:
                         size_ = file.write(chunk)
                         progressbar.update(task_id=task, advance=size_)
                 progressbar.update(task, description=text+"[blue]complete.[/blue]")
+            print("\n")
 
     def download(self, sdk_url, mesa_url):
         """Download the MESA SDK and MESA zip files.
