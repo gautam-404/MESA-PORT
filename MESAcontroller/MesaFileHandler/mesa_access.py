@@ -1,7 +1,7 @@
 from .support import *
 from .envhandler import MesaEnvironmentHandler
 from .access_helper import *
-from .loader import load
+from . import loader
 from pprint import pprint
 
 class MesaAccess:
@@ -249,7 +249,7 @@ class MesaAccess:
             ValueError: If the input for argument 'target' is invalid.
         """        
         self.check_exists()
-        load(inlistPath, self.projectDir, "inlist_project", binary=self.binary, target=self.target)
+        loader.load(inlistPath, self.projectDir, "inlist_project", binary=self.binary, target=self.target)
 
     def load_InlistAsteroSearch(self, inlistPath):
         """Loads the astero_search_controls inlist file.
@@ -258,7 +258,7 @@ class MesaAccess:
             inlistPath (str): Path to the inlist file.
         """        
         self.check_exists()
-        load(inlistPath, self.projectDir, "inlist_astero_search_controls")
+        loader.load(inlistPath, self.projectDir, "inlist_astero_search_controls")
             
     
     def load_InlistPG(self, inlistPath):
@@ -271,7 +271,7 @@ class MesaAccess:
             ValueError: If the input for argument 'typeof' is invalid.
         """        
         self.check_exists()
-        load(inlistPath, self.projectDir, "inlist_pgstar")
+        loader.load(inlistPath, self.projectDir, "inlist_pgstar")
         
 
     def load_HistoryColumns(self, HistoryColumns):
@@ -283,7 +283,7 @@ class MesaAccess:
                                     Input 'primary', 'secondary' or 'binary'. Defaults to None.
         """        
         self.check_exists()
-        load(HistoryColumns, self.projectDir, "history_columns", binary=self.binary, target=self.target)
+        loader.load(HistoryColumns, self.projectDir, "history_columns", binary=self.binary, target=self.target)
 
 
     def load_ProfileColumns(self, ProfileColumns):
@@ -293,7 +293,7 @@ class MesaAccess:
             ProfileColumns (str): Path to the profile columns file.
         """  
         self.check_exists()      
-        load(ProfileColumns, self.projectDir, "profile_columns")
+        loader.load(ProfileColumns, self.projectDir, "profile_columns")
 
 
     def load_GyreInput(self, gyre_in):
@@ -303,7 +303,7 @@ class MesaAccess:
             gyre_in (str): Path to the GYRE input file.
         """ 
         self.check_exists()       
-        load(gyre_in, self.projectDir, "gyre.in", binary=self.binary, target=self.target)
+        loader.load(gyre_in, self.projectDir, "gyre.in", binary=self.binary, target=self.target)
 
 
     def load_Extras(self, extras_path):
@@ -313,4 +313,4 @@ class MesaAccess:
             extras_path (str): Path to the extras file.
         """  
         self.check_exists()
-        load(extras_path, self.projectDir, "extras", binary=self.binary, target=self.target)
+        loader.load(extras_path, self.projectDir, "extras", binary=self.binary, target=self.target)
