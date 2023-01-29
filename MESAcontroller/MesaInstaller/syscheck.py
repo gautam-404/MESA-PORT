@@ -20,3 +20,4 @@ def whichos():
         return "Linux"
     else:
         raise OSError(f"OS {platform.platform()} not compatible.")
+        

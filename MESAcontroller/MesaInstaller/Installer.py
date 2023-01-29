@@ -2,9 +2,10 @@ import os
 import shlex
 import subprocess
 
+from rich import console, print
+
 from . import Choice, Downloader, Extractor, Prerequisites, Syscheck, mesaurls
 
-from rich import console, print
 
 class Installer:
     """Class for installing MESA and MESA SDK.
