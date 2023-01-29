@@ -31,7 +31,7 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
                 if silent is False:
                     sys.stdout.write(outline)
                 elif age is not None:
-                    status.update(status=f"[b i]Running....[/b i]\nCurrent age: [cyan]{age}[/cyan] years")
+                    status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Current age: [cyan]{age}[/cyan] years")
                     # print(f"Current age: {age} years", end='\r')
             for errline in proc.stderr:
                 file.write(errline)
