@@ -234,7 +234,7 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
             indent = "    "
             for line in lines:
                 edited = False
-                if default_section in line:
+                if "&"+default_section in line:
                     this_section = True
                 if this_section:
                     if exists and parameter in line:
@@ -253,6 +253,7 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
                         this_section = False
                 if not edited:
                     f.write(line)
+            f.write("\n")   
     
 
 

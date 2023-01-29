@@ -5,7 +5,6 @@ import subprocess
 from . import Choice, Downloader, Extractor, Prerequisites, Syscheck, mesaurls
 
 from rich import console, print
-console = console.Console()
 
 class Installer:
     """Class for installing MESA and MESA SDK.
@@ -49,11 +48,11 @@ class Installer:
         with open(f"install_log.txt", "w+") as logfile:
             ## to get sudo password prompt out of the way
             subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()    
-            with console.status("Installing pre-requisites", spinner="moon"):
+            with console.Console().status("Installing pre-requisites", spinner="moon"):
                 Prerequisites.install_prerequisites(directory, ostype, cleanAfter, logfile)
             Extractor.extract_mesa(directory, ostype, cleanAfter, sdk_download, mesa_zip, logfile)
 
-            with console.status("Installing MESA", spinner="moon"):
+            with console.Console().status("Installing MESA", spinner="moon"):
                 if ostype == "Linux":
                     sdk_dir = os.path.join(directory, 'mesasdk')
                 elif "macOS" in ostype:
