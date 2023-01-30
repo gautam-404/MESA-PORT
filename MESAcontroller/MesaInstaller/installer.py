@@ -9,7 +9,7 @@ from . import choice, downloader, extractor, mesaurls, prerequisites, syscheck
 class Installer:
     """Class for installing MESA and MESA SDK.
     """    
-    def __init__(self, version='', parentDir='', cleanAfter=False):
+    def __init__(self, version='', parentDir='', cleanAfter=False, logging=True):
         """Constructor for Installer class.
 
         Args:
@@ -26,6 +26,7 @@ class Installer:
         directory = choice.choose_directory(parentDir)
         print(f"[orange3]{ostype}[/orange3] system detected.\n")
         version = choice.choose_ver(ostype, version)
+        self.logging = logging
         self.install(version, ostype, directory, cleanAfter)
 
 
@@ -45,46 +46,52 @@ class Installer:
         sdk_download, mesa_zip = downloaded.sdk_download, downloaded.mesa_zip
         mesa_dir = os.path.join(directory, mesa_zip.split('/')[-1][0:-4])
 
-        with open(f"install_log", "w+") as logfile:
-            ## to get sudo password prompt out of the way
-            subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()    
-            with console.Console().status("[green b]Installing pre-requisites", spinner="moon"):
-                prerequisites.install_prerequisites(directory, ostype, cleanAfter, logfile)
-            extractor.extract_mesa(directory, ostype, cleanAfter, sdk_download, mesa_zip, logfile)
+        if self.logging is False:
+            logfile = subprocess.DEVNULL
+        else:
+            logfile = open(f"install.log", "w+")
+        
+        ## to get sudo password prompt out of the way
+        subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()    
+        with console.Console().status("[green b]Installing pre-requisites", spinner="moon"):
+            prerequisites.install_prerequisites(directory, ostype, cleanAfter, logfile)
+        extractor.extract_mesa(directory, ostype, cleanAfter, sdk_download, mesa_zip, logfile)
 
-            with console.Console().status("[green b]Installing MESA", spinner="moon"):
-                if ostype == "Linux":
-                    sdk_dir = os.path.join(directory, 'mesasdk')
-                elif "macOS" in ostype:
-                    sdk_dir = '/Applications/mesasdk'
+        with console.Console().status("[green b]Installing MESA", spinner="moon"):
+            if ostype == "Linux":
+                sdk_dir = os.path.join(directory, 'mesasdk')
+            elif "macOS" in ostype:
+                sdk_dir = '/Applications/mesasdk'
 
-                with subprocess.Popen(f"/bin/bash -c \"export MESASDK_ROOT={sdk_dir} && \
-                            source {sdk_dir}/bin/mesasdk_init.sh && gfortran --version\"",
-                            shell=True, stdout=logfile, stderr=logfile) as proc:
-                    proc.wait()
-                    if proc.returncode != 0:
-                        raise Exception("MESA SDK initialization failed. \
-                            Please check the install_log.txt file for details.")
+            with subprocess.Popen(f"/bin/bash -c \"export MESASDK_ROOT={sdk_dir} && \
+                        source {sdk_dir}/bin/mesasdk_init.sh && gfortran --version\"",
+                        shell=True, stdout=logfile, stderr=logfile) as proc:
+                proc.wait()
+                if proc.returncode != 0:
+                    raise Exception("MESA SDK initialization failed. \
+                        Please check the install_log.txt file for details.")
 
-                run_in_shell = f'''
-                /bin/bash -c \"
-                export MESASDK_ROOT={sdk_dir} \\
-                && source {sdk_dir}/bin/mesasdk_init.sh \\
-                && export MESA_DIR={mesa_dir} \\
-                && export OMP_NUM_THREADS=2 \\
-                && chmod -R +x {mesa_dir} \\
-                && cd {mesa_dir} && ./clean  && ./install \\
-                && export GYRE_DIR={mesa_dir}/gyre/gyre\"
-                '''
-                with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
-                    proc.wait()
-                    if proc.returncode != 0:
-                        raise Exception("MESA installation failed. \
-                            Please check the install_log.txt file for details.")
-                    else:
-                        logfile.write("MESA installation complete.\n")
-
-                logfile.write("Build Successful.\n")
+            run_in_shell = f'''
+            /bin/bash -c \"
+            export MESASDK_ROOT={sdk_dir} \\
+            && source {sdk_dir}/bin/mesasdk_init.sh \\
+            && export MESA_DIR={mesa_dir} \\
+            && export OMP_NUM_THREADS=2 \\
+            && chmod -R +x {mesa_dir} \\
+            && cd {mesa_dir} && ./clean  && ./install \\
+            && export GYRE_DIR={mesa_dir}/gyre/gyre\"
+            '''
+            with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
+                proc.wait()
+                if proc.returncode != 0:
+                    raise Exception("MESA installation failed. \
+                        Please check the install_log.txt file for details.")
+                elif self.logging is True:
+                    logfile.write("MESA installation complete.\n")
+                    logfile.write("Build Successful.\n")
+            
+        if self.logging is True:
+            logfile.close()
 
         self.write_env_vars(mesa_dir, sdk_dir)
         print("[b bright_cyan]Installation complete.\n")
