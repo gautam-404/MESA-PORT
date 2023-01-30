@@ -254,7 +254,8 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'silent'")
             
             if files == 'all':
-                filenames = glob.glob(os.path.join(LOGS_dir, "*.FGONG"))
+                filenames = sorted(glob.glob(os.path.join(LOGS_dir, "*.FGONG")), 
+                            key=lambda x: int(os.path.basename(x).split('.')[0].split('profile')[1]))
                 if len(filenames) == 0:
                     raise ValueError("No FGONG files found in LOGS directory.")
                 else:
