@@ -10,6 +10,10 @@
 ### Features:
 
   * ***Install MESA*** on ***Linux*** and ***macOS*** (ARM/M-series and Intel) with just this python package!
+    <details>
+    <summary><b><i>CLI example</b></i></summary>
+    <img src="imgs/installer.png">
+    </details>
 
   * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
   
@@ -52,11 +56,6 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   ## cleanAfter=False by default to allow re-running installation without removing downloaded files, 
   ## this saves time when debugging a failed MESA build.
   ```
-  <details>
-  <summary><b><i>CLI example</b></i></summary>
-  <img src="imgs/installer.png">
-  </details>
-  <br>
   
 ### ***Using a `ProjectOps` class object:***
   * Creating a new MESA work directory:
