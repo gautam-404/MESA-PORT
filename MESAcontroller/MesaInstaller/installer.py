@@ -45,7 +45,7 @@ class Installer:
         sdk_download, mesa_zip = downloaded.sdk_download, downloaded.mesa_zip
         mesa_dir = os.path.join(directory, mesa_zip.split('/')[-1][0:-4])
 
-        with open(f"install_log.txt", "w+") as logfile:
+        with open(f"install_log", "w+") as logfile:
             ## to get sudo password prompt out of the way
             subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()    
             with console.Console().status("[green b]Installing pre-requisites", spinner="moon"):
