@@ -67,7 +67,7 @@ def process_outline(outline, step):
         return step, None
 
 
-def writetoGyreFile(dir, parameter, value):
+def writetoGyreFile(dir, parameter, value, default_section):
     """Writes the parameter and its value to the inlist file.
 
     Args:
@@ -79,7 +79,6 @@ def writetoGyreFile(dir, parameter, value):
         sections (list): A list with the sections of the inlist file.
     """    
     filename = "gyre.in"
-    default_section = "model"
     this_section = False
     with cd(dir):
         with open(filename, "r") as file:
@@ -103,9 +102,12 @@ def writetoGyreFile(dir, parameter, value):
                         this_section = False
                 if not edited:
                     f.write(line)
-            f.write("\n")   
+
+   
 
 def modify_gyre_params(LOGS_dir, filename):
-    writetoGyreFile(LOGS_dir, parameter='model_type', value='\'EVOL\'')
-    writetoGyreFile(LOGS_dir, parameter='file_format', value='\'FGONG\'')
-    writetoGyreFile(LOGS_dir, parameter='file', value=f'\'{filename}\'')
+    writetoGyreFile(LOGS_dir, parameter="model_type", value="'EVOL'", default_section="model")
+    writetoGyreFile(LOGS_dir, parameter="file_format", value="'FGONG'", default_section="model")
+    writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", default_section="model")
+    writetoGyreFile(LOGS_dir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="ad_output")
+    writetoGyreFile(LOGS_dir, parameter="summary_file", value="'freq_output_nonad.txt'", default_section="ad_output")
