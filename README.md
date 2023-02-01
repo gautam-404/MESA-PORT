@@ -75,10 +75,10 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     ```python
     proj.clean()
     proj.make()
-    proj.run(silent=False)      ## Run MESA. Silent=True will suppress console output and write to a runlog file.
-    proj.resume("photo_name", silent=False)
-    proj.resume("photo_name", silent=False, target="primary")  ## For binary systems. Can be "primary" or "secondary"
-    proj.delete()  ## Deletes the project directory
+    proj.run(silent=True)                                    ## Run MESA model
+    ## Silent=True by default, whch writes MESA output to a run log while the console shows the star's age as it evolves.
+    proj.resume("photo_name", silent=True)
+    proj.delete()                                             ## Deletes the project directory
     ```
     
   * Run GYRE:
@@ -102,7 +102,6 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
 ### ***Using a `MesaAccess` class object:***
   ```python
   star = MesaAccess("your_project")
-  ## Use star = MesaAccess("your_project", astero=True) when working with an astero project
 
   ## Write
   star.set(parameters, values)              
@@ -137,7 +136,7 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   star.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
   star.load_InlistAsteroSearch("path/to/inlist")                   ## Load custom inlist_astero_search_controls
   ```
-
+  Use `star = MesaAccess("your_project", astero=True)` when working with an astero project.
 
   When working with a binary system, you can create multiple `MesaAccess` objects for each star and the binary system.
   ```python
@@ -157,3 +156,4 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
   binary.load_InlistProject("/path/to/custom/inlist")           ## Load custom 'inlist_project' for the binary system
   binary.load_Extras("path/to/custom/run_binary_extras_file")   ## Load custom run_binary_extras.f90
   ```
+ 
