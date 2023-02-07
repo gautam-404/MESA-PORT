@@ -113,7 +113,7 @@ class MesaAccess:
 
 
 
-    def set(self, force=False, *arg):
+    def set(self, *arg, force=False):
         """Sets a value in the full dictionary.
 
         Args:
