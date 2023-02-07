@@ -188,6 +188,7 @@ class ProjectOps:
             ValueError: If the input for argument 'silent' is invalid.
         """
         ops_helper.check_exists(self.exists, self.projName)
+        runlog = os.path.join(self.work_dir, "runlog")
         if photo == None:
             print(f"[b i  cyan3]Resuming run from the most recent photo.")
             with status.Status("[b i  cyan3]Running...", spinner="moon") as status_:
@@ -205,7 +206,6 @@ class ProjectOps:
             else:
                 photo_path = os.path.join(self.work_dir, "photos", photo)
                 
-            runlog = os.path.join(self.work_dir, "runlog")
             if not os.path.isfile(photo_path):
                 raise FileNotFoundError(f"Photo '{photo}' could not be exists.")
             else:
