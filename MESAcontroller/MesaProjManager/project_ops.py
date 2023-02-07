@@ -175,11 +175,12 @@ class ProjectOps:
 
         
     
-    def resume(self, photo, silent=True, target=None):
+    def resume(self, photo=None, silent=True, target=None):
         """Resumes the run from a given photo.
 
         Args:
-            photo (str): Photo name from which the run is to be resumed.
+            photo (str, optional): Photo name from which the run is to be resumed. 
+                                If None, the last photo is used. Defaults to None.
             silent (bool, optional): Run the command silently. Defaults to True.
 
         Raises:
@@ -187,32 +188,38 @@ class ProjectOps:
             ValueError: If the input for argument 'silent' is invalid.
         """
         ops_helper.check_exists(self.exists, self.projName)
-        if self.binary:
-            if target == 'primary':
-                photo_path = os.path.join(self.work_dir, "photos1", photo)
-            elif target == 'secondary':
-                photo_path = os.path.join(self.work_dir, "photos2", photo)
-            else:
-                raise ValueError('''Invalid input for argument 'target'.  
-                                Please use 'primary' or 'secondary' ''')
+        if photo == None:
+            print(f"[b i  cyan3]Resuming run from the most recent photo.")
+            with status.Status("[b i  cyan3]Running...", spinner="moon") as status_:
+                res = ops_helper.run_subprocess(commands=f'./re', dir=self.work_dir, 
+                        silent=silent, runlog=runlog, status=status_)
         else:
-            photo_path = os.path.join(self.work_dir, "photos", photo)
-            
-        runlog = os.path.join(self.work_dir, "runlog")
-        if not os.path.isfile(photo_path):
-            raise FileNotFoundError(f"Photo '{photo}' could not be exists.")
+            if self.binary:
+                if target == 'primary':
+                    photo_path = os.path.join(self.work_dir, "photos1", photo)
+                elif target == 'secondary':
+                    photo_path = os.path.join(self.work_dir, "photos2", photo)
+                else:
+                    raise ValueError('''Invalid input for argument 'target'.  
+                                    Please use 'primary' or 'secondary' ''')
+            else:
+                photo_path = os.path.join(self.work_dir, "photos", photo)
+                
+            runlog = os.path.join(self.work_dir, "runlog")
+            if not os.path.isfile(photo_path):
+                raise FileNotFoundError(f"Photo '{photo}' could not be exists.")
+            else:
+                if silent not in [True, False]:
+                    raise ValueError("Invalid input for argument 'silent'.")
+                else:
+                    print(f"[b i  cyan3]Resuming run from photo {photo}.")
+                    with status.Status("[b i  cyan3]Running...", spinner="moon") as status_:
+                        res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
+                                silent=silent, runlog=runlog, status=status_)
+        if res is False:
+            print("Resume from photo failed! Check runlog.")
         else:
-            if silent not in [True, False]:
-                raise ValueError("Invalid input for argument 'silent'.")
-            else:
-                print(f"[b i  cyan3]Resuming run from photo {photo}.")
-                with status.Status("[b i  cyan3]Running...", spinner="moon") as status_:
-                    res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
-                            silent=silent, runlog=runlog, status=status_)
-            if res is False:
-                print("Resume from photo failed! Check runlog.")
-            else:
-                print("Done with the run!\n")
+            print("Done with the run!\n")
 
 
 
