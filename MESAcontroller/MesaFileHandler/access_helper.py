@@ -237,10 +237,10 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
                 if line.startswith("&"):
                     if '&' + default_section in line:
                         this_section = True
-                        print("Writing to section: " + default_section)
+                        # print("Writing to section: " + default_section)
                     else:
                         this_section = False
-                        print("skip section: " + line.split("&")[1].split()[0])
+                        # print("skip section: " + line.split("&")[1].split()[0])
                 if this_section:
                     if exists and parameter in line:
                         if not delete:
