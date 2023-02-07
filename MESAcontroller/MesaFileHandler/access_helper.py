@@ -234,9 +234,13 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
         with open(filename, "w+") as f:
             indent = "    "
             for line in lines:
-                edited = False
-                if "&"+default_section in line:
-                    this_section = True
+                if line.startswith("&"):
+                    if '&' + default_section in line:
+                        this_section = True
+                        print("Writing to section: " + default_section)
+                    else:
+                        this_section = False
+                        print("skip section: " + line.split("&")[1].split()[0])
                 if this_section:
                     if exists and parameter in line:
                         if not delete:
@@ -244,17 +248,18 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
                         else:
                             f.write(indent)
                             f.write(f"! {parameter} = {value}    ! Removed\n")
-                        edited = True
-                        this_section = False
-                    elif not exists and line[0] == "/":
+                    elif not exists and line.startswith("/"):
                         f.write(indent)
                         f.write(f"{parameter} = {value}    ! Added\n")
-                        f.write("/")
-                        edited = True
+                        f.write("/\n")
                         this_section = False
-                if not edited:
+                    else:
+                        f.write(line)
+                else:
                     f.write(line)
-            f.write("\n")   
+                
+                
+                
     
 
 
