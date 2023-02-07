@@ -14,6 +14,8 @@ class MesaEnvironmentHandler():
             self.defaultsPath = "star/defaults/"
         self.mesaDir = self.readMesaDirs(mesa_env)
         self.defaultsDir = os.path.join(self.mesaDir, self.defaultsPath)
+        shutil.copy(os.path.join(self.mesaDir, "kap/defaults/kap.defaults"), self.defaultsDir)
+        shutil.copy(os.path.join(self.mesaDir, "eos/defaults/eos.defaults"), self.defaultsDir)
         if not os.path.exists(self.defaultsDir):
             raise FileNotFoundError(f"Defaults directory {self.defaultsDir} does not exist.")
         if astero:
