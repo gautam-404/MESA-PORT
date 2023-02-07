@@ -136,7 +136,7 @@ class MesaAccess:
             if isinstance(keys, list):
                 if len(keys) == len(values):
                     for i in range(len(keys)):
-                        self.setitem(keys[i], values[i])
+                        self.setitem(keys[i], values[i], force=force)
                 else:
                     raise ValueError(f"Length of keys {keys} does not match length of {values}")
             elif isinstance(keys, str):
