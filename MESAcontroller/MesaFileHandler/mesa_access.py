@@ -57,7 +57,7 @@ class MesaAccess:
 
 
     
-    def setitem(self, key, value, default=False):
+    def setitem(self, key, value, default=False, force=False):
         """Sets a value in the full dictionary.
 
         Args:
@@ -72,8 +72,9 @@ class MesaAccess:
             value = default_val
         filename = getFilename(self.astero, self.binary, default_section, self.inlist_filenames)
         exists, _ = matchtoFile(key, self.inlistDict[filename], self.inlistSections[filename], default_section)
-        if not matchTypes(type(value), default_type):
-            raise TypeError(f"Value {value} is not of default type {default_type}")
+        if not force:
+            if not matchTypes(type(value), default_type):
+                raise TypeError(f"Value {value} is not of default type {default_type}")
         writetoFile(self.projectDir, filename, key, value, exists, default_section, delete=False)
             
 
@@ -112,7 +113,7 @@ class MesaAccess:
 
 
 
-    def set(self, *arg):
+    def set(self, force=False, *arg):
         """Sets a value in the full dictionary.
 
         Args:
@@ -127,7 +128,7 @@ class MesaAccess:
         if len(arg) == 1:
             if isinstance(arg[0], dict):
                 for key, value in arg[0].items():
-                    self.setitem(key, value)
+                    self.setitem(key, value, force=force)
             else:
                 raise TypeError("Input parameter name(s) must be of type dict.")
         elif len(arg) == 2:
@@ -139,7 +140,7 @@ class MesaAccess:
                 else:
                     raise ValueError(f"Length of keys {keys} does not match length of {values}")
             elif isinstance(keys, str):
-                self.setitem(keys, values)
+                self.setitem(keys, values, force=force)
             else:
                 raise TypeError("Input parameter name(s) must be of type string or list of strings.")
         else:
