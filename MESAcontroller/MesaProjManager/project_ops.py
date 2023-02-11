@@ -156,7 +156,7 @@ class ProjectOps:
             Exception: If the run fails.
         """        
         ops_helper.check_exists(self.exists, self.projName)
-        runlog = os.path.join(self.work_dir, "runlog")
+        runlog = os.path.join(self.work_dir, "run.log")
         if not os.path.exists(os.path.join(self.work_dir, "star")) and \
             not os.path.exists(os.path.join(self.work_dir, "binary")):
             raise Exception("Aborting! Run 'make()' first.")
@@ -188,7 +188,7 @@ class ProjectOps:
             ValueError: If the input for argument 'silent' is invalid.
         """
         ops_helper.check_exists(self.exists, self.projName)
-        runlog = os.path.join(self.work_dir, "runlog")
+        runlog = os.path.join(self.work_dir, "run.log")
         if photo == None:
             print(f"[b i  cyan3]Resuming run from the most recent photo.")
             with status.Status("[b i  cyan3]Running...", spinner="moon") as status_:
@@ -255,7 +255,7 @@ class ProjectOps:
         else:
             LOGS_dir = os.path.join(self.work_dir, "LOGS")
 
-        runlog = os.path.join(self.work_dir, "runlog")
+        runlog = os.path.join(self.work_dir, "run.log")
         if os.environ['GYRE_DIR'] is not None:
             if not silent in [True, False]:
                 raise ValueError("Invalid input for argument 'silent'")
