@@ -190,8 +190,8 @@ class ProjectOps:
         ops_helper.check_exists(self.exists, self.projName)
         runlog = os.path.join(self.work_dir, "run.log")
         if photo == None:
-            print(f"[b i  cyan3]Resuming run from the most recent photo.")
-            with status.Status("[b i  cyan3]Running...", spinner="moon") as status_:
+            # print(f"[b i  cyan3]Resuming run from the most recent photo.")
+            with status.Status("[b i  cyan3]Resumed run from the most recent photo.\nRunning...", spinner="moon") as status_:
                 res = ops_helper.run_subprocess(commands=f'./re', dir=self.work_dir, 
                         silent=silent, runlog=runlog, status=status_)
         else:
@@ -212,8 +212,8 @@ class ProjectOps:
                 if silent not in [True, False]:
                     raise ValueError("Invalid input for argument 'silent'.")
                 else:
-                    print(f"[b i  cyan3]Resuming run from photo {photo}.")
-                    with status.Status("[b i  cyan3]Running...", spinner="moon") as status_:
+                    # print(f"[b i  cyan3]Resuming run from photo {photo}.")
+                    with status.Status(f"[b i  cyan3]Resumed run from photo {photo}.\nRunning...", spinner="moon") as status_:
                         res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
                                 silent=silent, runlog=runlog, status=status_)
         if res is False:
