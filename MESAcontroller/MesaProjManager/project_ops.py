@@ -144,7 +144,7 @@ class ProjectOps:
 
 
     
-    def run(self, silent=True):
+    def run(self, silent=True, logging=True):
         """Runs the project.
 
         Args:
@@ -156,7 +156,10 @@ class ProjectOps:
             Exception: If the run fails.
         """        
         ops_helper.check_exists(self.exists, self.projName)
-        runlog = os.path.join(self.work_dir, "run.log")
+        if logging:
+            runlog = os.path.join(self.work_dir, "run.log")
+        else:
+            runlog = os.devnull
         if not os.path.exists(os.path.join(self.work_dir, "star")) and \
             not os.path.exists(os.path.join(self.work_dir, "binary")):
             raise Exception("Aborting! Run 'make()' first.")
@@ -175,7 +178,7 @@ class ProjectOps:
 
         
     
-    def resume(self, photo=None, silent=True, target=None):
+    def resume(self, photo=None, silent=True, target=None, logging=True):
         """Resumes the run from a given photo.
 
         Args:
@@ -188,7 +191,10 @@ class ProjectOps:
             ValueError: If the input for argument 'silent' is invalid.
         """
         ops_helper.check_exists(self.exists, self.projName)
-        runlog = os.path.join(self.work_dir, "run.log")
+        if logging:
+            runlog = os.path.join(self.work_dir, "run.log")
+        else:
+            runlog = os.devnull
         if photo == None:
             # print(f"[b i  cyan3]Resuming run from the most recent photo.")
             with status.Status("[b i  cyan3]Resumed run from the most recent photo.\nRunning...", spinner="moon") as status_:
@@ -225,7 +231,7 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, files='', silent=True, target=None):
+    def runGyre(self, gyre_in, files='', silent=True, target=None, logging=True):
         """Runs GYRE.
 
         Args:
@@ -255,7 +261,10 @@ class ProjectOps:
         else:
             LOGS_dir = os.path.join(self.work_dir, "LOGS")
 
-        runlog = os.path.join(self.work_dir, "run.log")
+        if logging:
+            runlog = os.path.join(self.work_dir, "run.log")
+        else:
+            runlog = os.devnull
         if os.environ['GYRE_DIR'] is not None:
             if not silent in [True, False]:
                 raise ValueError("Invalid input for argument 'silent'")
