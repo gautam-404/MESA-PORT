@@ -31,6 +31,12 @@ def readDefaults(filename, defaultsDir):
                         line = line.split("!")[0]
                     name, _, var = line.strip().partition("=")
                     defaultParameters[name] = var
+                    if "(:)" in name:
+                        # print(name)
+                        for i in range(1, 101):
+                            name_ = name.replace("(:)", f"({i})")
+                            defaultParameters[name_] = var
+
     # pprint(defaultParameters)
     return defaultParameters
 
