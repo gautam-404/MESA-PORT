@@ -279,16 +279,18 @@ class ProjectOps:
                 else:
                     with progress.Progress(*progress_columns) as progressbar:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
+                        for filename in filenames:
+                                filename = filename.split('/')[-1]
+                                ops_helper.modify_gyre_params(LOGS_dir, filename, data_format)
                         if parallel:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
-                                for _ in pool.starmap(ops_helper.run_subprocess, zip(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                        silent=silent, runlog=runlog, gyre=True)):
+                                for _ in pool.starmap(ops_helper.run_subprocess, zip(f'{gyre_ex} gyre.in', LOGS_dir, 
+                                        silent, runlog, None, True)):
                                     progressbar.advance(task)
                         else:
                             for filename in filenames:
                                 filename = filename.split('/')[-1]
-                                ops_helper.modify_gyre_params(LOGS_dir, filename, data_format)
                                 res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
                                         silent=silent, runlog=runlog, gyre=True)
                                 progressbar.advance(task)
@@ -302,21 +304,22 @@ class ProjectOps:
                 else:
                     with progress.Progress(*progress_columns) as progressbar:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
+                        for file in progress.track(files, description="[b i cyan3]Running GYRE..."):
+                            if not os.path.isfile(os.path.join(LOGS_dir, file)):
+                                raise FileNotFoundError(f"File '{file}' does not exist.")
+                            else:    
+                                ops_helper.modify_gyre_params(LOGS_dir, file, data_format)
                         if parallel:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
-                                for _ in pool.starmap(ops_helper.run_subprocess, zip(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                        silent=silent, runlog=runlog, gyre=True)):
+                                for _ in pool.starmap(ops_helper.run_subprocess, zip(f'{gyre_ex} gyre.in', LOGS_dir, 
+                                        silent, runlog, None, True)):
                                     progressbar.advance(task)
                         else:
                             for file in progress.track(files, description="[b i cyan3]Running GYRE..."):
-                                if not os.path.isfile(os.path.join(LOGS_dir, file)):
-                                    raise FileNotFoundError(f"File '{file}' does not exist.")
-                                else:    
-                                    ops_helper.ops_helper.modify_gyre_params(LOGS_dir, file, data_format)
-                                    res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                        silent=silent, runlog=runlog, gyre=True)
-                                    progressbar.update(task_id=task, advance=1)
+                                res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                    silent=silent, runlog=runlog, gyre=True)
+                                progressbar.update(task_id=task, advance=1)
             
             ## NO FILES, i.e. file specified in gyre.in
             elif files == '':
