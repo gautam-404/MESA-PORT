@@ -292,7 +292,7 @@ class ProjectOps:
                         else:
                             for filename in progress.track(filenames, description="[b i cyan3]Running GYRE..."):
                                 res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                        silent=silent, runlog=runlog, gyre=True, filename=filename, data_format=data_format)
+                                        silent=silent, runlog=runlog, status=None, gyre=True, filename=filename, data_format=data_format)
                                 progressbar.advance(task)
 
             ## SPECIFIC FILES
@@ -319,7 +319,7 @@ class ProjectOps:
                         else:
                             for file in progress.track(files, description="[b i cyan3]Running GYRE..."):
                                 res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                    silent=silent, runlog=runlog, gyre=True, filename=file, data_format=data_format)
+                                    silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
                                 progressbar.update(task_id=task, advance=1)
             
             ## NO FILES, i.e. file specified in gyre.in
