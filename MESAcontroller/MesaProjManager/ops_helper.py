@@ -1,6 +1,7 @@
 import subprocess
 import shlex
 import sys
+import shutil
 from rich import status
 
 from ..MesaFileHandler.support import *
@@ -12,7 +13,7 @@ def check_exists(exists, projName):
 
 
 def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status("Running..."), 
-                    gyre=False, filename="", data_format="FGONG"):
+                    gyre=False, filename="", data_format="FGONG", parallel=False, gyre_in="gyre.in"):
     """Runs a subprocess.
 
     Args:
@@ -30,6 +31,10 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
     """      
     if gyre:
         modify_gyre_params(dir, filename, data_format)
+        if parallel:
+            shutil.move(gyre_in, f"gyre{filename}.in")
+            commands = commands.replace("gyre.in", f"gyre{filename}.in")
+
     with subprocess.Popen(shlex.split(commands), cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
         step = 1
