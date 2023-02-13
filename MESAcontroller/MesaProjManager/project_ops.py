@@ -286,7 +286,8 @@ class ProjectOps:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
                                 args = zip([f'{gyre_ex} gyre.in']*len(filenames), [LOGS_dir]*len(filenames),
-                                        [silent]*len(filenames), [runlog]*len(filenames), [True]*len(filenames))
+                                        [silent]*len(filenames), [runlog]*len(filenames), 
+                                        [None]*len(filenames), [True]*len(filenames))
                                 for _ in pool.starmap(ops_helper.run_subprocess, args):
                                     progressbar.advance(task)
                         else:
@@ -314,7 +315,8 @@ class ProjectOps:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
                                 args = zip([f'{gyre_ex} gyre.in']*len(filenames), [LOGS_dir]*len(filenames),
-                                        [silent]*len(filenames), [runlog]*len(filenames), [True]*len(filenames))
+                                        [silent]*len(filenames), [runlog]*len(filenames), 
+                                        [None]*len(filenames), [True]*len(filenames))
                                 for _ in pool.starmap(ops_helper.run_subprocess, args):
                                     progressbar.advance(task)
                         else:
