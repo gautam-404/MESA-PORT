@@ -30,11 +30,12 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
         bool: True if the command ran successfully, False otherwise.
     """      
     if gyre:
-        modify_gyre_params(dir, filename, data_format)
         if parallel:
             num = filename.split(".")[0]
             shutil.copy(gyre_in, os.path.join(dir, f"gyre{filename}.in"))
+            gyre_in = os.path.join(dir, f"gyre{filename}.in")
             commands = commands.replace("gyre.in", f"gyre{filename}.in")
+        modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in)
 
     with subprocess.Popen(shlex.split(commands), cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
@@ -80,7 +81,7 @@ def process_outline(outline, step):
         return step, None
 
 
-def writetoGyreFile(dir, parameter, value, default_section):
+def writetoGyreFile(dir, parameter, value, default_section, gyre_in="gyre.in"):
     """Writes the parameter and its value to the inlist file.
 
     Args:
@@ -91,12 +92,11 @@ def writetoGyreFile(dir, parameter, value, default_section):
         defaultsDict (dict): A dictionary with all the parameters and their values.
         sections (list): A list with the sections of the inlist file.
     """    
-    filename = "gyre.in"
     this_section = False
     with cd(dir):
-        with open(filename, "r") as file:
+        with open(gyre_in, "r") as file:
             lines = file.readlines()
-        with open(filename, "w+") as f:
+        with open(gyre_in, "w+") as f:
             indent = "    "
             for line in lines:
                 edited = False
@@ -118,13 +118,13 @@ def writetoGyreFile(dir, parameter, value, default_section):
 
    
 
-def modify_gyre_params(LOGS_dir, filename, data_format):
+def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in"):
     if data_format == "GYRE":
         file_format = "MESA"
     elif data_format == "FGONG":
         file_format = "FGONG"
-    writetoGyreFile(LOGS_dir, parameter="model_type", value="'EVOL'", default_section="&model")
-    writetoGyreFile(LOGS_dir, parameter="file_format", value=f"'{file_format}'", default_section="&model")
-    writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", default_section="&model")
-    writetoGyreFile(LOGS_dir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output")
-    writetoGyreFile(LOGS_dir, parameter="summary_file", value="'freq_output_nonad.txt'", default_section="&nad_output")
+    writetoGyreFile(LOGS_dir, parameter="model_type", value="'EVOL'", default_section="&model", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="file_format", value=f"'{file_format}'", default_section="&model", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", default_section="&model", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="summary_file", value="'freq_output_nonad.txt'", default_section="&nad_output", gyre_in=gyre_in)
