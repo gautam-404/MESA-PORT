@@ -173,7 +173,7 @@ class ProjectOps:
             if res is False:
                 raise Exception("Run failed! Check runlog.")
             else:
-                print("Done with the run!\n")
+                print("Run successful.\n")
         
 
         
@@ -225,7 +225,7 @@ class ProjectOps:
         if res is False:
             print("Resume from photo failed! Check runlog.")
         else:
-            print("Done with the run!\n")
+            print("Run successful.\n")
 
 
 
