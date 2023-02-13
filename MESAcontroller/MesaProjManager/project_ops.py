@@ -277,22 +277,23 @@ class ProjectOps:
                 if len(filenames) == 0:
                     raise ValueError(f"No {data_format} files found in LOGS directory.")
                 else:
-                    filenames = [filename.split('/')[-1] for filename in filenames]
-                    if parallel:
-                        n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
-                        with mp.Pool(n_processes) as pool, progress.Progress(*progress_columns) as progressbar:
-                            task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
-                            args = zip([f'{gyre_ex} gyre.in']*len(filenames), [LOGS_dir]*len(filenames),
-                                    [silent]*len(filenames), [runlog]*len(filenames), 
-                                    [None]*len(filenames), [True]*len(filenames),
-                                    filenames, [data_format]*len(filenames))
-                            for _ in pool.starmap(ops_helper.run_subprocess, args):
+                    with progress.Progress(*progress_columns) as progressbar:
+                        task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
+                        filenames = [filename.split('/')[-1] for filename in filenames]
+                        if parallel:
+                            n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
+                            with mp.Pool(n_processes) as pool:
+                                args = zip([f'{gyre_ex} gyre.in']*len(filenames), [LOGS_dir]*len(filenames),
+                                        [silent]*len(filenames), [runlog]*len(filenames), 
+                                        [None]*len(filenames), [True]*len(filenames),
+                                        filenames, [data_format]*len(filenames))
+                                for _ in pool.starmap(ops_helper.run_subprocess, args):
+                                    progressbar.advance(task)
+                        else:
+                            for filename in filenames:
+                                res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                        silent=silent, runlog=runlog, status=None, gyre=True, filename=filename, data_format=data_format)
                                 progressbar.advance(task)
-                    else:
-                        for filename in progress.track(filenames, description="[b i cyan3]Running GYRE..."):
-                            res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                    silent=silent, runlog=runlog, status=None, gyre=True, filename=filename, data_format=data_format)
-                            progressbar.advance(task)
 
             ## SPECIFIC FILES
             elif type(files) == list or type(files) == str:
@@ -301,24 +302,25 @@ class ProjectOps:
                 if len(files) == 0:
                     raise ValueError("No files provided.")
                 else:
-                    for file in files:
-                        if not os.path.isfile(os.path.join(LOGS_dir, file)):
-                            raise FileNotFoundError(f"File '{file}' does not exist.")
-                    if parallel:
-                        n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
-                        with mp.Pool(n_processes) as pool, progress.Progress(*progress_columns) as progressbar:
-                            task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
-                            args = zip([f'{gyre_ex} gyre.in']*len(filenames), [LOGS_dir]*len(filenames),
-                                    [silent]*len(filenames), [runlog]*len(filenames), 
-                                    [None]*len(filenames), [True]*len(filenames),
-                                    filenames, [data_format]*len(filenames))
-                            for _ in pool.starmap(ops_helper.run_subprocess, args):
+                    with progress.Progress(*progress_columns) as progressbar:
+                        task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
+                        for file in files:
+                            if not os.path.isfile(os.path.join(LOGS_dir, file)):
+                                raise FileNotFoundError(f"File '{file}' does not exist.")
+                        if parallel:
+                            n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
+                            with mp.Pool(n_processes) as pool:
+                                args = zip([f'{gyre_ex} gyre.in']*len(filenames), [LOGS_dir]*len(filenames),
+                                        [silent]*len(filenames), [runlog]*len(filenames), 
+                                        [None]*len(filenames), [True]*len(filenames),
+                                        filenames, [data_format]*len(filenames))
+                                for _ in pool.starmap(ops_helper.run_subprocess, args):
+                                    progressbar.advance(task)
+                        else:
+                            for file in files:
+                                res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                    silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
                                 progressbar.advance(task)
-                    else:
-                        for file in progress.track(files, description="[b i cyan3]Running GYRE..."):
-                            res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
-                            progressbar.update(task_id=task, advance=1)
             
             ## NO FILES, i.e. file specified in gyre.in
             elif files == '':
