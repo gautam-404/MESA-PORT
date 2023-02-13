@@ -266,10 +266,11 @@ class ProjectOps:
             runlog = os.path.join(self.work_dir, "run.log")
         else:
             runlog = os.devnull
+
+
         if os.environ['GYRE_DIR'] is not None:
             if not silent in [True, False]:
                 raise ValueError("Invalid input for argument 'silent'")
-            
             ## ALL FILES
             if files == 'all':
                 filenames = sorted(glob.glob(os.path.join(LOGS_dir, f"*.{data_format}")), 
@@ -283,7 +284,7 @@ class ProjectOps:
                         if parallel:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
-                                args = zip([f'{gyre_ex} gyre.in']*len(filenames), [LOGS_dir]*len(filenames),
+                                args = zip([f'{gyre_ex} {gyre_in}']*len(filenames), [LOGS_dir]*len(filenames),
                                         [silent]*len(filenames), [runlog]*len(filenames), 
                                         [None]*len(filenames), [True]*len(filenames),
                                         filenames, [data_format]*len(filenames))
@@ -310,7 +311,7 @@ class ProjectOps:
                         if parallel:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
-                                args = zip([f'{gyre_ex} gyre.in']*len(filenames), [LOGS_dir]*len(filenames),
+                                args = zip([f'{gyre_ex} {gyre_in}']*len(filenames), [LOGS_dir]*len(filenames),
                                         [silent]*len(filenames), [runlog]*len(filenames), 
                                         [None]*len(filenames), [True]*len(filenames),
                                         filenames, [data_format]*len(filenames))
