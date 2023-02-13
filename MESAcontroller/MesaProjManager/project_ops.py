@@ -284,6 +284,7 @@ class ProjectOps:
                         if parallel:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
+                                gyre_in = os.path.abspath(gyre_in)
                                 args = zip([f'{gyre_ex} {gyre_in}']*len(filenames), [LOGS_dir]*len(filenames),
                                         [silent]*len(filenames), [runlog]*len(filenames), 
                                         [None]*len(filenames), [True]*len(filenames),
@@ -311,6 +312,7 @@ class ProjectOps:
                         if parallel:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
+                                gyre_in = os.path.abspath(gyre_in)
                                 args = zip([f'{gyre_ex} {gyre_in}']*len(filenames), [LOGS_dir]*len(filenames),
                                         [silent]*len(filenames), [runlog]*len(filenames), 
                                         [None]*len(filenames), [True]*len(filenames),
