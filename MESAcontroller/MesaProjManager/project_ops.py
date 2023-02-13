@@ -231,7 +231,7 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, files='', silent=True, target=None, logging=True):
+    def runGyre(self, gyre_in, files='', data_format="FGONG", silent=True, target=None, logging=True):
         """Runs GYRE.
 
         Args:
@@ -270,10 +270,10 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'silent'")
             
             if files == 'all':
-                filenames = sorted(glob.glob(os.path.join(LOGS_dir, "*.FGONG")), 
+                filenames = sorted(glob.glob(os.path.join(LOGS_dir, f"*.{data_format}")), 
                             key=lambda x: int(os.path.basename(x).split('.')[0].split('profile')[1]))
                 if len(filenames) == 0:
-                    raise ValueError("No FGONG files found in LOGS directory.")
+                    raise ValueError(f"No {data_format} files found in LOGS directory.")
                 else:
                     with progress.Progress(*progress_columns) as progressbar:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
