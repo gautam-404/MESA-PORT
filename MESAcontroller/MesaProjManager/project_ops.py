@@ -285,8 +285,8 @@ class ProjectOps:
                         if parallel:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
-                                for _ in pool.starmap(ops_helper.run_subprocess, zip(f'{gyre_ex} gyre.in', LOGS_dir, 
-                                        silent, runlog, None, True)):
+                                args = [(f'{gyre_ex} gyre.in', LOGS_dir, silent, runlog, True) for filename in filenames]
+                                for _ in pool.starmap(ops_helper.run_subprocess, args):
                                     progressbar.advance(task)
                         else:
                             for filename in filenames:
@@ -312,8 +312,8 @@ class ProjectOps:
                         if parallel:
                             n_processes = - (-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                             with mp.Pool(n_processes) as pool:
-                                for _ in pool.starmap(ops_helper.run_subprocess, zip(f'{gyre_ex} gyre.in', LOGS_dir, 
-                                        silent, runlog, None, True)):
+                                args = [(f'{gyre_ex} gyre.in', LOGS_dir, silent, runlog, True) for file in files]
+                                for _ in pool.starmap(ops_helper.run_subprocess, args):
                                     progressbar.advance(task)
                         else:
                             for file in progress.track(files, description="[b i cyan3]Running GYRE..."):
