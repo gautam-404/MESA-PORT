@@ -105,9 +105,9 @@ def writetoGyreFile(dir, parameter, value, default_section):
 
    
 
-def modify_gyre_params(LOGS_dir, filename):
+def modify_gyre_params(LOGS_dir, filename, data_format):
     writetoGyreFile(LOGS_dir, parameter="model_type", value="'EVOL'", default_section="&model")
-    writetoGyreFile(LOGS_dir, parameter="file_format", value="'FGONG'", default_section="&model")
+    writetoGyreFile(LOGS_dir, parameter="file_format", value=f"'{data_format}'", default_section="&model")
     writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", default_section="&model")
     writetoGyreFile(LOGS_dir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output")
     writetoGyreFile(LOGS_dir, parameter="summary_file", value="'freq_output_nonad.txt'", default_section="&nad_output")

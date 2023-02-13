@@ -279,7 +279,7 @@ class ProjectOps:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
                         for filename in filenames:
                             filename = filename.split('/')[-1]
-                            ops_helper.modify_gyre_params(LOGS_dir, filename)
+                            ops_helper.modify_gyre_params(LOGS_dir, filename, data_format)
                             res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
                                     silent=silent, runlog=runlog, gyre=True)
                             progressbar.update(task_id=task, advance=1)
@@ -296,7 +296,7 @@ class ProjectOps:
                             if not os.path.isfile(os.path.join(LOGS_dir, file)):
                                 raise FileNotFoundError(f"File '{file}' does not exist.")
                             else:    
-                                ops_helper.ops_helper.modify_gyre_params(LOGS_dir, file)
+                                ops_helper.ops_helper.modify_gyre_params(LOGS_dir, file, data_format)
                                 res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
                                     silent=silent, runlog=runlog, gyre=True)
                                 progressbar.update(task_id=task, advance=1)
