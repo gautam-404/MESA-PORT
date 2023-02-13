@@ -77,8 +77,9 @@ def load(infile, work_dir, typeof, astero=False, binary=False, target=''):
         elif os.path.exists(os.path.join(work_dir, infile)):
             infile = os.path.join(work_dir, infile)
             shutil.copy(infile, dest)
-        elif typeof == "gyre.in" and os.path.exists(os.path.join("LOGS", gyre_in)):
-                gyre_in = os.path.join("LOGS", gyre_in)
+        elif typeof == "gyre.in" and os.path.exists(os.path.join("LOGS", infile)):
+                infile = os.path.join("LOGS", infile)
+                shutil.copy(infile, dest)
         else:
             raise FileNotFoundError(f"Could not find the your specified {typeof} file, '{infile}'. Aborting...")
     except shutil.Error:
