@@ -62,11 +62,14 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
             file.write( "\n\n"+("*"*100)+"\n\n" )
 
         _data, error = proc.communicate()
-        if proc.returncode or error:
-            print('The process raised an error:', proc.returncode, error)
-            return False
-        else:
-            return True
+    if gyre:
+        if parallel:
+            os.remove(gyre_in)
+    if proc.returncode or error:
+        print('The process raised an error:', proc.returncode, error)
+        return False
+    else:
+        return True
 
 def process_outline(outline, step):
     try:
