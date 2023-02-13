@@ -11,7 +11,8 @@ def check_exists(exists, projName):
             raise FileNotFoundError(f"Project '{projName}' does not exist. Please create it first.")
 
 
-def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status("Running..."), gyre=False):
+def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status("Running..."), 
+                    gyre=False, filename="", data_format="FGONG"):
     """Runs a subprocess.
 
     Args:
@@ -19,10 +20,16 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
         dir (str): Directory in which the command is to be run.
         silent (bool, optional): Run the command silently. Defaults to False.
         runlog (str, optional): Log file to write the output to. Defaults to ''.
+        status (rich.status.Status, optional): Status to update. Defaults to status.Status("Running...").
+        gyre (bool, optional): Whether the command is a gyre command. Defaults to False.
+        filename (str, optional): The name of the file to be used by gyre. Defaults to None.
+        data_format (str, optional): The format of the data to be used by gyre. Defaults to None.
 
     Returns:
         bool: True if the command ran successfully, False otherwise.
     """      
+    if gyre:
+        modify_gyre_params(dir, filename, data_format)
     with subprocess.Popen(shlex.split(commands), cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
         step = 1
