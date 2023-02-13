@@ -32,9 +32,9 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
     if gyre:
         if parallel:
             num = filename.split(".")[0]
-            shutil.copy(gyre_in, os.path.join(dir, f"gyre{filename}.in"))
-            gyre_in = os.path.join(dir, f"gyre{filename}.in")
-            commands = commands.replace("gyre.in", f"gyre{filename}.in")
+            shutil.copy(gyre_in, os.path.join(dir, f"gyre{num}.in"))
+            gyre_in = os.path.join(dir, f"gyre{num}.in")
+            commands = commands.replace("gyre.in", f"gyre{num}.in")
         modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in)
 
     with subprocess.Popen(shlex.split(commands), cwd=dir,
