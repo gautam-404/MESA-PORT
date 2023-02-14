@@ -80,7 +80,7 @@ class Installer:
             && chmod -R +x {mesa_dir} \\
             && cd {mesa_dir} && ./clean  && ./install \\
             && export GYRE_DIR={mesa_dir}/gyre/gyre \\
-            $$ make -C {mesa_dir}/gyre/gyre \\
+            && make -C {mesa_dir}/gyre/gyre \\
             && make -C {mesa_dir}/gyre/gyre test\"
             '''
             with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
