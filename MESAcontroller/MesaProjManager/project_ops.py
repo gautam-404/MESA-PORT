@@ -12,6 +12,7 @@ import multiprocessing as mp
 
 from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
 from . import ops_helper
+import istarmap
 
 
 class ProjectOps:
@@ -290,8 +291,8 @@ class ProjectOps:
                                         [None]*len(filenames), [True]*len(filenames),
                                         filenames, [data_format]*len(filenames),
                                         [True]*len(filenames), [gyre_in]*len(filenames))
-                                res = [pool.apply_async(ops_helper.run_subprocess, arg, callback=progressbar.advance(task)) for arg in args]
-                                results = [r.get() for r in res]
+                                for _ in pool.istarmap(ops_helper.run_subprocess, args):
+                                    progressbar.advance(task)
                         else:
                             for filename in filenames:
                                 res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
