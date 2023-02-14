@@ -12,7 +12,7 @@ import multiprocessing as mp
 
 from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
 from . import ops_helper
-import istarmap
+from . import istarmap
 
 
 class ProjectOps:
