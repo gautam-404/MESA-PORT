@@ -290,7 +290,7 @@ class ProjectOps:
                                         [None]*len(filenames), [True]*len(filenames),
                                         filenames, [data_format]*len(filenames),
                                         [True]*len(filenames), [gyre_in]*len(filenames))
-                                res = [pool.apply_async(ops_helper.run_subprocess, (arg,), callback=progressbar.advance(task)) for arg in args]
+                                res = [pool.apply_async(ops_helper.run_subprocess, arg, callback=progressbar.advance(task)) for arg in args]
                                 results = [r.get() for r in res]
                         else:
                             for filename in filenames:
