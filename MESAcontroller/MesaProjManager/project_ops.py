@@ -290,7 +290,7 @@ class ProjectOps:
                                         [None]*len(filenames), [True]*len(filenames),
                                         filenames, [data_format]*len(filenames),
                                         [True]*len(filenames), [gyre_in]*len(filenames))
-                                for _ in pool.starmap(ops_helper.run_subprocess, args):
+                                for _ in pool.imap_unordered(ops_helper.run_subprocess, args):
                                     progressbar.advance(task)
                         else:
                             for filename in filenames:
