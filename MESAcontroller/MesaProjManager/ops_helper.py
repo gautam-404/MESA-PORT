@@ -2,7 +2,7 @@ import subprocess
 import shlex
 import sys
 import shutil
-from rich import status
+from rich import status, print
 
 from ..MesaFileHandler.support import *
 
