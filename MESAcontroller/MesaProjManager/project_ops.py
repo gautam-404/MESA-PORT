@@ -170,7 +170,7 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'silent'")
             else:
                 if parallel:
-                    num = int(''.join(filter(str.isdigit, dir.split('/')[-1])))
+                    num = int(''.join(filter(str.isdigit, self.work_dir.split('/')[-1])))
                     print(f"[bi]Model {num}")
                     res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
                                     silent=silent, runlog=runlog, status=status_, parallel=parallel)
@@ -227,7 +227,7 @@ class ProjectOps:
                     raise ValueError("Invalid input for argument 'silent'.")
                 else:
                     if parallel:
-                        num = int(''.join(filter(str.isdigit, dir.split('/')[-1])))
+                        num = int(''.join(filter(str.isdigit, self.work_dir.split('/')[-1])))
                         print(f"[bi]Model {num}")
                         res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
                                 silent=silent, runlog=runlog, parallel=parallel)
