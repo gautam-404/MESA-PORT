@@ -171,9 +171,9 @@ class ProjectOps:
             else:
                 if parallel:
                     num = int(''.join(filter(str.isdigit, self.work_dir.split('/')[-1])))
-                    with status.Status(f"[bi]Model {num}", spinner_style=None) as status_:
-                        res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
-                                        silent=silent, runlog=runlog, status=status_, parallel=parallel)
+                    print(f"[bi]Model {num}", end="\r")
+                    res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
+                                    silent=silent, runlog=runlog, parallel=parallel)
                 else:
                     with status.Status("[b i cyan3]Running...", spinner="moon") as status_:
                         res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
@@ -228,9 +228,9 @@ class ProjectOps:
                 else:
                     if parallel:
                         num = int(''.join(filter(str.isdigit, self.work_dir.split('/')[-1])))
-                        with status.Status(f"[bi]Model {num}", spinner_style=None) as status_:
-                            res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
-                                    silent=silent, runlog=runlog, parallel=parallel)
+                        print(f"[bi]Model {num}", end="\r")
+                        res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
+                                silent=silent, runlog=runlog, parallel=parallel)
                     else:
                         with status.Status(f"[b i  cyan3]Resuming run from photo {photo}.\nRunning...", spinner="moon") as status_:
                             res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
