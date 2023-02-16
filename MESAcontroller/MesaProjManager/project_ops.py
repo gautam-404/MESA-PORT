@@ -171,7 +171,7 @@ class ProjectOps:
             else:
                 if parallel:
                     num = int(''.join(filter(str.isdigit, self.work_dir.split('/')[-1])))
-                    print(f"[bi]Model {num}", end="\r")
+                    # print(f"[bi]Model {num}", end="\r")
                     res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
                                     silent=silent, runlog=runlog, parallel=parallel)
                 else:
@@ -228,7 +228,7 @@ class ProjectOps:
                 else:
                     if parallel:
                         num = int(''.join(filter(str.isdigit, self.work_dir.split('/')[-1])))
-                        print(f"[bi]Model {num}", end="\r")
+                        # print(f"[bi]Model {num}", end="\r")
                         res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
                                 silent=silent, runlog=runlog, parallel=parallel)
                     else:
