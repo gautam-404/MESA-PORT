@@ -49,13 +49,18 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
                     step, age = process_outline(outline, step)
                     if age is not None:
                         if age < 1/365:
-                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Age: [cyan]{age*365*24:.4f}[/cyan] hours")
+                            age_str = f"[b]Age: [cyan]{age*365*24:.4f}[/cyan] hours"
                         elif 1/365 < age < 1:
-                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Age: [cyan]{age*365:.4f}[/cyan] days")
+                            age_str = f"[b]Age: [cyan]{age*365:.4f}[/cyan] days"
                         elif 1 < age < 1000:
-                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Age: [cyan]{age:.3f}[/cyan] years")
+                            age_str = f"[b]Age: [cyan]{age:.3f}[/cyan] years"
                         else:
-                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n[b]Age: [cyan]{age:.3e}[/cyan] years")
+                            age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
+                        if parallel:
+                            num = int(''.join(filter(str.isdigit, dir.split('/')[-1])))
+                            status.update(status=f"[b i cyan3]Model {num}[/b i cyan3] -----> "+age_str+"\n", spinner=None)
+                        else:
+                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
             for errline in proc.stderr:
                 file.write(errline)
                 sys.stdout.write(errline)
