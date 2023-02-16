@@ -59,7 +59,7 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
                         if parallel:
                             num = int(''.join(filter(str.isdigit, dir.split('/')[-1])))
                             pad = "\n"*num
-                            end = "\r"*num
+                            end = "\r"*(num+1)
                             print(pad+f"[b i]Model {num}[/b i] -----> "+age_str, end=end)
                         else:
                             status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
