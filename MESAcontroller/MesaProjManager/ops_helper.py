@@ -58,13 +58,7 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
                             age_str = f"[b]Age: [cyan]{age:.3f}[/cyan] years"
                         else:
                             age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
-                        if parallel:
-                            num = int(''.join(filter(str.isdigit, dir.split('/')[-1])))
-                            pad = "\n"*num
-                            print(pad+f"[b i]Model {num}[/b i] -----> "+age_str, end="\r")
-                            print("\033[F"*num)
-                        else:
-                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
+                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
             for errline in proc.stderr:
                 file.write(errline)
                 sys.stdout.write(errline)
