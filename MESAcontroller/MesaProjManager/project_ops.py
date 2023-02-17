@@ -146,7 +146,7 @@ class ProjectOps:
 
 
     
-    def run(self, silent=True, logging=True, parallel=False):
+    def run(self, silent=True, logging=True, parallel=False, progress_table=None):
         """Runs the project.
 
         Args:
@@ -177,7 +177,8 @@ class ProjectOps:
                 else:
                     with status.Status("[b i cyan3]Running...", spinner="moon") as status_:
                         res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
-                                    silent=silent, runlog=runlog, status=status_, parallel=parallel) 
+                                    silent=silent, runlog=runlog, status=status_, 
+                                    parallel=parallel, progress_table=progress_table) 
             if res is False:
                 raise Exception("Run failed! Check runlog.")
             else:
@@ -186,7 +187,7 @@ class ProjectOps:
 
         
     
-    def resume(self, photo=None, silent=True, target=None, logging=True, parallel=False):
+    def resume(self, photo=None, silent=True, target=None, logging=True, parallel=False, progress_table=None):
         """Resumes the run from a given photo.
 
         Args:
@@ -234,7 +235,8 @@ class ProjectOps:
                     else:
                         with status.Status(f"[b i  cyan3]Resuming run from photo {photo}.\nRunning...", spinner="moon") as status_:
                             res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
-                                    silent=silent, runlog=runlog, status=status_, parallel=parallel)
+                                    silent=silent, runlog=runlog, status=status_, 
+                                    parallel=parallel, progress_table=progress_table)
         if res is False:
             print("Resume from photo failed! Check runlog.")
         else:

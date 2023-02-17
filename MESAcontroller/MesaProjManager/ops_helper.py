@@ -3,8 +3,31 @@ import shlex
 import sys
 import shutil
 from rich import status, print
+from rich.live import Live
+from rich.table import Table
 
 from ..MesaFileHandler.support import *
+
+class ProgressTable:
+    def __init__(self, num_models):
+        self.num_models = num_models
+        self.table = self.generate_table(num_models)
+
+    def generate_table(num_models) -> Table:
+        """Make a new table."""
+        table = Table()
+        table.add_column("Model")
+        table.add_column("Age")
+
+        # for i in range(num_models):
+        #     table.add_row(f"Model {i}", f"{ages[i]}")
+        return table
+    
+    def update_table(self, table, num, age):
+        """Update the table."""
+        table = self.generate_table(self.num_models)
+        table.add_row(f"Model {num}", age)
+        return table
 
 def check_exists(exists, projName):
         """Checks if the project exists."""
@@ -13,7 +36,7 @@ def check_exists(exists, projName):
 
 
 def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status("Running..."), 
-                    gyre=False, filename="", data_format="FGONG", parallel=False, gyre_in="gyre.in"):
+                    gyre=False, filename="", data_format="FGONG", parallel=False, gyre_in="gyre.in", progress_table=None):
     """Runs a subprocess.
 
     Args:
@@ -58,9 +81,10 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
                             age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
                         if parallel:
                             num = int(''.join(filter(str.isdigit, dir.split('/')[-1])))
-                            pad = "\n"*num
-                            end = "\r"*(num+1)
-                            print(pad+f"[b i]Model {num}[/b i] -----> "+age_str, end=end)
+                            # pad = "\n"*num
+                            # end = "\r"*(num+1)
+                            # print(pad+f"[b i]Model {num}[/b i] -----> "+age_str, end=end)
+                            progress_table.update_table(progress_table.table, num, age_str)
                         else:
                             status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
             for errline in proc.stderr:
