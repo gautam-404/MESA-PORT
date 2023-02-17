@@ -11,7 +11,7 @@ from ..MesaFileHandler.support import *
 class ProgressTable:
     def __init__(self, num_models):
         self.num_models = num_models
-        self.live = Live(self.generate_table(), refresh_per_second=1)
+        self.live = Live(self.update_table(), refresh_per_second=1)
 
     def update_table(self, *args) -> Table:
         """Make a new table."""
