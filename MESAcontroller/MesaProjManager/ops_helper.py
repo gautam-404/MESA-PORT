@@ -8,6 +8,7 @@ from rich.table import Table
 
 from ..MesaFileHandler.support import *
 
+
 def check_exists(exists, projName):
         """Checks if the project exists."""
         if not exists:
@@ -76,7 +77,7 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
 
 def process_outline(outline, step):
     try:
-        if "E" in outline and "0" in outline and "." in outline:
+        if outline.split()[-1] in dt_limit_values:
             return step, float(outline.split()[0])
         outline = outline.split()
         # print(outline.split())
@@ -134,3 +135,12 @@ def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in"):
     writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", default_section="&model", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="summary_file", value="'freq_output_nonad.txt'", default_section="&nad_output", gyre_in=gyre_in)
+
+dt_limit_values = ['burn steps', 'Lnuc', 'Lnuc_cat', 'Lnuc_H', 'Lnuc_He', 'lgL_power_phot', 'Lnuc_z', 'bad_X_sum',
+                  'dH', 'dH/H', 'dHe', 'dHe/He', 'dHe3', 'dHe3/He3', 'dL/L', 'dX', 'dX/X', 'dX_nuc_drop', 'delta mdot',
+                  'delta total J', 'delta_HR', 'delta_mstar', 'diff iters', 'diff steps', 'min_dr_div_cs', 'dt_collapse',
+                  'eps_nuc_cntr', 'error rate', 'highT del Ye', 'hold', 'lgL', 'lgP', 'lgP_cntr', 'lgR', 'lgRho', 'lgRho_cntr',
+                  'lgT', 'lgT_cntr', 'lgT_max', 'lgT_max_hi_T', 'lgTeff', 'dX_div_X_cntr', 'lg_XC_cntr', 'lg_XH_cntr', 
+                  'lg_XHe_cntr', 'lg_XNe_cntr', 'lg_XO_cntr', 'lg_XSi_cntr', 'XC_cntr', 'XH_cntr', 'XHe_cntr', 'XNe_cntr',
+                  'XO_cntr', 'XSi_cntr', 'log_eps_nuc', 'max_dt', 'neg_mass_frac', 'adjust_J_q', 'solver iters', 'rel_E_err',
+                  'varcontrol', 'max increase', 'max decrease', 'retry', 'b_****']
