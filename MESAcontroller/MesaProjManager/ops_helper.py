@@ -11,23 +11,26 @@ from ..MesaFileHandler.support import *
 class ProgressTable:
     def __init__(self, num_models):
         self.num_models = num_models
-        self.table = self.generate_table(num_models)
+        self.live = Live(self.generate_table(), refresh_per_second=1)
 
-    def generate_table(num_models) -> Table:
+    def update_table(self, *args) -> Table:
         """Make a new table."""
         table = Table()
         table.add_column("Model")
         table.add_column("Age")
-
-        # for i in range(num_models):
-        #     table.add_row(f"Model {i}", f"{ages[i]}")
+        
+        if len(args) == 0:
+            for i in range(self.num_models):
+                table.add_row(f"Model {i}", f"")
+        if len(args) == 2:
+            num, age = args
+            for i in range(self.num_models):
+                if i == num:
+                    table.add_row(f"Model {num}", f"{age}")
+                else:
+                    table.add_row(f"Model {i}", f"")
         return table
     
-    def update_table(self, table, num, age):
-        """Update the table."""
-        table = self.generate_table(self.num_models)
-        table.add_row(f"Model {num}", age)
-        return table
 
 def check_exists(exists, projName):
         """Checks if the project exists."""
@@ -84,7 +87,7 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
                             # pad = "\n"*num
                             # end = "\r"*(num+1)
                             # print(pad+f"[b i]Model {num}[/b i] -----> "+age_str, end=end)
-                            progress_table.update_table(progress_table.table, num, age_str)
+                            progress_table.live.update(progress_table.generate_table(num, age_str))
                         else:
                             status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
             for errline in proc.stderr:
