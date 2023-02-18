@@ -149,7 +149,7 @@ class ProjectOps:
 
 
     
-    def run(self, silent=True, logging=True):
+    def run(self, silent=True, logging=True, parallel=False):
         """Runs the project.
 
         Args:
@@ -172,9 +172,13 @@ class ProjectOps:
             if silent not in [True, False]:
                 raise ValueError("Invalid input for argument 'silent'")
             else:
-                with status.Status("[b i cyan3]Running...", spinner="moon") as status_:
+                if parallel:
                     res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
-                                silent=silent, runlog=runlog, status=status_) 
+                                silent=silent, runlog=runlog, parallel=True)
+                else:
+                    with status.Status("[b i cyan3]Running...", spinner="moon") as status_:
+                        res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
+                                    silent=silent, runlog=runlog, status=status_) 
             if res is False:
                 raise Exception("Run failed! Check runlog.")
             else:
@@ -183,7 +187,7 @@ class ProjectOps:
 
         
     
-    def resume(self, photo=None, silent=True, target=None, logging=True):
+    def resume(self, photo=None, silent=True, target=None, logging=True, parallel=False):
         """Resumes the run from a given photo.
 
         Args:
@@ -223,10 +227,13 @@ class ProjectOps:
                 if silent not in [True, False]:
                     raise ValueError("Invalid input for argument 'silent'.")
                 else:
-                    # print(f"[b i  cyan3]Resuming run from photo {photo}.")
-                    with status.Status(f"[b i  cyan3]Resuming run from photo {photo}.\nRunning...", spinner="moon") as status_:
+                    if parallel:
                         res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
-                                silent=silent, runlog=runlog, status=status_)
+                                silent=silent, runlog=runlog, parallel=True)
+                    else:
+                        with status.Status(f"[b i  cyan3]Resuming run from photo {photo}.\nRunning...", spinner="moon") as status_:
+                            res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
+                                    silent=silent, runlog=runlog, status=status_)
         if res is False:
             print("Resume from photo failed! Check runlog.")
         else:

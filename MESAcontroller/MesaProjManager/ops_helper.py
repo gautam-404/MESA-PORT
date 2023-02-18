@@ -15,7 +15,7 @@ def check_exists(exists, projName):
             raise FileNotFoundError(f"Project '{projName}' does not exist. Please create it first.")
 
 
-def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status("Running..."), 
+def run_subprocess(commands, dir, silent=False, runlog='', status=None, 
                     gyre=False, filename="", data_format="FGONG", parallel=False, gyre_in="gyre.in"):
     """Runs a subprocess.
 
@@ -39,6 +39,8 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
             gyre_in = os.path.join(dir, f"gyre{num}.in")
             commands = commands.replace("gyre.in", f"gyre{num}.in")
         modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in)
+    if parallel is False:
+        status = status.Status("Running...")
 
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
@@ -60,7 +62,8 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
                             age_str = f"[b]Age: [cyan]{age:.3f}[/cyan] years"
                         else:
                             age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
-                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
+                        if parallel is False:
+                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
             for errline in proc.stderr:
                 file.write(errline)
                 sys.stdout.write(errline)
