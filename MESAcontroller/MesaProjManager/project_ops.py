@@ -130,15 +130,18 @@ class ProjectOps:
             print("Clean successful.\n")
             
 
-    def make(self):
+    def make(self, silent=True):
         """Makes the project.
 
         Raises:
             Exception: If the make fails.
         """        
         ops_helper.check_exists(self.exists, self.projName)
-        with status.Status("[b i cyan3]Making...", spinner="moon"):
+        if silent:
             res = subprocess.call('./mk', cwd=self.work_dir, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
+        else:
+            with status.Status("[b i cyan3]Making...", spinner="moon"):
+                res = subprocess.call('./mk', cwd=self.work_dir, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
         if res is False:
             raise Exception("Make failed!")
         else:    
@@ -220,6 +223,7 @@ class ProjectOps:
                 if silent not in [True, False]:
                     raise ValueError("Invalid input for argument 'silent'.")
                 else:
+                    # print(f"[b i  cyan3]Resuming run from photo {photo}.")
                     with status.Status(f"[b i  cyan3]Resuming run from photo {photo}.\nRunning...", spinner="moon") as status_:
                         res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
                                 silent=silent, runlog=runlog, status=status_)
