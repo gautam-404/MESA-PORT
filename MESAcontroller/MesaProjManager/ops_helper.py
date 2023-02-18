@@ -40,12 +40,13 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=status.Status(
             commands = commands.replace("gyre.in", f"gyre{num}.in")
         modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in)
 
-    with subprocess.Popen(shlex.split(commands), cwd=dir,
+    with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
         step = 1
         with open(runlog, "a+") as file:
             for outline in proc.stdout:
                 file.write(outline)
+                file.flush()
                 if silent is False:
                     sys.stdout.write(outline)
                 elif not gyre:
