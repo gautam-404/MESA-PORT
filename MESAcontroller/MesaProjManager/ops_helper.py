@@ -2,9 +2,8 @@ import subprocess
 import shlex
 import sys
 import shutil
-from rich import status, print
-from rich.live import Live
-from rich.table import Table
+from rich import print
+from rich.status import Status
 
 from ..MesaFileHandler.support import *
 
@@ -40,7 +39,7 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=None,
             commands = commands.replace("gyre.in", f"gyre{num}.in")
         modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in)
     if parallel is False:
-        status = status.Status("Running...")
+        status = Status("Running...")
 
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
