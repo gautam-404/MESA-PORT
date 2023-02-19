@@ -14,7 +14,7 @@ def check_exists(exists, projName):
             raise FileNotFoundError(f"Project '{projName}' does not exist. Please create it first.")
 
 
-def run_subprocess(commands, dir, silent=False, runlog='', status=None, 
+def run_subprocess(commands, dir, silent=True, runlog='', status=None, 
                     gyre=False, filename="", data_format="FGONG", parallel=False, gyre_in="gyre.in"):
     """Runs a subprocess.
 
@@ -32,22 +32,21 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=None,
         bool: True if the command ran successfully, False otherwise.
     """      
     if gyre:
+        status = Status("Running...")
         if parallel:
             num = filename.split(".")[0]
             shutil.copy(gyre_in, os.path.join(dir, f"gyre{num}.in"))
             gyre_in = os.path.join(dir, f"gyre{num}.in")
             commands = commands.replace("gyre.in", f"gyre{num}.in")
-        modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in)
-    if parallel is False:
-        status = Status("Running...")
+        modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in)   
 
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
         step = 1
-        with open(runlog, "a+") as file:
+        with open(runlog, "a+") as logfile:
             for outline in proc.stdout:
-                file.write(outline)
-                file.flush()
+                logfile.write(outline)
+                logfile.flush()
                 if silent is False:
                     sys.stdout.write(outline)
                 elif not gyre:
@@ -64,13 +63,12 @@ def run_subprocess(commands, dir, silent=False, runlog='', status=None,
                         if parallel is False:
                             status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
             for errline in proc.stderr:
-                file.write(errline)
+                logfile.write(errline)
                 sys.stdout.write(errline)
-            file.write( "\n\n"+("*"*100)+"\n\n" )
+            logfile.write( "\n\n"+("*"*100)+"\n\n" )
 
         _data, error = proc.communicate()
-    if gyre:
-        if parallel:
+    if gyre and parallel:
             os.remove(gyre_in)
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
