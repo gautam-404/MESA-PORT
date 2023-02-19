@@ -130,7 +130,7 @@ class ProjectOps:
             print("Clean successful.\n")
             
 
-    def make(self, silent=True):
+    def make(self, silent=False):
         """Makes the project.
 
         Raises:
