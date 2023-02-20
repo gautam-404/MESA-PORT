@@ -235,7 +235,7 @@ class ProjectOps:
                             res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
                                     silent=silent, runlog=runlog, status=status_)
         if res is False:
-            print("Resume from photo failed! Check runlog.")
+            raise Exception("Resume from photo failed! Check runlog.")
         else:
             print("Run successful.\n")
 
