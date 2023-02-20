@@ -2,6 +2,7 @@ import os
 import shutil
 import subprocess
 import glob
+from itertools import repeat
 
 from rich import print, progress, prompt, status
 progress_columns = (progress.SpinnerColumn(spinner_name="moon"),
@@ -286,53 +287,49 @@ class ProjectOps:
         if os.environ['GYRE_DIR'] is not None:
             if not silent in [True, False]:
                 raise ValueError("Invalid input for argument 'silent'")
-            ## ALL FILES
-            if files == 'all':
-                filenames = sorted(glob.glob(os.path.join(LOGS_dir, f"*.{data_format}")), 
-                            key=lambda x: int(os.path.basename(x).split('.')[0].split('profile')[1]))
-                if len(filenames) == 0:
-                    raise ValueError(f"No {data_format} files found in LOGS directory.")
-                else:
-                    filenames = [filename.split('/')[-1] for filename in filenames]
-                    if parallel:
-                        for filename in filenames:
-                            res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                    silent=silent, runlog=runlog, status=None, gyre=True, filename=filename, data_format=data_format)
-                    else:
-                        with progress.Progress(*progress_columns) as progressbar:
-                            task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
-                            for filename in filenames:
-                                res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                        silent=silent, runlog=runlog, status=None, gyre=True, filename=filename, data_format=data_format)
-                                progressbar.advance(task)
 
-            ## SPECIFIC FILES
-            elif type(files) == list or type(files) == str:
-                if type(files) == str:
-                    files = [files]
-                if len(files) == 0:
-                    raise ValueError("No files provided.")
-                else:
-                    for file in files:
-                        if not os.path.isfile(os.path.join(LOGS_dir, file)):
-                            raise FileNotFoundError(f"File '{file}' does not exist.")
-                    if parallel:
-                        for file in files:
-                            res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
-                    else:
-                        with progress.Progress(*progress_columns) as progressbar:
-                            task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(filenames))
-                            for file in files:
-                                res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                    silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
-                                progressbar.advance(task)
-            
             ## NO FILES, i.e. file specified in gyre.in
-            elif files == '':
+            if files == '':
                 with status.Status("[b i  cyan3]Running GYRE...", spinner="moon") as status_:
                     res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
                                     silent=silent, runlog=runlog, status=status_, gyre=True)
+            elif files == 'all' or type(files) == list or type(files) == str:
+                ## ALL FILES
+                if files == 'all':
+                    files = sorted(glob.glob(os.path.join(LOGS_dir, f"*.{data_format}")), 
+                                key=lambda x: int(os.path.basename(x).split('.')[0].split('profile')[1]))
+                    if len(files) == 0:
+                        raise ValueError(f"No {data_format} files found in LOGS directory.")
+                    else:
+                        files = [file.split('/')[-1] for file in files]
+                ## SPECIFIC FILES
+                elif type(files) == list or type(files) == str:
+                    if type(files) == str:
+                        files = [files]
+                    if len(files) == 0:
+                        raise ValueError("No files provided.")
+                    else:
+                        for file in files:
+                            if not os.path.isfile(os.path.join(LOGS_dir, file)):
+                                raise FileNotFoundError(f"File '{file}' does not exist.")
+                if parallel:
+                    n_processes = -(-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
+                    with mp.Pool(n_processes) as pool:
+                        gyre_in = os.path.abspath(gyre_in)
+                        args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                                repeat(silent), repeat(runlog),
+                                repeat(None), repeat(True),
+                                files, repeat(data_format),
+                                repeat(True), repeat(gyre_in))
+                        for _ in pool.istarmap(ops_helper.run_subprocess, args):
+                            pass
+                else:
+                    with progress.Progress(*progress_columns) as progressbar:
+                        task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
+                        for file in files:
+                            res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                                silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
+                            progressbar.advance(task)
             else:
                 raise ValueError("Invalid input for argument 'files'")
 

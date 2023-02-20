@@ -32,7 +32,6 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
         bool: True if the command ran successfully, False otherwise.
     """      
     if gyre:
-        status = Status("Running...")
         if parallel:
             num = filename.split(".")[0]
             shutil.copy(gyre_in, os.path.join(dir, f"gyre{num}.in"))
