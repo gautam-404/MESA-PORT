@@ -50,6 +50,8 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
                 if silent is False:
                     sys.stdout.write(outline)
                 elif not gyre:
+                    if "terminated evolution:" in outline:
+                        return False
                     step, age = process_outline(outline, step)
                     if age is not None:
                         if age < 1/365:
