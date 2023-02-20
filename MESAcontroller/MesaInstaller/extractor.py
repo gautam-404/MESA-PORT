@@ -30,7 +30,7 @@ def extract_mesa(directory, ostype, cleanAfter, sdk_download, mesa_zip, logfile)
                             stdout=logfile, stderr=logfile).wait()
             if cleanAfter:
                 os.remove(sdk_download)
-            print("[blue b]MESA SDK package installation complete.\n")
+        print("[blue b]MESA SDK package installation complete.\n")
 
     with console.Console().status("[green b]Extracting MESA", spinner="moon"):
         with zipfile.ZipFile(mesa_zip, 'r') as zip_ref:

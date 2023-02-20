@@ -26,13 +26,13 @@ def install_prerequisites(directory, ostype, cleanAfter, logfile):
                     except:
                         pass           
         if "macOS" in ostype:
-            print("Installing XCode Command Line Tools...")
+            # print("[green]Installing XCode Command Line Tools...")
             subprocess.Popen(shlex.split("sudo xcode-select --install"), stdout=logfile, stderr=logfile).wait()
             
             if not os.path.exists("/Applications/Utilities/XQuartz.app"):
                 xquartz = os.path.join(directory, mesaurls.url_xquartz.split('/')[-1])   
 
-                print("Installing XQuartz...")
+                # print("[green]Installing XQuartz...")
                 subprocess.Popen(shlex.split(f"sudo installer -pkg {xquartz} -target /"), stdout=logfile, stderr=logfile).wait()
                 if cleanAfter:
                     os.remove(xquartz)

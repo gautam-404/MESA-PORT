@@ -55,6 +55,7 @@ class Installer:
         subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()    
         with console.Console().status("[green b]Installing pre-requisites", spinner="moon"):
             prerequisites.install_prerequisites(directory, ostype, cleanAfter, logfile)
+        print("[blue b]Pre-requisites installation complete.\n")
         extractor.extract_mesa(directory, ostype, cleanAfter, sdk_download, mesa_zip, logfile)
 
         with console.Console().status("[green b]Installing MESA", spinner="moon"):
