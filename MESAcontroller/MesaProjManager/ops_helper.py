@@ -42,7 +42,6 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
 
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
-        step = 1
         with open(runlog, "a+") as logfile:
             for outline in proc.stdout:
                 logfile.write(outline)
@@ -52,7 +51,7 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
                 elif not gyre:
                     if "terminated evolution:" in outline:
                         return False
-                    step, age = process_outline(outline, step)
+                    age = process_outline(outline)
                     if age is not None:
                         if age < 1/365:
                             age_str = f"[b]Age: [cyan]{age*365*24:.4f}[/cyan] hours"
@@ -78,17 +77,17 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
     else:
         return True
 
-def process_outline(outline, step):
+def process_outline(outline):
     try:
-        if outline.split()[-1] in dt_limit_values:
-            return step, float(outline.split()[0])
-        outline = outline.split()
-        # print(outline.split())
-        if int(outline[0]) == step+1:
-            step += 1
-        return step, None
+        keyword1 = outline.split()[-1]
+        keyword2 = outline.split()[-2] + " " + outline.split()[-1]
+        keyword3 = outline.split()[-3] + " " + outline.split()[-2] + " " + outline.split()[-1]
+        if keyword1 in dt_limit_values or keyword2 in dt_limit_values or keyword3 in dt_limit_values:
+            return float(outline.split()[0])
+        else:
+            return None
     except:
-        return step, None
+        return None
 
 
 def writetoGyreFile(dir, parameter, value, default_section, gyre_in="gyre.in"):
@@ -142,8 +141,8 @@ def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in"):
 dt_limit_values = ['burn steps', 'Lnuc', 'Lnuc_cat', 'Lnuc_H', 'Lnuc_He', 'lgL_power_phot', 'Lnuc_z', 'bad_X_sum',
                   'dH', 'dH/H', 'dHe', 'dHe/He', 'dHe3', 'dHe3/He3', 'dL/L', 'dX', 'dX/X', 'dX_nuc_drop', 'delta mdot',
                   'delta total J', 'delta_HR', 'delta_mstar', 'diff iters', 'diff steps', 'min_dr_div_cs', 'dt_collapse',
-                  'eps_nuc_cntr', 'error rate', 'rate', 'highT del Ye', 'hold', 'lgL', 'lgP', 'lgP_cntr', 'lgR', 'lgRho', 'lgRho_cntr',
+                  'eps_nuc_cntr', 'error rate', 'highT del Ye', 'hold', 'lgL', 'lgP', 'lgP_cntr', 'lgR', 'lgRho', 'lgRho_cntr',
                   'lgT', 'lgT_cntr', 'lgT_max', 'lgT_max_hi_T', 'lgTeff', 'dX_div_X_cntr', 'lg_XC_cntr', 'lg_XH_cntr', 
                   'lg_XHe_cntr', 'lg_XNe_cntr', 'lg_XO_cntr', 'lg_XSi_cntr', 'XC_cntr', 'XH_cntr', 'XHe_cntr', 'XNe_cntr',
                   'XO_cntr', 'XSi_cntr', 'log_eps_nuc', 'max_dt', 'neg_mass_frac', 'adjust_J_q', 'solver iters', 'rel_E_err',
-                  'varcontrol', 'max increase', 'increase', 'max decrease', 'decrease', 'retry', 'b_****']
+                  'varcontrol', 'max increase', 'max decrease', 'retry', 'b_****']
