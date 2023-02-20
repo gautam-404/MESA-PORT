@@ -13,15 +13,15 @@ def install_prerequisites(directory, ostype, cleanAfter, logfile):
         if ostype == "Linux":
             subprocess.Popen(shlex.split("sudo apt-get update"), stdout=logfile, stderr=logfile).wait()
             try:
-                subprocess.Popen(shlex.split("yes | sudo apt-get install build-essential wget curl binutils make perl libx11-6 \
+                subprocess.Popen(shlex.split("sudo apt-get install -yq build-essential wget curl binutils make perl libx11-6 \
                     libx11-dev zlib1g zlib1g-dev tcsh"), stdout=logfile, stderr=logfile).wait()
             except:
                 try:
-                    subprocess.Popen(shlex.split("yes | sudo apt-get install -yq binutils make perl libx11-6 libx11-dev zlib1g zlib1g-dev tcsh"),
+                    subprocess.Popen(shlex.split("sudo apt-get install -yq binutils make perl libx11-6 libx11-dev zlib1g zlib1g-dev tcsh"),
                                 stdout=logfile, stderr=logfile).wait()
                 except:
                     try:
-                        subprocess.Popen(shlex.split("yes | sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc"),
+                        subprocess.Popen(shlex.split("sudo apt-get install -yq binutils make perl libx11 zlib tcsh glibc"),
                                     stdout=logfile, stderr=logfile).wait()
                     except:
                         pass           
