@@ -205,10 +205,14 @@ class ProjectOps:
         else:
             runlog = os.devnull
         if photo == None:
-            # print(f"[b i  cyan3]Resuming run from the most recent photo.")
-            with status.Status("[b i  cyan3]Resuming run from the most recent photo.\nRunning...", spinner="moon") as status_:
-                res = ops_helper.run_subprocess(commands=f'./re', dir=self.work_dir, 
-                        silent=silent, runlog=runlog, status=status_)
+            if parallel:
+                res = ops_helper.run_subprocess(commands='./re', dir=self.work_dir, 
+                        silent=silent, runlog=runlog, parallel=True)
+            else:
+                # print(f"[b i  cyan3]Resuming run from the most recent photo.")
+                with status.Status("[b i  cyan3]Resuming run from the most recent photo.\nRunning...", spinner="moon") as status_:
+                    res = ops_helper.run_subprocess(commands=f'./re', dir=self.work_dir, 
+                            silent=silent, runlog=runlog, status=status_)
         else:
             if self.binary:
                 if target == 'primary':
