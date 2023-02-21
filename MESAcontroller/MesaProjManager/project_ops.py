@@ -2,7 +2,6 @@ import os
 import shutil
 import subprocess
 import glob
-import time
 from itertools import repeat
 
 from rich import print, progress, prompt, status
@@ -313,16 +312,13 @@ class ProjectOps:
                             if not os.path.isfile(os.path.join(LOGS_dir, file)):
                                 raise FileNotFoundError(f"File '{file}' does not exist.")
                 if parallel:
-                    def init(lock):
-                        global starting
-                        starting = lock
                     with progress.Progress(*progress_columns) as progressbar:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
                         n_processes = (os.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                         print(os.cpu_count(), os.environ['OMP_NUM_THREADS'], n_processes)
-                        with mp.Pool(n_processes, initializer=init, initargs=[mp.Lock()]) as pool:
+                        with mp.Pool(n_processes) as pool:
                             gyre_in = os.path.abspath(gyre_in)
-                            args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                            args = zip(repeat(f'sleep 0.1 && {gyre_ex} gyre.in'), repeat(LOGS_dir),
                                     repeat(silent), repeat(runlog),
                                     repeat(None), repeat(True),
                                     files, repeat(data_format),
