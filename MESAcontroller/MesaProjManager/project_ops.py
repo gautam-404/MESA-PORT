@@ -13,7 +13,6 @@ import multiprocessing as mp
 
 from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
 from . import ops_helper
-from . import istarmap
 
 
 class ProjectOps:
@@ -317,7 +316,7 @@ class ProjectOps:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
                         n_processes = (os.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
                         print(os.cpu_count(), os.environ['OMP_NUM_THREADS'], n_processes)
-                        with mp.Pool(n_processes) as pool:
+                        with mp.Pool(n_processes, initargs=[mp.Lock()]) as pool:
                             gyre_in = os.path.abspath(gyre_in)
                             args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
                                     repeat(silent), repeat(runlog),
