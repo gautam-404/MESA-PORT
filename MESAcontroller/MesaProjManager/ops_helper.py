@@ -39,7 +39,7 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
             commands = commands.replace("gyre.in", f"gyre{num}.in")
         modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in) 
 
-
+    evo_terminated = False
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
         with open(runlog, "a+") as logfile:
@@ -50,7 +50,7 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
                     sys.stdout.write(outline)
                 elif not gyre:
                     if "terminated evolution:" in outline:
-                        return False
+                        evo_terminated = True
                     age = process_outline(outline)
                     if age is not None:
                         if age < 1/365:
@@ -73,6 +73,8 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
             os.remove(gyre_in)
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
+        return False
+    elif evo_terminated:
         return False
     else:
         return True
