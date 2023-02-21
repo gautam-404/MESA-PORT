@@ -315,7 +315,7 @@ class ProjectOps:
                 if parallel:
                     with progress.Progress(*progress_columns) as progressbar:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
-                        n_processes = os.cpu_count()//int(os.environ['OMP_NUM_THREADS'])
+                        n_processes = (os.cpu_count()//int(os.environ['OMP_NUM_THREADS'])) - 1
                         print(n_processes)
                         with mp.Pool(n_processes) as pool:
                             gyre_in = os.path.abspath(gyre_in)
