@@ -2,6 +2,7 @@ import subprocess
 import shlex
 import sys
 import shutil
+import time
 from rich import print
 from rich.status import Status
 
@@ -37,10 +38,12 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
             shutil.copy(gyre_in, os.path.join(dir, f"gyre{num}.in"))
             gyre_in = os.path.join(dir, f"gyre{num}.in")
             commands = commands.replace("gyre.in", f"gyre{num}.in")
-        modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in)   
+        modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in) 
+
 
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
+        time.sleep(0.1)
         with open(runlog, "a+") as logfile:
             for outline in proc.stdout:
                 logfile.write(outline)
