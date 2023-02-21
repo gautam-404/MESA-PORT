@@ -3,7 +3,6 @@ import shlex
 import sys
 import shutil
 from rich import print
-from rich.status import Status
 
 from ..MesaFileHandler.support import *
 
