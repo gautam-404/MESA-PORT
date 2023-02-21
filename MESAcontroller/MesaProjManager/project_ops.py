@@ -315,7 +315,7 @@ class ProjectOps:
                     with progress.Progress(*progress_columns) as progressbar:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
                         n_processes = (os.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
-                        os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'
+                        os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails
                         with mp.Pool(n_processes) as pool:
                             gyre_in = os.path.abspath(gyre_in)
                             args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
