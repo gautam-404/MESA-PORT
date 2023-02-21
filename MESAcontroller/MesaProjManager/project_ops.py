@@ -313,23 +313,22 @@ class ProjectOps:
                             if not os.path.isfile(os.path.join(LOGS_dir, file)):
                                 raise FileNotFoundError(f"File '{file}' does not exist.")
                 if parallel:
-                    n_processes = -(-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
-                    with mp.Pool(n_processes) as pool:
-                        gyre_in = os.path.abspath(gyre_in)
-                        args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
-                                repeat(silent), repeat(runlog),
-                                repeat(None), repeat(True),
-                                files, repeat(data_format),
-                                repeat(True), repeat(gyre_in))
-                        for _ in pool.istarmap(ops_helper.run_subprocess, args):
-                            pass
-                else:
                     with progress.Progress(*progress_columns) as progressbar:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
-                        for file in files:
-                            res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
-                                silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
-                            progressbar.advance(task)
+                        n_processes = -(-mp.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
+                        with mp.Pool(n_processes) as pool:
+                            gyre_in = os.path.abspath(gyre_in)
+                            args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                                    repeat(silent), repeat(runlog),
+                                    repeat(None), repeat(True),
+                                    files, repeat(data_format),
+                                    repeat(True), repeat(gyre_in))
+                            for _ in pool.istarmap(ops_helper.run_subprocess, args):
+                                progressbar.advance(task)
+                else:
+                    for file in files:
+                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                            silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
             else:
                 raise ValueError("Invalid input for argument 'files'")
 
