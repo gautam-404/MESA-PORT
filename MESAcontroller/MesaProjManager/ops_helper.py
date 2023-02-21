@@ -2,7 +2,6 @@ import subprocess
 import shlex
 import sys
 import shutil
-import time
 from rich import print
 from rich.status import Status
 
@@ -43,7 +42,6 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
 
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=dir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
-        time.sleep(0.1)
         with open(runlog, "a+") as logfile:
             for outline in proc.stdout:
                 logfile.write(outline)

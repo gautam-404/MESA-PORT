@@ -324,7 +324,7 @@ class ProjectOps:
                                     repeat(None), repeat(True),
                                     files, repeat(data_format),
                                     repeat(True), repeat(gyre_in))
-                            for _ in pool.istarmap(ops_helper.run_subprocess, args):
+                            for _ in pool.starmap(ops_helper.run_subprocess, args):
                                 progressbar.advance(task)
                 else:
                     for file in files:
