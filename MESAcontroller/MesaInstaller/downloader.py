@@ -56,6 +56,9 @@ class Download:
             filepath (str): Path to the file to be downloaded. 
             url (str): URL of the file to be downloaded.
         """    
+        headers = {
+                        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
+                    }
         response = requests.get(url, headers=headers, stream=True, timeout=10)
         response.raise_for_status()
         total = int(response.headers.get('content-length', 0))    
@@ -64,9 +67,6 @@ class Download:
             print("[blue]File already downloaded. Skipping download.[/blue]\n")
         else:
             chunk_size = 1024*1024
-            headers = {
-                        "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
-                    }
             with open(filepath, 'wb') as file, progress.Progress(*progress_columns) as progressbar:
                 task = progressbar.add_task(text, total=total)
                 for chunk in response.raw.stream(chunk_size, decode_content=False):
