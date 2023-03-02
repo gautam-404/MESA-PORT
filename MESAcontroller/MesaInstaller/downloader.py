@@ -55,8 +55,11 @@ class Download:
         Args:
             filepath (str): Path to the file to be downloaded. 
             url (str): URL of the file to be downloaded.
-        """        
-        if os.path.exists(filepath) and int(requests.head(url, timeout=10).headers['content-length']) == os.path.getsize(filepath):
+        """    
+        response = requests.get(url, headers=headers, stream=True, timeout=10)
+        response.raise_for_status()
+        total = int(response.headers.get('content-length', 0))    
+        if os.path.exists(filepath) and total == os.path.getsize(filepath):
             print(text)
             print("[blue]File already downloaded. Skipping download.[/blue]\n")
         else:
@@ -64,16 +67,17 @@ class Download:
             headers = {
                         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
                     }
-            response = requests.get(url, headers=headers, stream=True, timeout=10)
-            response.raise_for_status()
-            total = int(response.headers.get('content-length', 0))
             with open(filepath, 'wb') as file, progress.Progress(*progress_columns) as progressbar:
                 task = progressbar.add_task(text, total=total)
                 for chunk in response.raw.stream(chunk_size, decode_content=False):
                     if chunk:
                         size_ = file.write(chunk)
                         progressbar.update(task_id=task, advance=size_)
-                progressbar.update(task, description=text+"[bright_blue b]Done![/bright_blue b]")
+                if total == os.path.getsize(filepath):
+                    progressbar.update(task, description=text+"[bright_blue b]Done![/bright_blue b]")
+                else:
+                    progressbar.update(task, description=text+"[red b]Failed![/red b]")
+                    raise Exception("Download failed.")
             print("\n", end="")
             
 
