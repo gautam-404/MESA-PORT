@@ -125,8 +125,8 @@ class ProjectOps:
         runlog = os.path.join(self.work_dir, "runlog")
         if os.path.exists(runlog):
             os.remove(runlog)
-        if res is False:
-            raise Exception("Clean failed!")
+        if res!=0:
+            raise Exception(f"Clean failed! Returned non-zero exit code ({res})")
         else:
             print("Clean successful.\n")
             
@@ -143,8 +143,8 @@ class ProjectOps:
         else:
             with status.Status("[b i cyan3]Making...", spinner="moon"):
                 res = subprocess.call('./mk', cwd=self.work_dir, stdout=subprocess.DEVNULL, stderr=subprocess.STDOUT)
-        if res is False:
-            raise Exception("Make failed!")
+        if res!=0:
+            raise Exception(f"Make failed! Returned non-zero exit code ({res})")
         else:    
             print("Make successful.\n")
 
