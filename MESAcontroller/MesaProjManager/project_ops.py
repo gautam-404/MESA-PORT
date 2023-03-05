@@ -248,7 +248,7 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, files='', data_format="FGONG", silent=True, target=None, logging=True, parallel=False):
+    def runGyre(self, gyre_in, files='', data_format="FGONG", silent=True, target=None, logging=True, parallel=False, n_cores=None):
         """Runs GYRE.
 
         Args:
@@ -315,7 +315,9 @@ class ProjectOps:
                 if parallel:
                     with progress.Progress(*progress_columns) as progressbar:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
-                        n_processes = (os.cpu_count()//int(os.environ['OMP_NUM_THREADS']))
+                        if n_cores is None:
+                            n_processes = os.cpu_count()
+                        n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                         os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails
                         with mp.Pool(n_processes) as pool:
                             gyre_in = os.path.abspath(gyre_in)
