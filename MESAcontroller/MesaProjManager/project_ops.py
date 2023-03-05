@@ -330,18 +330,21 @@ class ProjectOps:
                                 for _ in pool.istarmap(ops_helper.run_subprocess, args):
                                     progressbar.advance(task)
                     else:
-                        from concurrent.futures import ThreadPoolExecutor as Pool
-                        from itertools import izip
-                        args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
-                                repeat(silent), repeat(runlog),
-                                repeat(None), repeat(True),
-                                files, repeat(data_format),
-                                repeat(True), repeat(gyre_in))
-                        n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
-                        with Pool(n_processes) as pool:
-                            gyre_in = os.path.abspath(gyre_in)
-                            for result in pool.map(ops_helper.run_subprocess, *izip(*args)):
-                                print(result)
+                        try:
+                            from concurrent.futures import ThreadPoolExecutor as Pool
+                            from itertools import izip
+                            args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                                    repeat(silent), repeat(runlog),
+                                    repeat(None), repeat(True),
+                                    files, repeat(data_format),
+                                    repeat(True), repeat(gyre_in))
+                            n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
+                            with Pool(n_processes) as pool:
+                                gyre_in = os.path.abspath(gyre_in)
+                                for result in pool.map(ops_helper.run_subprocess, *izip(*args)):
+                                    print(result)
+                        except Exception as e:
+                            print(e)
                                     
                 else:
                     for file in files:
