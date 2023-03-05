@@ -313,32 +313,35 @@ class ProjectOps:
                             if not os.path.isfile(os.path.join(LOGS_dir, file)):
                                 raise FileNotFoundError(f"File '{file}' does not exist.")
                 if parallel:
-                    with progress.Progress(*progress_columns) as progressbar:
-                        task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
-                        if n_cores is None:
-                            parallel_type = "parent"
-                            n_cores = os.cpu_count()
+                    os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails
+                    if n_cores is None:
+                        n_cores = os.cpu_count()
                         Pool = mp.Pool
-                        
-                        # else:
-                        #     parallel_type = "child"
-                        #     from multiprocessing.pool import ThreadPool as Pool
+                        args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                                repeat(silent), repeat(runlog),
+                                repeat(None), repeat(True),
+                                files, repeat(data_format),
+                                repeat(True), repeat(gyre_in))
+                        with progress.Progress(*progress_columns) as progressbar:
+                            task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
+                            n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
+                            with Pool(n_processes) as pool:
+                                gyre_in = os.path.abspath(gyre_in)
+                                for _ in pool.istarmap(ops_helper.run_subprocess, args):
+                                    progressbar.advance(task)
+                    else:
+                        from concurrent.futures import ThreadPoolExecutor as Pool
+                        from itertools import izip
+                        args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                                repeat(silent), repeat(runlog),
+                                repeat(None), repeat(True),
+                                files, repeat(data_format),
+                                repeat(True), repeat(gyre_in))
                         n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
-                        os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails
                         with Pool(n_processes) as pool:
                             gyre_in = os.path.abspath(gyre_in)
-                            args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
-                                    repeat(silent), repeat(runlog),
-                                    repeat(None), repeat(True),
-                                    files, repeat(data_format),
-                                    repeat(True), repeat(gyre_in))
-                            for _ in pool.istarmap(ops_helper.run_subprocess, args):
-                                    progressbar.advance(task)
-                            # if parallel_type == "parent":
-                            #     for _ in pool.istarmap(ops_helper.run_subprocess, args):
-                            #         progressbar.advance(task)
-                            # elif parallel_type == "child":
-                            #     pool.starmap(ops_helper.run_subprocess, args)
+                            for result in pool.map(ops_helper.run_subprocess, *izip(*args)):
+                                print(result)
                                     
                 else:
                     for file in files:
