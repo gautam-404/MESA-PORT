@@ -319,9 +319,9 @@ class ProjectOps:
                             parallel_type = "parent"
                             n_cores = os.cpu_count()
                             Pool = mp.Pool
-                        else:
-                            parallel_type = "child"
-                            from multiprocessing.pool import ThreadPool as Pool
+                        # else:
+                        #     parallel_type = "child"
+                        #     from multiprocessing.pool import ThreadPool as Pool
                         n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                         os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails
                         with Pool(n_processes) as pool:
@@ -331,11 +331,13 @@ class ProjectOps:
                                     repeat(None), repeat(True),
                                     files, repeat(data_format),
                                     repeat(True), repeat(gyre_in))
-                            if parallel_type == "parent":
-                                for _ in pool.istarmap(ops_helper.run_subprocess, args):
+                            for _ in pool.istarmap(ops_helper.run_subprocess, args):
                                     progressbar.advance(task)
-                            elif parallel_type == "child":
-                                pool.starmap(ops_helper.run_subprocess, args)
+                            # if parallel_type == "parent":
+                            #     for _ in pool.istarmap(ops_helper.run_subprocess, args):
+                            #         progressbar.advance(task)
+                            # elif parallel_type == "child":
+                            #     pool.starmap(ops_helper.run_subprocess, args)
                                     
                 else:
                     for file in files:
