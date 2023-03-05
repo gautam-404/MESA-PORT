@@ -316,18 +316,28 @@ class ProjectOps:
                     with progress.Progress(*progress_columns) as progressbar:
                         task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
                         if n_cores is None:
-                            n_processes = os.cpu_count()
+                            parallel_type = "parent"
+                            n_cores = os.cpu_count()
+                            Pool = mp.Pool
+                        else:
+                            parallel_type = "child"
+                            import ray
+                            from ray.util.multiprocessing import Pool
                         n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                         os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails
-                        with mp.Pool(n_processes) as pool:
+                        with Pool(n_processes) as pool:
                             gyre_in = os.path.abspath(gyre_in)
                             args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
                                     repeat(silent), repeat(runlog),
                                     repeat(None), repeat(True),
                                     files, repeat(data_format),
                                     repeat(True), repeat(gyre_in))
-                            for _ in pool.istarmap(ops_helper.run_subprocess, args):
-                                progressbar.advance(task)
+                            if parallel_type == "parent":
+                                for _ in pool.istarmap(ops_helper.run_subprocess, args):
+                                    progressbar.advance(task)
+                            elif parallel_type == "child":
+                                pool.starmap(ops_helper.run_subprocess, args)
+                                    
                 else:
                     for file in files:
                         res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
