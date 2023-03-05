@@ -321,8 +321,7 @@ class ProjectOps:
                             Pool = mp.Pool
                         else:
                             parallel_type = "child"
-                            import ray
-                            from ray.util.multiprocessing import Pool
+                            from multiprocessing.pool import ThreadPool as Pool
                         n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                         os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails
                         with Pool(n_processes) as pool:
