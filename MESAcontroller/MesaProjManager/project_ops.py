@@ -318,7 +318,8 @@ class ProjectOps:
                         if n_cores is None:
                             parallel_type = "parent"
                             n_cores = os.cpu_count()
-                            Pool = mp.Pool
+                        Pool = mp.Pool
+                        
                         # else:
                         #     parallel_type = "child"
                         #     from multiprocessing.pool import ThreadPool as Pool
