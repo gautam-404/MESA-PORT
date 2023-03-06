@@ -69,6 +69,8 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
 
         _data, error = proc.communicate()
     if gyre and parallel:
+        with open('gyre.log', 'a+') as f:
+            f.write(f"Done with {filename}.")
         os.remove(gyre_in)
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
