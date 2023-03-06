@@ -330,11 +330,11 @@ class ProjectOps:
                                 for _ in pool.istarmap(ops_helper.run_subprocess, args):
                                     progressbar.advance(task)
                     else:
-                        from concurrent.futures import ThreadPoolExecutor as Pool
+                        from concurrent.futures import ThreadPoolExecutor
                         n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
-                        with Pool(max_workers=n_processes) as pool:
+                        with ThreadPoolExecutor(max_workers=n_processes) as executor:
                             gyre_in = os.path.abspath(gyre_in)
-                            pool.map(ops_helper.run_subprocess, repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                            executor.map(ops_helper.run_subprocess, repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
                                                                                 repeat(silent), repeat(runlog),
                                                                                 repeat(None), repeat(True),
                                                                                 files, repeat(data_format),
