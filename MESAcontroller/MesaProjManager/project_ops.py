@@ -332,14 +332,13 @@ class ProjectOps:
                     else:
                         from concurrent.futures import ThreadPoolExecutor as Pool
                         n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
-                        with Pool(n_processes) as pool:
+                        with Pool(max_workers=n_processes) as pool:
                             gyre_in = os.path.abspath(gyre_in)
-                            for result in pool.map(ops_helper.run_subprocess, repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                            pool.map(ops_helper.run_subprocess, repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
                                                                                 repeat(silent), repeat(runlog),
                                                                                 repeat(None), repeat(True),
                                                                                 files, repeat(data_format),
-                                                                                repeat(True), repeat(gyre_in)):
-                                print(result)
+                                                                                repeat(True), repeat(gyre_in))
                                     
                 else:
                     for file in files:
