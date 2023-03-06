@@ -331,7 +331,7 @@ class ProjectOps:
                                     progressbar.advance(task)
                     else:
                         try:
-                            from concurrent.futures import ThreadPoolExecutor, wait
+                            from concurrent.futures import ThreadPoolExecutor
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                             with ThreadPoolExecutor(max_workers=n_processes) as executor:
                                 gyre_in = os.path.abspath(gyre_in)
