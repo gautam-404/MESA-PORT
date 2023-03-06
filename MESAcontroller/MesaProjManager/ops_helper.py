@@ -68,8 +68,6 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
             logfile.write( "\n\n"+("*"*100)+"\n\n" )
 
         _data, error = proc.communicate()
-    if gyre and parallel:
-            os.remove(gyre_in)
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
         return False
