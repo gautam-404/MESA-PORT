@@ -351,10 +351,13 @@ class ProjectOps:
             else:
                 raise ValueError("Invalid input for argument 'files'")
 
-            if res is False:
-                    print("GYRE run failed! Check runlog.")
+            if not parallel:
+                if res is False:
+                        print("GYRE run failed! Check runlog.")
+                else:
+                    print("GYRE run complete!\n") 
             else:
-                print("GYRE run complete!\n") 
+                print("GYRE run complete!\n")
         else:
             print("Check if $GYRE_DIR is set in environment variables...could not run!")
             print("Run aborted!")
