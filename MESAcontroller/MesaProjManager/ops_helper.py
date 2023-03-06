@@ -13,13 +13,13 @@ def check_exists(exists, projName):
             raise FileNotFoundError(f"Project '{projName}' does not exist. Please create it first.")
 
 
-def run_subprocess(commands, dir, silent=True, runlog='', status=None, 
+def run_subprocess(commands, wdir, silent=True, runlog='', status=None, 
                     gyre=False, filename="", data_format="FGONG", parallel=False, gyre_in="gyre.in"):
     """Runs a subprocess.
 
     Args:
         commands (str or list): Command to be run.
-        dir (str): Directory in which the command is to be run.
+        wdir (str): Directory in which the command is to be run.
         silent (bool, optional): Run the command silently. Defaults to False.
         runlog (str, optional): Log file to write the output to. Defaults to ''.
         status (rich.status.Status, optional): Status to update. Defaults to status.Status("Running...").
@@ -33,13 +33,13 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
     if gyre:
         if parallel:
             num = filename.split(".")[0]
-            shutil.copy(gyre_in, os.path.join(dir, f"gyre{num}.in"))
-            gyre_in = os.path.join(dir, f"gyre{num}.in")
+            shutil.copy(gyre_in, os.path.join(wdir, f"gyre{num}.in"))
+            gyre_in = os.path.join(wdir, f"gyre{num}.in")
             commands = commands.replace("gyre.in", f"gyre{num}.in")
-        modify_gyre_params(dir, filename, data_format, gyre_in=gyre_in) 
+        modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in) 
 
     evo_terminated = False
-    with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=dir,
+    with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=wdir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
         with open(runlog, "a+") as logfile:
             for outline in proc.stdout:
@@ -69,8 +69,9 @@ def run_subprocess(commands, dir, silent=True, runlog='', status=None,
 
         _data, error = proc.communicate()
     if gyre and parallel:
-        with open('gyre.log', 'a+') as f:
-            f.write(f"Done with {filename}.")
+        working_dir = wdir.replace("LOGS", "")
+        with open(f'{working_dir}/gyre.log', 'a+') as f:
+            f.write(f"Done with {filename}.\n")
         os.remove(gyre_in)
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
@@ -93,7 +94,7 @@ def process_outline(outline):
         return None
 
 
-def writetoGyreFile(dir, parameter, value, default_section, gyre_in="gyre.in"):
+def writetoGyreFile(wdir, parameter, value, default_section, gyre_in="gyre.in"):
     """Writes the parameter and its value to the inlist file.
 
     Args:
@@ -105,7 +106,7 @@ def writetoGyreFile(dir, parameter, value, default_section, gyre_in="gyre.in"):
         sections (list): A list with the sections of the inlist file.
     """    
     this_section = False
-    with cd(dir):
+    with cd(wdir):
         with open(gyre_in, "r") as file:
             lines = file.readlines()
         with open(gyre_in, "w+") as f:
