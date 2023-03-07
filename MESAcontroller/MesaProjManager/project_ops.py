@@ -174,11 +174,11 @@ class ProjectOps:
                 raise ValueError("Invalid input for argument 'silent'")
             else:
                 if parallel:
-                    res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
+                    res = ops_helper.run_subprocess(commands='./rn', wdir=self.work_dir, 
                                 silent=silent, runlog=runlog, parallel=True)
                 else:
                     with status.Status("[b i cyan3]Running...", spinner="moon") as status_:
-                        res = ops_helper.run_subprocess(commands='./rn', dir=self.work_dir, 
+                        res = ops_helper.run_subprocess(commands='./rn', wdir=self.work_dir, 
                                     silent=silent, runlog=runlog, status=status_) 
             if res is False:
                 raise Exception("Run failed! Check runlog.")
@@ -207,12 +207,12 @@ class ProjectOps:
             runlog = os.devnull
         if photo == None:
             if parallel:
-                res = ops_helper.run_subprocess(commands='./re', dir=self.work_dir, 
+                res = ops_helper.run_subprocess(commands='./re', wdir=self.work_dir, 
                         silent=silent, runlog=runlog, parallel=True)
             else:
                 # print(f"[b i  cyan3]Resuming run from the most recent photo.")
                 with status.Status("[b i  cyan3]Resuming run from the most recent photo.\nRunning...", spinner="moon") as status_:
-                    res = ops_helper.run_subprocess(commands=f'./re', dir=self.work_dir, 
+                    res = ops_helper.run_subprocess(commands=f'./re', wdir=self.work_dir, 
                             silent=silent, runlog=runlog, status=status_)
         else:
             if self.binary:
@@ -233,11 +233,11 @@ class ProjectOps:
                     raise ValueError("Invalid input for argument 'silent'.")
                 else:
                     if parallel:
-                        res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
+                        res = ops_helper.run_subprocess(commands=f'./re {photo}', wdir=self.work_dir, 
                                 silent=silent, runlog=runlog, parallel=True)
                     else:
                         with status.Status(f"[b i  cyan3]Resuming run from photo {photo}.\nRunning...", spinner="moon") as status_:
-                            res = ops_helper.run_subprocess(commands=f'./re {photo}', dir=self.work_dir, 
+                            res = ops_helper.run_subprocess(commands=f'./re {photo}', wdir=self.work_dir, 
                                     silent=silent, runlog=runlog, status=status_)
         if res is False:
             raise Exception("Resume from photo failed! Check runlog.")
@@ -291,7 +291,7 @@ class ProjectOps:
             ## NO FILES, i.e. file specified in gyre.in
             if files == '':
                 with status.Status("[b i  cyan3]Running GYRE...", spinner="moon") as status_:
-                    res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                    res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
                                     silent=silent, runlog=runlog, status=status_, gyre=True)
             elif files == 'all' or type(files) == list or type(files) == str:
                 ## ALL FILES
@@ -348,7 +348,7 @@ class ProjectOps:
                                     
                 else:
                     for file in files:
-                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', dir=LOGS_dir, 
+                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
                             silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
             else:
                 raise ValueError("Invalid input for argument 'files'")
