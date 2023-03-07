@@ -312,9 +312,10 @@ class ProjectOps:
                         for file in files:
                             if not os.path.isfile(os.path.join(LOGS_dir, file)):
                                 raise FileNotFoundError(f"File '{file}' does not exist.")
-                if parallel:
-                    with open(f'{self.work_dir}/gyre.log', 'a+') as f:
+                            
+                with open(f'{self.work_dir}/gyre.log', 'a+') as f:
                         f.write(f"Total {len(files)} profiles to be processed by GYRE.\n\n")
+                if parallel:
                     os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails
                     if n_cores is None:
                         n_cores = os.cpu_count()
