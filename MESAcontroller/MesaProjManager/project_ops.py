@@ -327,7 +327,7 @@ class ProjectOps:
                         f.write(f"Total {len(files)} profiles to be processed by GYRE.\n\n")
                 if parallel:
                     gyre_input_params = gyre_input_params if gyre_input_params is not None else repeat(None)
-                    os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails
+                    os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails in parallel
                     if n_cores is None:
                         n_cores = os.cpu_count()
                         Pool = mp.Pool
@@ -347,7 +347,6 @@ class ProjectOps:
                         try:
                             from concurrent.futures import ThreadPoolExecutor
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
-                            gyre_input_params = gyre_input_params if gyre_input_params is not None else repeat(None)
                             with ThreadPoolExecutor(max_workers=n_processes) as executor:
                                 gyre_in = os.path.abspath(gyre_in)
                                 executor.map(ops_helper.run_subprocess, repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
