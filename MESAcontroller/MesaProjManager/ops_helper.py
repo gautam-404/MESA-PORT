@@ -5,6 +5,7 @@ import shutil
 from rich import print
 
 from ..MesaFileHandler.support import *
+from ..MesaFileHandler.access_helper import toFortranType
 
 def check_exists(exists, projName):
         """Checks if the project exists."""
@@ -38,7 +39,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             commands = commands.replace("gyre.in", f"gyre{num}.in")
         if gyre_input_params is not None:
             for parameter, value in gyre_input_params.items():
-                writetoGyreFile(wdir, parameter, value, gyre_in=gyre_in)
+                writetoGyreFile(wdir, parameter, toFortranType(value), gyre_in=gyre_in)
         modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in) 
 
     evo_terminated = False
@@ -179,7 +180,7 @@ def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in"):
     writetoGyreFile(LOGS_dir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="summary_file", value="'freq_output_nonad.txt'", default_section="&nad_output", gyre_in=gyre_in)
 
-    
+
 dt_limit_values = ['burn steps', 'Lnuc', 'Lnuc_cat', 'Lnuc_H', 'Lnuc_He', 'lgL_power_phot', 'Lnuc_z', 'bad_X_sum',
                   'dH', 'dH/H', 'dHe', 'dHe/He', 'dHe3', 'dHe3/He3', 'dL/L', 'dX', 'dX/X', 'dX_nuc_drop', 'delta mdot',
                   'delta total J', 'delta_HR', 'delta_mstar', 'diff iters', 'diff steps', 'min_dr_div_cs', 'dt_collapse',
