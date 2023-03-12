@@ -173,12 +173,13 @@ def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in"):
         file_format = "MESA"
     elif data_format == "FGONG":
         file_format = "FGONG"
-    writetoGyreFile(LOGS_dir, parameter="model_type", value="'EVOL'", gyre_in=gyre_in)
-    writetoGyreFile(LOGS_dir, parameter="file_format", value=f"'{file_format}'", gyre_in=gyre_in)
-    writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="model_type", value="'EVOL'", default_section="&model", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="file_format", value=f"'{file_format}'", default_section="&model", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", default_section="&model", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="summary_file", value="'freq_output_nonad.txt'", default_section="&nad_output", gyre_in=gyre_in)
 
+    
 dt_limit_values = ['burn steps', 'Lnuc', 'Lnuc_cat', 'Lnuc_H', 'Lnuc_He', 'lgL_power_phot', 'Lnuc_z', 'bad_X_sum',
                   'dH', 'dH/H', 'dHe', 'dHe/He', 'dHe3', 'dHe3/He3', 'dL/L', 'dX', 'dX/X', 'dX_nuc_drop', 'delta mdot',
                   'delta total J', 'delta_HR', 'delta_mstar', 'diff iters', 'diff steps', 'min_dr_div_cs', 'dt_collapse',
