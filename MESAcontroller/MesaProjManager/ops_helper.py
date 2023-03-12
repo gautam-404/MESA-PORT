@@ -14,7 +14,8 @@ def check_exists(exists, projName):
 
 
 def run_subprocess(commands, wdir, silent=True, runlog='', status=None, 
-                    gyre=False, filename="", data_format="FGONG", parallel=False, gyre_in="gyre.in"):
+                    gyre=False, filename="", data_format="FGONG", parallel=False, 
+                    gyre_in="gyre.in", gyre_input_params=None):
     """Runs a subprocess.
 
     Args:
@@ -36,6 +37,9 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             shutil.copy(gyre_in, os.path.join(wdir, f"gyre{num}.in"))
             gyre_in = os.path.join(wdir, f"gyre{num}.in")
             commands = commands.replace("gyre.in", f"gyre{num}.in")
+        if gyre_input_params is not None:
+            for params in gyre_input_params:
+                writetoGyreFile(wdir, params[0], params[1], params[2], gyre_in=gyre_in)
         modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in) 
 
     evo_terminated = False
@@ -102,8 +106,7 @@ def writetoGyreFile(wdir, parameter, value, default_section, gyre_in="gyre.in"):
         filename (str): The path to the inlist file.
         parameter (str): The parameter to be written.
         value (str): The value of the parameter to be written.
-        inlistDict (dict): A dictionary with all the parameters and their values.
-        defaultsDict (dict): A dictionary with all the parameters and their values.
+        default_section (str): The section in which the parameter is to be written.
         sections (list): A list with the sections of the inlist file.
     """    
     this_section = False

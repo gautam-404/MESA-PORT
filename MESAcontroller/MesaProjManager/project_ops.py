@@ -248,7 +248,8 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, files='', data_format="FGONG", silent=True, target=None, logging=True, parallel=False, n_cores=None):
+    def runGyre(self, gyre_in, files='', data_format="GYRE", silent=True, target=None, logging=True, 
+                    parallel=False, n_cores=None, gyre_input_params=None):
         """Runs GYRE.
 
         Args:
@@ -257,7 +258,14 @@ class ProjectOps:
                                             to be processed by GYRE. Defaults to 'all'.
             silent (bool, optional): Run the command silently. Defaults to True.
             target (str, optional): Target star. Defaults to None.
-
+            logging (bool, optional): Log the output. Defaults to True.
+            parallel (bool, optional): Run GYRE in parallel. Defaults to False.
+            n_cores (int, optional): Number of cores to use. Defaults to None.
+            gyre_input_params (list of string lists, optional): List of lists of the form [[parameter, value, default_section],...].
+                                                                Where parameter is the parameter name, value is the value to be set and
+                                                                default_section is the section in which the parameter is to be set.
+                                                                All three are strings. Defaults to None.
+                                                                Note: Fortran string values will need to be enclosed in quotes.
         Raises: 
             FileNotFoundError: If the GYRE input file does not exist.
             ValueError: If the input for argument 'silent' is invalid.
@@ -292,7 +300,7 @@ class ProjectOps:
             if files == '':
                 with status.Status("[b i  cyan3]Running GYRE...", spinner="moon") as status_:
                     res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
-                                    silent=silent, runlog=runlog, status=status_, gyre=True)
+                                    silent=silent, runlog=runlog, status=status_, gyre=True, gyre_input_params=gyre_input_params)
             elif files == 'all' or type(files) == list or type(files) == str:
                 ## ALL FILES
                 if files == 'all':
@@ -324,7 +332,7 @@ class ProjectOps:
                                 repeat(silent), repeat(runlog),
                                 repeat(None), repeat(True),
                                 files, repeat(data_format),
-                                repeat(True), repeat(gyre_in))
+                                repeat(True), repeat(gyre_in), repeat(gyre_input_params))
                         with progress.Progress(*progress_columns) as progressbar:
                             task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
@@ -342,7 +350,8 @@ class ProjectOps:
                                                                                     repeat(silent), repeat(runlog),
                                                                                     repeat(None), repeat(True),
                                                                                     files, repeat(data_format),
-                                                                                    repeat(True), repeat(gyre_in))
+                                                                                    repeat(True), repeat(gyre_in),
+                                                                                    repeat(gyre_input_params))
                         except Exception as e:
                             raise e
                         
@@ -350,7 +359,8 @@ class ProjectOps:
                 else:
                     for file in files:
                         res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
-                            silent=silent, runlog=runlog, status=None, gyre=True, filename=file, data_format=data_format)
+                            silent=silent, runlog=runlog, status=None, gyre=True, 
+                            filename=file, data_format=data_format, gyre_input_params=gyre_input_params)
             else:
                 raise ValueError("Invalid input for argument 'files'")
 
