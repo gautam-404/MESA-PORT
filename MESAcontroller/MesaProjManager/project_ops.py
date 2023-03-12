@@ -347,6 +347,7 @@ class ProjectOps:
                         try:
                             from concurrent.futures import ThreadPoolExecutor
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
+                            gyre_input_params = gyre_input_params if gyre_input_params is not None else repeat(None)
                             with ThreadPoolExecutor(max_workers=n_processes) as executor:
                                 gyre_in = os.path.abspath(gyre_in)
                                 executor.map(ops_helper.run_subprocess, repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
