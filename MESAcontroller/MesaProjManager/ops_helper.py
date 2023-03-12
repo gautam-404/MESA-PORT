@@ -155,9 +155,10 @@ def writetoGyreFile(wdir, parameter, value, default_section=None, gyre_in="gyre.
                     this_section = True
                 if this_section:
                     if parameter in line:
-                        f.write(line.replace(line.split("=")[1], f" {value}    ! Changed\n"))
-                        edited = True
-                        this_section = False
+                        if parameter == line.split("=")[0].strip():
+                            f.write(line.replace(line.split("=")[1], f" {value}    ! Changed\n"))
+                            edited = True
+                            this_section = False
                     elif line[0] == "/":
                         f.write(indent)
                         f.write(f"{parameter} = {value}    ! Added\n")

@@ -249,11 +249,12 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
                         # print("skip section: " + line.split("&")[1].split()[0])
                 if this_section:
                     if exists and parameter in line:
-                        if not delete:
-                            f.write(line.replace(line.split("=")[1], f" {value}    ! Changed\n"))
-                        else:
-                            f.write(indent)
-                            f.write(f"! {parameter} = {value}    ! Removed\n")
+                        if parameter == line.split("=")[0].strip():
+                            if not delete:
+                                f.write(line.replace(line.split("=")[1], f" {value}    ! Changed\n"))
+                            else:
+                                f.write(indent)
+                                f.write(f"! {parameter} = {value}    ! Removed\n")
                     elif not exists and line.startswith("/"):
                         f.write(indent)
                         f.write(f"{parameter} = {value}    ! Added\n")
