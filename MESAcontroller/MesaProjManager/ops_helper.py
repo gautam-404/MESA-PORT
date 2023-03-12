@@ -1,11 +1,10 @@
 import subprocess
 import shlex
-import sys, os
+import sys, os, glob
 import shutil
 from rich import print
 
 from ..MesaFileHandler.support import *
-
 
 def check_exists(exists, projName):
         """Checks if the project exists."""
@@ -38,8 +37,8 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             gyre_in = os.path.join(wdir, f"gyre{num}.in")
             commands = commands.replace("gyre.in", f"gyre{num}.in")
         if gyre_input_params is not None:
-            for params in gyre_input_params:
-                writetoGyreFile(wdir, params[0], params[1], params[2], gyre_in=gyre_in)
+            for parameter, value in gyre_input_params.items():
+                writetoGyreFile(wdir, parameter, value, gyre_in=gyre_in)
         modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in) 
 
     evo_terminated = False
@@ -98,8 +97,36 @@ def process_outline(outline):
     except:
         return None
 
+def gyreDefaults():
+    """Reads the defaults files and returns a dictionary with all the parameters and their values.
+    Returns:
+        dict: A dictionary with all the parameters and their values.
+    """    
+    gyre_dir = os.path.abspath(os.environ["GYRE_DIR"])
+    gyre_defaults_dir = os.path.join(gyre_dir, "doc/source/ref-guide/input-files/*")
+    defaultsFiles = glob.glob(gyre_defaults_dir)
+    # sections = ["&"+name.split("/")[-1].split('.')[0].split('-')[0] for name in defaultsFiles]
+    # print(sections)
+    section_parameters = {}
+    for i, file in enumerate(defaultsFiles):
+        params = []
+        sections = []
+        with open(file) as file:
+            for line in file:
+                if ":nml_g:" in line:
+                    splits = line.split(":nml_g:")
+                    for s in splits:
+                        if "`" in s:
+                            sections.append("&"+s.split("`")[1])
+                if ":nml_n:" in line:
+                    params.append(line.split(":nml_n:")[1].split("`")[1])
+        sections = list(set(sections))
+        for section in sections:
+            section_parameters[section] = params
+    return section_parameters
 
-def writetoGyreFile(wdir, parameter, value, default_section, gyre_in="gyre.in"):
+
+def writetoGyreFile(wdir, parameter, value, default_section=None, gyre_in="gyre.in"):
     """Writes the parameter and its value to the inlist file.
 
     Args:
@@ -108,7 +135,13 @@ def writetoGyreFile(wdir, parameter, value, default_section, gyre_in="gyre.in"):
         value (str): The value of the parameter to be written.
         default_section (str): The section in which the parameter is to be written.
         sections (list): A list with the sections of the inlist file.
-    """    
+    """   
+    if default_section is None:
+        for section, values in gyreDefaults().items():
+            if parameter in values:
+                default_section = section
+        if default_section is None:
+            raise(f"Parameter {parameter} not found in any GYRE input files.")
     this_section = False
     with cd(wdir):
         with open(gyre_in, "r") as file:
@@ -140,9 +173,9 @@ def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in"):
         file_format = "MESA"
     elif data_format == "FGONG":
         file_format = "FGONG"
-    writetoGyreFile(LOGS_dir, parameter="model_type", value="'EVOL'", default_section="&model", gyre_in=gyre_in)
-    writetoGyreFile(LOGS_dir, parameter="file_format", value=f"'{file_format}'", default_section="&model", gyre_in=gyre_in)
-    writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", default_section="&model", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="model_type", value="'EVOL'", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="file_format", value=f"'{file_format}'", gyre_in=gyre_in)
+    writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="summary_file", value="'freq_output_nonad.txt'", default_section="&nad_output", gyre_in=gyre_in)
 

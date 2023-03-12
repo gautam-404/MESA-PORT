@@ -261,11 +261,13 @@ class ProjectOps:
             logging (bool, optional): Log the output. Defaults to True.
             parallel (bool, optional): Run GYRE in parallel. Defaults to False.
             n_cores (int, optional): Number of cores to use. Defaults to None.
-            gyre_input_params (list of string lists, optional): List of lists of the form [[parameter, value, default_section],...].
-                                                                Where parameter is the parameter name, value is the value to be set and
-                                                                default_section is the section in which the parameter is to be set.
-                                                                All three are strings. Defaults to None.
-                                                                Note: Fortran string values will need to be enclosed in quotes.
+            gyre_input_params (dict or list of dicts, optional): Dictionary of GYRE input parameters.
+                                                                {parameter: value}. Parameter must be a string. Value
+                                                                can be a string, int, float, or bool.
+                                                                List of dictionaries for multiple profiles. 
+                                                                list of dicts must be in the same order as the
+                                                                list of profile files. len(list of dicts) must be
+                                                                equal to len(list of profile files). Defaults to None.
         Raises: 
             FileNotFoundError: If the GYRE input file does not exist.
             ValueError: If the input for argument 'silent' is invalid.
@@ -332,7 +334,7 @@ class ProjectOps:
                                 repeat(silent), repeat(runlog),
                                 repeat(None), repeat(True),
                                 files, repeat(data_format),
-                                repeat(True), repeat(gyre_in), repeat(gyre_input_params))
+                                repeat(True), repeat(gyre_in), gyre_input_params)
                         with progress.Progress(*progress_columns) as progressbar:
                             task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
@@ -351,16 +353,17 @@ class ProjectOps:
                                                                                     repeat(None), repeat(True),
                                                                                     files, repeat(data_format),
                                                                                     repeat(True), repeat(gyre_in),
-                                                                                    repeat(gyre_input_params))
+                                                                                    gyre_input_params)
                         except Exception as e:
                             raise e
                         
                                     
                 else:
-                    for file in files:
+                    for i, file in enumerate(files):
+                        gyre_input_params_i = gyre_input_params[i] if gyre_input_params is not None else None
                         res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
                             silent=silent, runlog=runlog, status=None, gyre=True, 
-                            filename=file, data_format=data_format, gyre_input_params=gyre_input_params)
+                            filename=file, data_format=data_format, gyre_input_params=gyre_input_params_i)
             else:
                 raise ValueError("Invalid input for argument 'files'")
 
