@@ -316,6 +316,7 @@ class ProjectOps:
                 elif type(files) == list or type(files) == str:
                     if type(files) == str:
                         files = [files]
+                        gyre_input_params = [gyre_input_params]
                     if len(files) == 0:
                         raise ValueError("No files provided.")
                     else:
@@ -360,16 +361,11 @@ class ProjectOps:
                         
                                     
                 else:
-                    if isinstance(files, list):
-                        for i, file in enumerate(files):
-                            gyre_input_params_i = gyre_input_params[i] if gyre_input_params is not None else None
-                            res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
-                                silent=silent, runlog=runlog, status=None, gyre=True, 
-                                filename=file, data_format=data_format, gyre_input_params=gyre_input_params_i)
-                    elif isinstance(files, str):
+                    for i, file in enumerate(files):
+                        gyre_input_params_i = gyre_input_params[i] if gyre_input_params is not None else None
                         res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
-                                silent=silent, runlog=runlog, status=None, gyre=True, 
-                                filename=files, data_format=data_format, gyre_input_params=gyre_input_params)
+                            silent=silent, runlog=runlog, status=None, gyre=True, 
+                            filename=file, data_format=data_format, gyre_input_params=gyre_input_params_i)
             else:
                 raise ValueError("Invalid input for argument 'files'")
 
