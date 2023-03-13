@@ -27,7 +27,9 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
         gyre (bool, optional): Whether the command is a gyre command. Defaults to False.
         filename (str, optional): The name of the file to be used by gyre. Defaults to None.
         data_format (str, optional): The format of the data to be used by gyre. Defaults to None.
-
+        parallel (bool, optional): Whether the command is a parallel gyre command. Defaults to False.
+        gyre_in (str, optional): The name of the gyre input file. Defaults to "gyre.in".
+        gyre_input_params (dict, optional): The parameters to be written to the gyre input file. Defaults to None.
     Returns:
         bool: True if the command ran successfully, False otherwise.
     """      

@@ -360,13 +360,13 @@ class ProjectOps:
                         
                                     
                 else:
-                    if type(files) == list:
+                    if isinstance(files, list):
                         for i, file in enumerate(files):
                             gyre_input_params_i = gyre_input_params[i] if gyre_input_params is not None else None
                             res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
                                 silent=silent, runlog=runlog, status=None, gyre=True, 
                                 filename=file, data_format=data_format, gyre_input_params=gyre_input_params_i)
-                    elif type(files) == str:
+                    elif isinstance(files, str):
                         res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
                                 silent=silent, runlog=runlog, status=None, gyre=True, 
                                 filename=files, data_format=data_format, gyre_input_params=gyre_input_params)
