@@ -13,6 +13,8 @@ class MesaEnvironmentHandler():
         else:
             self.defaultsPath = "star/defaults/"
         self.mesaDir = self.readMesaDirs(mesa_env)
+        ## Copy kap and eos defaults to the defaults directory 
+        self.copyDefaults()
         self.defaultsDir = os.path.join(self.mesaDir, self.defaultsPath)
         if not os.path.exists(self.defaultsDir):
             raise FileNotFoundError(f"Defaults directory {self.defaultsDir} does not exist.")
