@@ -1,6 +1,7 @@
 import os
 import shutil
 import glob
+import time
 
 from .support import *
 from ..MesaInstaller import syscheck
@@ -26,6 +27,7 @@ class MesaEnvironmentHandler():
     def copyDefaults(self):
         shutil.copy(os.path.join(self.mesaDir, "kap/defaults/kap.defaults"), self.defaultsDir)
         shutil.copy(os.path.join(self.mesaDir, "eos/defaults/eos.defaults"), self.defaultsDir)
+        time.sleep(2)
         if syscheck.whichos() == "Linux" or "macOS" in syscheck.whichos():
             os.sync()
             
