@@ -1,9 +1,9 @@
 import os
 import shutil
 import glob
-import time
 
 from .support import *
+from ..MesaInstaller import syscheck
 
 class MesaEnvironmentHandler():
     def __init__(self, astero=False, binary=False, target='', mesa_env="MESA_DIR"):
@@ -26,8 +26,9 @@ class MesaEnvironmentHandler():
     def copyDefaults(self):
         shutil.copy(os.path.join(self.mesaDir, "kap/defaults/kap.defaults"), self.defaultsDir)
         shutil.copy(os.path.join(self.mesaDir, "eos/defaults/eos.defaults"), self.defaultsDir)
-        time.sleep(0.5)
-
+        if syscheck.whichos() == "Linux" or "macOS" in syscheck.whichos():
+            os.sync()
+            
     def readMesaDirs(self, envVar):
         try:
             mesaDir = os.environ[envVar]
