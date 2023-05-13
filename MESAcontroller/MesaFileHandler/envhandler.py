@@ -1,6 +1,7 @@
 import os
 import shutil
 import glob
+import time
 
 from .support import *
 
@@ -25,6 +26,7 @@ class MesaEnvironmentHandler():
     def copyDefaults(self):
         shutil.copy(os.path.join(self.mesaDir, "kap/defaults/kap.defaults"), self.defaultsDir)
         shutil.copy(os.path.join(self.mesaDir, "eos/defaults/eos.defaults"), self.defaultsDir)
+        time.sleep(0.5)
 
     def readMesaDirs(self, envVar):
         try:
