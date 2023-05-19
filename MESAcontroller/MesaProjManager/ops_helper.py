@@ -67,15 +67,19 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                             age_str = f"[b]Age: [cyan]{age:.3f}[/cyan] years"
                         else:
                             age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
-                        if parallel is False:
-                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
                     if trace is not None:
                         values = process_trace(trace, outline)
-                        trace = [tr for i, tr in enumerate(trace) if values[i] is not None]
+                        trace_ = [tr for i, tr in enumerate(trace) if values[i] is not None]
                         values = [val for val in values if val is not None]
                         if len(values) > 0 and parallel is False:
-                            for i in range(len(trace)):
-                                status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str+f"\n[b]Trace: [cyan]{trace[i]}[/cyan]: [cyan]{values[i]:.3f}[/cyan]", spinner="moon")
+                            trace_str = ""
+                            for i in range(len(trace_)):
+                                trace_str += f"[b]{trace_[i]}[/b]: [cyan]{values[i]:.3e}[/cyan]\n"
+                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str+"\n"+trace_str, spinner="moon")
+                        elif parallel is False and age is not None:
+                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
+                    elif parallel is False and age is not None:
+                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
             for errline in proc.stderr:
                 logfile.write(errline)
                 sys.stdout.write(errline)
@@ -118,22 +122,22 @@ def setup_trace(trace, work_dir):
     star = MesaAccess(work_dir)
     num_trace_history_values = star.get("num_trace_history_values")
     for tr in trace:
-        num_trace_history_values += 1
-        star.set({f'trace_history_value_name({num_trace_history_values})': f'{tr}'})
+        try:
+            star.get(tr)
+        except:
+            num_trace_history_values += 1
+            star.set({f'trace_history_value_name({num_trace_history_values})': f'{tr}'})
     star.set({'num_trace_history_values': num_trace_history_values})
 
 
 def process_trace(trace, outline):
     if isinstance(trace, str):
         trace = [trace]
-    splitline = outline.split(" ")
+    splitline = outline.split()
     values = []
     for tr in trace:
         if tr in splitline:
-            for value in splitline:
-                if value.isnumeric():
-                    values.append(float(value))
-                    break
+            values.append(float(splitline[1]))
         else:
             values.append(None)
     return values

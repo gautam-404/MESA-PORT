@@ -245,11 +245,11 @@ class ProjectOps:
                 else:
                     if parallel:
                         res = ops_helper.run_subprocess(commands=f'./re {photo}', wdir=self.work_dir, 
-                                silent=silent, runlog=runlog, parallel=True)
+                                silent=silent, runlog=runlog, parallel=True, trace=trace)
                     else:
                         with status.Status(f"[b i  cyan3]Resuming run from photo {photo}.\nRunning...", spinner="moon") as status_:
                             res = ops_helper.run_subprocess(commands=f'./re {photo}', wdir=self.work_dir, 
-                                    silent=silent, runlog=runlog, status=status_)
+                                    silent=silent, runlog=runlog, status=status_, trace=trace)
         if res is False:
             raise Exception("Resume from photo failed! Check runlog.")
         else:
