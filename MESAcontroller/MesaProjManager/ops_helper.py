@@ -5,7 +5,7 @@ import shutil
 from rich import print
 
 from ..MesaFileHandler.support import *
-from ..MesaFileHandler.access_helper import toFortranType
+from ..MesaFileHandler.access_helper import toFortranType, toPythonType
 from ..MesaFileHandler import MesaAccess
 
 def check_exists(exists, projName):
@@ -46,6 +46,8 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
         modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in) 
 
     evo_terminated = False
+    if trace is not None:
+        trace_values = [None for i in range(len(trace))]
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=wdir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
         with open(runlog, "a+") as logfile:
@@ -68,13 +70,13 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                         else:
                             age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
                     if trace is not None:
-                        values = process_trace(trace, outline)
-                        trace_ = [tr for i, tr in enumerate(trace) if values[i] is not None]
-                        values = [val for val in values if val is not None]
+                        trace_values = process_trace(trace, outline, trace_values)
+                        trace_ = [trace[i] for i in range(len(trace)) if trace_values[i] is not None]
+                        values = [val for val in trace_values if val is not None]
                         if len(values) > 0 and parallel is False:
                             trace_str = ""
                             for i in range(len(trace_)):
-                                trace_str += f"[b]{trace_[i]}[/b]: [cyan]{values[i]:.3e}[/cyan]\n"
+                                trace_str += f"[b]{trace_[i]}[/b]: [cyan]{values[i]:.5f}[/cyan]\n"
                             status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str+"\n"+trace_str, spinner="moon")
                         elif parallel is False and age is not None:
                             status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
@@ -122,24 +124,27 @@ def setup_trace(trace, work_dir):
     star = MesaAccess(work_dir)
     num_trace_history_values = star.get("num_trace_history_values")
     for tr in trace:
-        try:
-            star.get(tr)
-        except:
+        exists = False
+        for i in range(num_trace_history_values+1):
+            if tr == star.get(f'trace_history_value_name({i+1})'):
+                exists = True
+                break
+        if not exists:
             num_trace_history_values += 1
             star.set({f'trace_history_value_name({num_trace_history_values})': f'{tr}'})
     star.set({'num_trace_history_values': num_trace_history_values})
 
 
-def process_trace(trace, outline):
+def process_trace(trace, outline, values):
     if isinstance(trace, str):
         trace = [trace]
     splitline = outline.split()
-    values = []
-    for tr in trace:
-        if tr in splitline:
-            values.append(float(splitline[1]))
-        else:
-            values.append(None)
+    for i in range(len(trace)):
+        if trace[i] in splitline:
+            try:
+                values[i] = float(toPythonType(splitline[1]))
+            except:
+                pass
     return values
             
 
