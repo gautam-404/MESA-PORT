@@ -5,7 +5,8 @@ import shutil
 from rich import print
 
 from ..MesaFileHandler.support import *
-from ..MesaFileHandler.access_helper import toFortranType
+from ..MesaFileHandler.access_helper import toFortranType, toPythonType
+from ..MesaFileHandler import MesaAccess
 
 def check_exists(exists, projName):
         """Checks if the project exists."""
@@ -15,7 +16,7 @@ def check_exists(exists, projName):
 
 def run_subprocess(commands, wdir, silent=True, runlog='', status=None, 
                     gyre=False, filename="", data_format="FGONG", parallel=False, 
-                    gyre_in="gyre.in", gyre_input_params=None):
+                    gyre_in="gyre.in", gyre_input_params=None, trace=None):
     """Runs a subprocess.
 
     Args:
@@ -45,6 +46,8 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
         modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in) 
 
     evo_terminated = False
+    if trace is not None:
+        trace_values = [None for i in range(len(trace))]
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=wdir,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
         with open(runlog, "a+") as logfile:
@@ -66,8 +69,19 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                             age_str = f"[b]Age: [cyan]{age:.3f}[/cyan] years"
                         else:
                             age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
-                        if parallel is False:
+                    if trace is not None:
+                        trace_values = process_trace(trace, outline, trace_values)
+                        trace_ = [trace[i] for i in range(len(trace)) if trace_values[i] is not None]
+                        values = [val for val in trace_values if val is not None]
+                        if len(values) > 0 and parallel is False:
+                            trace_str = ""
+                            for i in range(len(trace_)):
+                                trace_str += f"[b]{trace_[i]}[/b]: [cyan]{values[i]:.5f}[/cyan]\n"
+                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str+"\n"+trace_str, spinner="moon")
+                        elif parallel is False and age is not None:
                             status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
+                    elif parallel is False and age is not None:
+                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
             for errline in proc.stderr:
                 logfile.write(errline)
                 sys.stdout.write(errline)
@@ -99,6 +113,40 @@ def process_outline(outline):
             return None
     except:
         return None
+
+def setup_trace(trace, work_dir):
+    if isinstance(trace, str):
+        trace = [trace]
+    elif isinstance(trace, list):
+        pass
+    else:
+        raise TypeError("Trace must be a string or a list of strings.")
+    star = MesaAccess(work_dir)
+    num_trace_history_values = star.get("num_trace_history_values")
+    for tr in trace:
+        exists = False
+        for i in range(num_trace_history_values+1):
+            if tr == star.get(f'trace_history_value_name({i+1})'):
+                exists = True
+                break
+        if not exists:
+            num_trace_history_values += 1
+            star.set({f'trace_history_value_name({num_trace_history_values})': f'{tr}'})
+    star.set({'num_trace_history_values': num_trace_history_values})
+
+
+def process_trace(trace, outline, values):
+    if isinstance(trace, str):
+        trace = [trace]
+    splitline = outline.split()
+    for i in range(len(trace)):
+        if trace[i] in splitline:
+            try:
+                values[i] = float(toPythonType(splitline[1]))
+            except:
+                pass
+    return values
+            
 
 def gyreDefaults():
     """Reads the defaults files and returns a dictionary with all the parameters and their values.
