@@ -59,29 +59,30 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 elif not gyre:
                     if "terminated evolution:" in outline:
                         evo_terminated = True
-                    age = process_outline(outline)
-                    if age is not None:
-                        if age < 1/365:
-                            age_str = f"[b]Age: [cyan]{age*365*24:.4f}[/cyan] hours"
-                        elif 1/365 < age < 1:
-                            age_str = f"[b]Age: [cyan]{age*365:.4f}[/cyan] days"
-                        elif 1 < age < 1000:
-                            age_str = f"[b]Age: [cyan]{age:.3f}[/cyan] years"
-                        else:
-                            age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
-                    if trace is not None:
-                        trace_values = process_trace(trace, outline, trace_values)
-                        trace_ = [trace[i] for i in range(len(trace)) if trace_values[i] is not None]
-                        values = [val for val in trace_values if val is not None]
-                        if len(values) > 0 and parallel is False:
-                            trace_str = ""
-                            for i in range(len(trace_)):
-                                trace_str += f"[b]{trace_[i]}[/b]: [cyan]{values[i]:.5f}[/cyan]\n"
-                            status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str+"\n"+trace_str, spinner="moon")
-                        elif parallel is False and age is not None:
+                    if not parallel:
+                        age = process_outline(outline)
+                        if age is not None:
+                            if age < 1/365:
+                                age_str = f"[b]Age: [cyan]{age*365*24:.4f}[/cyan] hours"
+                            elif 1/365 < age < 1:
+                                age_str = f"[b]Age: [cyan]{age*365:.4f}[/cyan] days"
+                            elif 1 < age < 1000:
+                                age_str = f"[b]Age: [cyan]{age:.3f}[/cyan] years"
+                            else:
+                                age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
+                        if trace is not None:
+                            trace_values = process_trace(trace, outline, trace_values)
+                            trace_ = [trace[i] for i in range(len(trace)) if trace_values[i] is not None]
+                            values = [val for val in trace_values if val is not None]
+                            if len(values) > 0 and parallel is False:
+                                trace_str = ""
+                                for i in range(len(trace_)):
+                                    trace_str += f"[b]{trace_[i]}[/b]: [cyan]{values[i]:.5f}[/cyan]\n"
+                                status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str+"\n"+trace_str, spinner="moon")
+                            elif age is not None:
+                                status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
+                        elif age is not None:
                             status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
-                    elif parallel is False and age is not None:
-                        status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
             for errline in proc.stderr:
                 logfile.write(errline)
                 sys.stdout.write(errline)
