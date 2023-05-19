@@ -6,6 +6,7 @@ from rich import print
 
 from ..MesaFileHandler.support import *
 from ..MesaFileHandler.access_helper import toFortranType
+from ..MesaFileHandler import MesaAccess
 
 def check_exists(exists, projName):
         """Checks if the project exists."""
@@ -15,7 +16,7 @@ def check_exists(exists, projName):
 
 def run_subprocess(commands, wdir, silent=True, runlog='', status=None, 
                     gyre=False, filename="", data_format="FGONG", parallel=False, 
-                    gyre_in="gyre.in", gyre_input_params=None):
+                    gyre_in="gyre.in", gyre_input_params=None, trace=None):
     """Runs a subprocess.
 
     Args:
@@ -68,6 +69,13 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                             age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
                         if parallel is False:
                             status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str, spinner="moon")
+                    if trace is not None:
+                        values = process_trace(trace, outline)
+                        trace = [tr for i, tr in enumerate(trace) if values[i] is not None]
+                        values = [val for val in values if val is not None]
+                        if len(values) > 0 and parallel is False:
+                            for i in range(len(trace)):
+                                status.update(status=f"[b i cyan3]Running....[/b i cyan3]\n"+age_str+f"\n[b]Trace: [cyan]{trace[i]}[/cyan]: [cyan]{values[i]:.3f}[/cyan]", spinner="moon")
             for errline in proc.stderr:
                 logfile.write(errline)
                 sys.stdout.write(errline)
@@ -99,6 +107,37 @@ def process_outline(outline):
             return None
     except:
         return None
+
+def setup_trace(trace, work_dir):
+    if isinstance(trace, str):
+        trace = [trace]
+    elif isinstance(trace, list):
+        pass
+    else:
+        raise TypeError("Trace must be a string or a list of strings.")
+    star = MesaAccess(work_dir)
+    num_trace_history_values = star.get("num_trace_history_values")
+    for tr in trace:
+        num_trace_history_values += 1
+        star.set({f'trace_history_value_name({num_trace_history_values})': f'{tr}'})
+    star.set({'num_trace_history_values': num_trace_history_values})
+
+
+def process_trace(trace, outline):
+    if isinstance(trace, str):
+        trace = [trace]
+    splitline = outline.split(" ")
+    values = []
+    for tr in trace:
+        if tr in splitline:
+            for value in splitline:
+                if value.isnumeric():
+                    values.append(float(value))
+                    break
+        else:
+            values.append(None)
+    return values
+            
 
 def gyreDefaults():
     """Reads the defaults files and returns a dictionary with all the parameters and their values.

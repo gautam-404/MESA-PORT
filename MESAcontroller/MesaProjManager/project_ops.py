@@ -150,17 +150,22 @@ class ProjectOps:
 
 
     
-    def run(self, silent=True, logging=True, parallel=False):
+    def run(self, silent=True, logging=True, parallel=False, trace=None):
         """Runs the project.
 
         Args:
             silent (bool, optional): Run the command silently. Defaults to True.
+            logging (bool, optional): Log the run. Defaults to True.
+            parallel (bool, optional): Run in parallel. Defaults to False.
+            trace (list of str, optional): Trace specific history variables. Defaults to None.
 
         Raises:
             Exception: If the project is not made yet.
             ValueError: If the input for argument 'silent' is invalid.
             Exception: If the run fails.
         """        
+        if trace is not None:
+            ops_helper.setup_trace(trace, self.work_dir)
         ops_helper.check_exists(self.exists, self.projName)
         if logging:
             runlog = os.path.join(self.work_dir, "run.log")
@@ -175,11 +180,11 @@ class ProjectOps:
             else:
                 if parallel:
                     res = ops_helper.run_subprocess(commands='./rn', wdir=self.work_dir, 
-                                silent=silent, runlog=runlog, parallel=True)
+                                silent=silent, runlog=runlog, parallel=True, trace=trace)
                 else:
                     with status.Status("[b i cyan3]Running...", spinner="moon") as status_:
                         res = ops_helper.run_subprocess(commands='./rn', wdir=self.work_dir, 
-                                    silent=silent, runlog=runlog, status=status_) 
+                                    silent=silent, runlog=runlog, status=status_, trace=trace) 
             if res is False:
                 raise Exception("Run failed! Check runlog.")
             else:
@@ -188,18 +193,24 @@ class ProjectOps:
 
         
     
-    def resume(self, photo=None, silent=True, target=None, logging=True, parallel=False):
+    def resume(self, photo=None, silent=True, target=None, logging=True, parallel=False, trace=None):
         """Resumes the run from a given photo.
 
         Args:
             photo (str, optional): Photo name from which the run is to be resumed. 
                                 If None, the last photo is used. Defaults to None.
             silent (bool, optional): Run the command silently. Defaults to True.
+            target (str, optional): Target photo name. Defaults to None.
+            logging (bool, optional): Log the run. Defaults to True.
+            parallel (bool, optional): Run in parallel. Defaults to False.
+            trace (list of str, optional): Trace specific history variables. Defaults to None.
 
         Raises:
             FileNotFoundError: If the photo does not exist.
             ValueError: If the input for argument 'silent' is invalid.
         """
+        if trace is not None:
+            ops_helper.setup_trace(trace, self.work_dir)
         ops_helper.check_exists(self.exists, self.projName)
         if logging:
             runlog = os.path.join(self.work_dir, "run.log")
@@ -208,12 +219,12 @@ class ProjectOps:
         if photo == None:
             if parallel:
                 res = ops_helper.run_subprocess(commands='./re', wdir=self.work_dir, 
-                        silent=silent, runlog=runlog, parallel=True)
+                        silent=silent, runlog=runlog, parallel=True, trace=trace)
             else:
                 # print(f"[b i  cyan3]Resuming run from the most recent photo.")
                 with status.Status("[b i  cyan3]Resuming run from the most recent photo.\nRunning...", spinner="moon") as status_:
                     res = ops_helper.run_subprocess(commands=f'./re', wdir=self.work_dir, 
-                            silent=silent, runlog=runlog, status=status_)
+                            silent=silent, runlog=runlog, status=status_, trace=trace)
         else:
             if self.binary:
                 if target == 'primary':
