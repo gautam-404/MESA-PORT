@@ -75,8 +75,9 @@ pip install git+https://github.com/gautam-404/MESA-controller.git
     ```python
     proj.clean()
     proj.make()
-    proj.run(silent=True)                                    ## Run MESA model
+    proj.run(silent=True, trace=None)                                    ## Run MESA model
     ## Silent=True by default, whch writes MESA output to a run log while the console shows the star's age as it evolves.
+    ## Pass a list of MESA parameters as an argument to trace their evolution in terminal along with age. Eg, trace=["log_L", "log_Teff"]
     proj.resume("photo_name", silent=True)
     proj.delete()                                             ## Deletes the project directory
     ```
