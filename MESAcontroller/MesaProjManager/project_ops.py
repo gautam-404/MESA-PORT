@@ -189,6 +189,7 @@ class ProjectOps:
                 raise Exception("Run failed! Check runlog.")
             else:
                 print("Run successful.\n")
+                return res
         
 
         
@@ -254,6 +255,7 @@ class ProjectOps:
             raise Exception("Resume from photo failed! Check runlog.")
         else:
             print("Run successful.\n")
+            return res
 
 
 
