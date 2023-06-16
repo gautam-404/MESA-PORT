@@ -101,7 +101,10 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     elif evo_terminated:
         return False
     else:
-        return True
+        if not gyre:
+            return age
+        else:
+            return True
 
 def process_outline(outline):
     try:
