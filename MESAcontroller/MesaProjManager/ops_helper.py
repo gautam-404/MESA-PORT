@@ -102,6 +102,9 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
         return False
     else:
         if not gyre:
+            with open(runlog, "r") as logfile:
+                for line in logfile.readlines():
+                    age = process_outline(line)
             return age
         else:
             return True
