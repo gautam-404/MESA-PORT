@@ -19,9 +19,11 @@
   
   * **Single star** as well as **binary system** evolution supported.
 
-  * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. [Brainchild of [Marco Müllner](https://github.com/MarcoMuellner/PyMesaHandler)]
+  * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. 
 
   * MESA-controller can also run [GYRE](https://github.com/rhdtownsend/gyre) stellar oscillation code! See Usage.
+
+  * For advanced usage, see the [MESA-tests repository](https://github.com/gautam-404/MESA-tests). 
 
 
 
