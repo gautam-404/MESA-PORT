@@ -101,7 +101,16 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     elif evo_terminated:
         return False
     else:
-        return True
+        if not gyre:
+            age = 0
+            with open(runlog, "r") as logfile:
+                for line in logfile.readlines():
+                    age_ = process_outline(line)
+                    if age_ is not None:
+                        age = age_
+            return age
+        else:
+            return True
 
 def process_outline(outline):
     try:
