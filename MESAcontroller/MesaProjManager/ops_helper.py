@@ -235,6 +235,8 @@ def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in"):
         file_format = "MESA"
     elif data_format == "FGONG":
         file_format = "FGONG"
+    else:
+        file_format = "GSM"
     writetoGyreFile(LOGS_dir, parameter="model_type", value="'EVOL'", default_section="&model", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="file_format", value=f"'{file_format}'", default_section="&model", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", default_section="&model", gyre_in=gyre_in)
