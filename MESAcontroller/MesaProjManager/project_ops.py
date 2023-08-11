@@ -262,7 +262,7 @@ class ProjectOps:
 
 
     def runGyre(self, gyre_in, files='', data_format="GYRE", silent=True, target=None, logging=True, 
-                    parallel=False, n_cores=None, gyre_input_params=None):
+                    parallel=False, n_cores=None, gyre_input_params=None, gyre_diff_scheme='MAGNUS_GL2'):
         """Runs GYRE.
 
         Args:
@@ -315,7 +315,7 @@ class ProjectOps:
             if files == '':
                 with status.Status("[b i  cyan3]Running GYRE...", spinner="moon") as status_:
                     res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
-                                    silent=silent, runlog=runlog, status=status_, gyre=True, gyre_input_params=gyre_input_params)
+                                    silent=silent, runlog=runlog, status=status_, gyre=True, gyre_input_params=gyre_input_params, gyre_diff_scheme=gyre_diff_scheme)
             elif files == 'all' or type(files) == list or type(files) == str:
                 ## ALL FILES
                 if files == 'all':
@@ -349,7 +349,7 @@ class ProjectOps:
                                 repeat(silent), repeat(runlog),
                                 repeat(None), repeat(True),
                                 files, repeat(data_format),
-                                repeat(True), repeat(gyre_in), gyre_input_params)
+                                repeat(True), repeat(gyre_in), gyre_input_params, repeat(None), repeat(gyre_diff_scheme))
                         with progress.Progress(*progress_columns) as progressbar:
                             task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
@@ -368,7 +368,7 @@ class ProjectOps:
                                                                                     repeat(None), repeat(True),
                                                                                     files, repeat(data_format),
                                                                                     repeat(True), repeat(gyre_in),
-                                                                                    gyre_input_params)
+                                                                                    gyre_input_params, repeat(None), repeat(gyre_diff_scheme))
                         except Exception as e:
                             raise e
                         

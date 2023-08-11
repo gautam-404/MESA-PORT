@@ -16,7 +16,7 @@ def check_exists(exists, projName):
 
 def run_subprocess(commands, wdir, silent=True, runlog='', status=None, 
                     gyre=False, filename="", data_format="FGONG", parallel=False, 
-                    gyre_in="gyre.in", gyre_input_params=None, trace=None):
+                    gyre_in="gyre.in", gyre_input_params=None, trace=None, gyre_diff_scheme='MAGNUS_GL2'):
     """Runs a subprocess.
 
     Args:
@@ -43,7 +43,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
         if gyre_input_params is not None:
             for parameter, value in gyre_input_params.items():
                 writetoGyreFile(wdir, parameter, toFortranType(value), gyre_in=gyre_in)
-        modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in) 
+        modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in, diff_scheme=gyre_diff_scheme)
 
     evo_terminated = False
     if trace is not None:
@@ -230,7 +230,7 @@ def writetoGyreFile(wdir, parameter, value, default_section=None, gyre_in="gyre.
 
    
 
-def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in"):
+def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in", diff_scheme='MAGNUS_GL2'):
     if data_format == "GYRE":
         file_format = "MESA"
     elif data_format == "FGONG":
@@ -242,7 +242,7 @@ def modify_gyre_params(LOGS_dir, filename, data_format, gyre_in="gyre.in"):
     writetoGyreFile(LOGS_dir, parameter="file", value=f"'{filename}'", default_section="&model", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output", gyre_in=gyre_in)
     writetoGyreFile(LOGS_dir, parameter="summary_file", value="'freq_output_nonad.txt'", default_section="&nad_output", gyre_in=gyre_in)
-
+    writetoGyreFile(LOGS_dir, parameter="diff_scheme", value=diff_scheme, default_section="&num", gyre_in=gyre_in)
 
 dt_limit_values = ['burn steps', 'Lnuc', 'Lnuc_cat', 'Lnuc_H', 'Lnuc_He', 'lgL_power_phot', 'Lnuc_z', 'bad_X_sum',
                   'dH', 'dH/H', 'dHe', 'dHe/He', 'dHe3', 'dHe3/He3', 'dL/L', 'dX', 'dX/X', 'dX_nuc_drop', 'delta mdot',
