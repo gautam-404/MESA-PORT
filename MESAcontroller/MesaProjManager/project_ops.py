@@ -261,7 +261,7 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, files='', data_format="GYRE", silent=True, target=None, logging=True, 
+    def runGyre(self, gyre_in, files='', data_format="GYRE", silent=True, target=None, logging=True, logdir="run.log", 
                     parallel=False, n_cores=None, gyre_input_params=None, gyre_diff_scheme='MAGNUS_GL2'):
         """Runs GYRE.
 
@@ -302,7 +302,8 @@ class ProjectOps:
             LOGS_dir = os.path.join(self.work_dir, "LOGS")
 
         if logging:
-            runlog = os.path.join(self.work_dir, "run.log")
+            # runlog = os.path.join(self.work_dir, "run.log")
+            runlog = os.path.join(self.work_dir, logdir)
         else:
             runlog = os.devnull
 
