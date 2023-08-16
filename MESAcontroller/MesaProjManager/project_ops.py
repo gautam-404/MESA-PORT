@@ -334,10 +334,10 @@ class ProjectOps:
                         gyre_input_params = [gyre_input_params]
                     if len(files) == 0:
                         raise ValueError("No files provided.")
-                    else:
-                        for file in files:
-                            if not os.path.isfile(os.path.join(LOGS_dir, file)):
-                                raise FileNotFoundError(f"File '{file}' does not exist.")
+                    # else:
+                    #     for file in files:
+                    #         if not os.path.isfile(os.path.join(LOGS_dir, file)) and not os.path.isfile(file):
+                    #             raise FileNotFoundError(f"File '{file}' does not exist.")
                             
                 with open(f'{self.work_dir}/gyre.log', 'a+') as f:
                         f.write(f"Total {len(files)} profiles to be processed by GYRE.\n\n")
