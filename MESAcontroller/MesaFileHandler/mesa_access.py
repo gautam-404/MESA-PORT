@@ -19,7 +19,10 @@ class MesaAccess:
         self.astero = astero
         self.binary = binary
         self.target = target
-        self.projectDir = os.path.join(os.getcwd(), project)
+        if os.path.isabs(project):
+            self.projectDir = project
+        else:
+            self.projectDir = os.path.join(os.getcwd(), project)
         envObj = MesaEnvironmentHandler(astero, binary, target)
         if binary and target == 'binary':
             self.mesaDir, self.defaultsDir = envObj.mesaDir, envObj.defaultsDir
