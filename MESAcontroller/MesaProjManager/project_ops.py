@@ -85,7 +85,7 @@ class ProjectOps:
                 raise Exception(f"Could not overwrite the existing '{self.projName}' project!")
 
         if self.exists is True:
-            self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
+            # self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
             if overwrite is True:
                 writeover()
             elif overwrite is False:
@@ -102,7 +102,7 @@ class ProjectOps:
         else:
             try:
                 shutil.copytree(self.defaultWork, self.projName)
-                self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
+                # self.work_dir = os.path.abspath(os.path.join(os.getcwd(), self.projName))
                 self.exists = True
             except shutil.Error:
                 raise Exception(f"Could not create the project '{self.projName}'!")
