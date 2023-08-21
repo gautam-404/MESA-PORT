@@ -1,5 +1,6 @@
 import os
 import shutil
+import psutil
 import subprocess
 import glob
 from itertools import repeat
@@ -354,7 +355,7 @@ class ProjectOps:
                     gyre_input_params = gyre_input_params if gyre_input_params is not None else repeat(None)
                     os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails in parallel
                     if n_cores is None:
-                        n_cores = os.cpu_count()
+                        n_cores = psutil.cpu_count(logical=True) 
                         Pool = mp.Pool
                         args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
                                 repeat(silent), repeat(runlog),
