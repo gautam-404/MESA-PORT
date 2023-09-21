@@ -1,4 +1,4 @@
-# MESA-controller
+# MESA Python Operational Runtime Toolkit
 
 <!-- <a href="https://zenodo.org/badge/latestdoi/589065195"><img src="https://zenodo.org/badge/589065195.svg" alt="DOI" width=150></a> -->
 
@@ -21,7 +21,7 @@
 
   * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. 
 
-  * MESA-controller can also run [GYRE](https://github.com/rhdtownsend/gyre) stellar oscillation code! See Usage.
+  * MESA-PORT can also run [GYRE](https://github.com/rhdtownsend/gyre) stellar oscillation code! See Usage.
 
   * For advanced usage, see the [MESA-tests repository](https://github.com/gautam-404/MESA-tests). 
 
@@ -31,14 +31,14 @@
 
 ## Installation
 ```
-pip install git+https://github.com/gautam-404/MESA-controller.git
+pip install git+https://github.com/gautam-404/MESA-PORT.git
 ```
 
 ## Usage
 
 ### ***Importing:***
   ```python
-  from MESAcontroller import  ProjectOps, MesaAccess, Installer
+  from mesaport import  ProjectOps, MesaAccess, Installer
   ```
   
   
