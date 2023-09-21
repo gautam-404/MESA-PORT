@@ -1,4 +1,4 @@
-from MESAcontroller import  ProjectOps, MesaAccess
+from mesaport import  ProjectOps, MesaAccess
 
 ## Use ProjectOps("your_project") for a custom project name
 work = ProjectOps()          
