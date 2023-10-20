@@ -57,7 +57,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 if silent is False:
                     sys.stdout.write(outline)
                 elif not gyre:
-                    if "terminated evolution:" in outline:
+                    if "terminated evolution:" in outline or "ERROR" in outline:
                         evo_terminated = True
                     if not parallel:
                         age = process_outline(outline)
@@ -87,7 +87,6 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 logfile.write(errline)
                 sys.stdout.write(errline)
             logfile.write( "\n\n"+("*"*100)+"\n\n" )
-
         _data, error = proc.communicate()
     if gyre:
         working_dir = wdir.replace("LOGS", "")
