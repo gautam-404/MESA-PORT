@@ -388,7 +388,6 @@ class ProjectOps:
                                 files, repeat(data_format),
                                 repeat(True), repeat(gyre_in), gyre_input_params, repeat(None), repeat(env))
                         with progress.Progress(*progress_columns) as progressbar:
-                        with progress.Progress(*progress_columns) as progressbar:
                             task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                             with Pool(n_processes) as pool:
