@@ -16,24 +16,27 @@ def check_exists(exists, projName):
 
 def run_subprocess(commands, wdir, silent=True, runlog='', status=None, 
                     gyre=False, filename="", data_format="FGONG", parallel=False, 
-                    gyre_in="gyre.in", gyre_input_params=None, trace=None):
-    """Runs a subprocess.
+                    gyre_in="gyre.in", gyre_input_params=None, trace=None, env=None):
+    
+    """
+    Runs a subprocess with the given commands.
 
     Args:
-        commands (str or list): Command to be run.
-        wdir (str): Directory in which the command is to be run.
-        silent (bool, optional): Run the command silently. Defaults to False.
-        runlog (str, optional): Log file to write the output to. Defaults to ''.
-        status (rich.status.Status, optional): Status to update. Defaults to status.Status("Running...").
-        gyre (bool, optional): Whether the command is a gyre command. Defaults to False.
-        filename (str, optional): The name of the file to be used by gyre. Defaults to None.
-        data_format (str, optional): The format of the data to be used by gyre. Defaults to None.
-        parallel (bool, optional): Whether the command is a parallel gyre command. Defaults to False.
-        gyre_in (str, optional): The name of the gyre input file. Defaults to "gyre.in".
-        gyre_input_params (dict, optional): The parameters to be written to the gyre input file. Defaults to None.
-    Returns:
-        bool: True if the command ran successfully, False otherwise.
-    """      
+    commands (str): The commands to be run.
+    wdir (str): The working directory.
+    silent (bool, optional): If True, the output of the subprocess is not printed. Defaults to True.
+    runlog (str, optional): The path to the runlog file. Defaults to ''.
+    status (rich.status.Status, optional): The status bar. Defaults to None.
+    gyre (bool, optional): If True, the subprocess is a GYRE run. Defaults to False.
+    filename (str, optional): The name of the file to be used in the GYRE run. Defaults to "".
+    data_format (str, optional): The data format of the file to be used in the GYRE run. Defaults to "FGONG".
+    parallel (bool, optional): If True, the subprocess is a parallel GYRE run. Defaults to False.
+    gyre_in (str, optional): The path to the GYRE input file. Defaults to "gyre.in".
+    gyre_input_params (dict, optional): A dictionary with the parameters to be changed in the GYRE input file. Defaults to None.
+    trace (str or list, optional): The trace to be followed in the GYRE run. Defaults to None.
+    env (dict, optional): The environment variables. Defaults to None. 
+                Pass os.environ.copy() to use the current environment. Or pass a dictionary with the environment variables to be used.
+    """   
     if gyre:
         if parallel:
             num = filename.split(".")[0]
@@ -48,7 +51,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     evo_terminated = False
     if trace is not None:
         trace_values = [None for i in range(len(trace))]
-    with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=wdir,
+    with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=wdir, env=env,
         stdout=subprocess.PIPE, stderr=subprocess.PIPE, universal_newlines=True) as proc:
         with open(runlog, "a+") as logfile:
             for outline in proc.stdout:
@@ -57,7 +60,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 if silent is False:
                     sys.stdout.write(outline)
                 elif not gyre:
-                    if "terminated evolution:" in outline:
+                    if "terminated evolution:" in outline or "ERROR" in outline:
                         evo_terminated = True
                     if not parallel:
                         age = process_outline(outline)
@@ -87,7 +90,6 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 logfile.write(errline)
                 sys.stdout.write(errline)
             logfile.write( "\n\n"+("*"*100)+"\n\n" )
-
         _data, error = proc.communicate()
     if gyre:
         working_dir = wdir.replace("LOGS", "")

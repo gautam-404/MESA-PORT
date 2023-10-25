@@ -17,6 +17,25 @@ from . import ops_helper
 from . import istarmap
 
 
+"""
+This module defines the `ProjectOps` class, which handles MESA project operations.
+
+Attributes:
+    projName (str): Name of the project.
+    binary (bool): True for a binary star system.
+    astero (bool): True for an astrophysical system.
+    envObject (MesaEnvironmentHandler): An instance of the `MesaEnvironmentHandler` class.
+    defaultWork (str): The default work directory for the project.
+    exists (bool): Flag indicating whether the project already exists.
+    work_dir (str): The working directory for the project.
+
+Methods:
+    __init__(self, name='work', astero=False, binary=False): Constructor for ProjectOps class.
+    create(self, overwrite=None, clean=None): Creates a new MESA project.
+    delete(self): Deletes the project.
+    clean(self): Cleans the project.
+    make(self, silent=False): Makes the project.
+"""
 class ProjectOps:
     """This class handles MESA project operations.
     """    
@@ -144,6 +163,9 @@ class ProjectOps:
     def make(self, silent=False):
         """Makes the project.
 
+        Args:
+            silent (bool, optional): Run the command silently. Defaults to False.
+
         Raises:
             Exception: If the make fails.
         """        
@@ -160,14 +182,15 @@ class ProjectOps:
 
 
     
-    def run(self, silent=True, logging=True, parallel=False, trace=None):
-        """Runs the project.
-
+    def run(self, silent=True, logging=True, parallel=False, trace=None, env=os.environ.copy()):
+        """
+        Runs the project.
         Args:
             silent (bool, optional): Run the command silently. Defaults to True.
             logging (bool, optional): Log the run. Defaults to True.
             parallel (bool, optional): Run in parallel. Defaults to False.
             trace (list of str, optional): Trace specific history variables. Defaults to None.
+            env (dict, optional): Environment variables. Defaults to os.environ.copy().
 
         Raises:
             Exception: If the project is not made yet.
@@ -190,11 +213,11 @@ class ProjectOps:
             else:
                 if parallel:
                     res = ops_helper.run_subprocess(commands='./rn', wdir=self.work_dir, 
-                                silent=silent, runlog=runlog, parallel=True, trace=trace)
+                                silent=silent, runlog=runlog, parallel=True, trace=trace, env=env)
                 else:
                     with status.Status("[b i cyan3]Running...", spinner="moon") as status_:
                         res = ops_helper.run_subprocess(commands='./rn', wdir=self.work_dir, 
-                                    silent=silent, runlog=runlog, status=status_, trace=trace) 
+                                    silent=silent, runlog=runlog, status=status_, trace=trace, env=env)
             if res is False:
                 raise Exception("Run failed! Check runlog.")
             else:
@@ -204,7 +227,7 @@ class ProjectOps:
 
         
     
-    def resume(self, photo=None, silent=True, target=None, logging=True, parallel=False, trace=None):
+    def resume(self, photo=None, silent=True, target=None, logging=True, parallel=False, trace=None, env=os.environ.copy()):
         """Resumes the run from a given photo.
 
         Args:
@@ -215,6 +238,7 @@ class ProjectOps:
             logging (bool, optional): Log the run. Defaults to True.
             parallel (bool, optional): Run in parallel. Defaults to False.
             trace (list of str, optional): Trace specific history variables. Defaults to None.
+            env (dict, optional): Environment variables. Defaults to os.environ.copy().
 
         Raises:
             FileNotFoundError: If the photo does not exist.
@@ -235,7 +259,7 @@ class ProjectOps:
                 # print(f"[b i  cyan3]Resuming run from the most recent photo.")
                 with status.Status("[b i  cyan3]Resuming run from the most recent photo.\nRunning...", spinner="moon") as status_:
                     res = ops_helper.run_subprocess(commands=f'./re', wdir=self.work_dir, 
-                            silent=silent, runlog=runlog, status=status_, trace=trace)
+                            silent=silent, runlog=runlog, status=status_, trace=trace, env=env)
         else:
             if self.binary:
                 if target == 'primary':
@@ -256,11 +280,11 @@ class ProjectOps:
                 else:
                     if parallel:
                         res = ops_helper.run_subprocess(commands=f'./re {photo}', wdir=self.work_dir, 
-                                silent=silent, runlog=runlog, parallel=True, trace=trace)
+                                silent=silent, runlog=runlog, parallel=True, trace=trace, env=env)
                     else:
                         with status.Status(f"[b i  cyan3]Resuming run from photo {photo}.\nRunning...", spinner="moon") as status_:
                             res = ops_helper.run_subprocess(commands=f'./re {photo}', wdir=self.work_dir, 
-                                    silent=silent, runlog=runlog, status=status_, trace=trace)
+                                    silent=silent, runlog=runlog, status=status_, trace=trace, env=env)
         if res is False:
             raise Exception("Resume from photo failed! Check runlog.")
         else:
@@ -272,7 +296,7 @@ class ProjectOps:
 
 
     def runGyre(self, gyre_in, files='', data_format="GYRE", silent=True, target=None, logging=True, logdir="run.log", 
-                    parallel=False, n_cores=None, gyre_input_params=None):
+                    parallel=False, n_cores=None, gyre_input_params=None, env=os.environ.copy()):
         """Runs GYRE.
 
         Args:
@@ -292,6 +316,7 @@ class ProjectOps:
                                                                 list of dicts must be in the same order as the
                                                                 list of profile files. len(list of dicts) must be
                                                                 equal to len(list of profile files). Defaults to None.
+            env (dict, optional): Environment variables. Defaults to os.environ.copy().
         Raises: 
             FileNotFoundError: If the GYRE input file does not exist.
             ValueError: If the input for argument 'silent' is invalid.
@@ -327,7 +352,7 @@ class ProjectOps:
             if files == '':
                 with status.Status("[b i  cyan3]Running GYRE...", spinner="moon") as status_:
                     res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
-                                    silent=silent, runlog=runlog, status=status_, gyre=True, gyre_input_params=gyre_input_params)
+                                    silent=silent, runlog=runlog, status=status_, gyre=True, gyre_input_params=gyre_input_params, env=env)
             elif files == 'all' or type(files) == list or type(files) == str:
                 ## ALL FILES
                 if files == 'all':
@@ -361,7 +386,7 @@ class ProjectOps:
                                 repeat(silent), repeat(runlog),
                                 repeat(None), repeat(True),
                                 files, repeat(data_format),
-                                repeat(True), repeat(gyre_in), gyre_input_params, repeat(None))
+                                repeat(True), repeat(gyre_in), gyre_input_params, repeat(None), repeat(env))
                         with progress.Progress(*progress_columns) as progressbar:
                             task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
@@ -380,7 +405,7 @@ class ProjectOps:
                                                                                     repeat(None), repeat(True),
                                                                                     files, repeat(data_format),
                                                                                     repeat(True), repeat(gyre_in),
-                                                                                    gyre_input_params, repeat(None))
+                                                                                    gyre_input_params, repeat(None), repeat(env))
                         except Exception as e:
                             raise e
                         
