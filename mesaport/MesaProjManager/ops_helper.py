@@ -60,7 +60,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 if silent is False:
                     sys.stdout.write(outline)
                 elif not gyre:
-                    if "terminated evolution:" in outline or "ERROR" in outline:
+                    if "terminated evolution:" in outline or "ERROR" in outline or "photo does not exist" in outline:
                         evo_terminated = True
                     if not parallel:
                         age = process_outline(outline)
