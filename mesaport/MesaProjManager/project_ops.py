@@ -196,6 +196,10 @@ class ProjectOps:
             Exception: If the project is not made yet.
             ValueError: If the input for argument 'silent' is invalid.
             Exception: If the run fails.
+        
+        Returns: (If run is successful)
+            termination_code (str): Termination code.
+            age (float): Age of the star in years.
         """        
         if trace is not None:
             ops_helper.setup_trace(trace, self.work_dir)
@@ -218,11 +222,12 @@ class ProjectOps:
                     with status.Status("[b i cyan3]Running...", spinner="moon") as status_:
                         res = ops_helper.run_subprocess(commands='./rn', wdir=self.work_dir, 
                                     silent=silent, runlog=runlog, status=status_, trace=trace, env=env)
-            if res is False:
+            if res == False:
                 raise Exception("Run failed! Check runlog.")
             else:
+                termination_code, age = res
                 print("Run successful.\n")
-                return res
+                return termination_code, age
         
 
         
@@ -243,6 +248,10 @@ class ProjectOps:
         Raises:
             FileNotFoundError: If the photo does not exist.
             ValueError: If the input for argument 'silent' is invalid.
+
+        Returns: (If run is successful)
+            termination_code (str): Termination code.
+            age (float): Age of the star in years.
         """
         if trace is not None:
             ops_helper.setup_trace(trace, self.work_dir)
@@ -288,8 +297,9 @@ class ProjectOps:
         if res is False:
             raise Exception("Resume from photo failed! Check runlog.")
         else:
+            termination_code, age = res
             print("Run successful.\n")
-            return res
+            return termination_code, age
 
 
 

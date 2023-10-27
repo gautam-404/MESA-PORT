@@ -49,6 +49,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
         modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
 
     evo_terminated = False
+    termination_code = None
     if trace is not None:
         trace_values = [None for i in range(len(trace))]
     with subprocess.Popen(shlex.split(commands), bufsize=0, cwd=wdir, env=env,
@@ -62,6 +63,9 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 elif not gyre:
                     if "terminated evolution:" in outline or "ERROR" in outline or "photo does not exist" in outline:
                         evo_terminated = True
+                    if "termination code:" in outline:
+                        evo_terminated = True
+                        termination_code = outline.split()[-1]
                     if not parallel:
                         age = process_outline(outline)
                         if age is not None:
@@ -100,7 +104,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
         return False
-    elif evo_terminated:
+    elif evo_terminated and termination_code == None:
         return False
     else:
         if not gyre:
@@ -110,7 +114,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                     age_ = process_outline(line)
                     if age_ is not None:
                         age = age_
-            return age
+            return termination_code, age
         else:
             return True
 
