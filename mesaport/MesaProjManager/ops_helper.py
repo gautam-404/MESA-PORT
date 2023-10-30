@@ -139,6 +139,8 @@ def setup_trace(trace, work_dir):
         raise TypeError("Trace must be a string or a list of strings.")
     star = MesaAccess(work_dir)
     num_trace_history_values = star.get("num_trace_history_values")
+    if num_trace_history_values is None:
+        num_trace_history_values = star.getDefault("num_trace_history_values")
     for tr in trace:
         exists = False
         for i in range(num_trace_history_values+1):
