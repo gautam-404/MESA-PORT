@@ -1,7 +1,7 @@
 import os
 
 import requests
-import shutil
+import time
 from rich import print, progress
 
 progress_columns = (progress.DownloadColumn(), 
@@ -61,18 +61,19 @@ class Download:
                     }
         response = requests.get(url, headers=headers, stream=True, timeout=10)
         response.raise_for_status()
-        total = int(response.headers.get('content-length', 0))    
+        total = float(response.headers.get('content-length', 0))    
         if os.path.exists(filepath) and total == os.path.getsize(filepath):
             print(text)
             print("[blue]File already downloaded. Skipping download.[/blue]\n")
         else:
             chunk_size = 1024*1024
             with open(filepath, 'wb') as file, progress.Progress(*progress_columns) as progressbar:
-                task = progressbar.add_task(text, total=total)
+                task = progressbar.add_task(text, total=int(total))
                 for chunk in response.raw.stream(chunk_size, decode_content=False):
                     if chunk:
                         size_ = file.write(chunk)
                         progressbar.update(task_id=task, advance=size_)
+                time.sleep(5)
                 if total == os.path.getsize(filepath):
                     progressbar.update(task, description=text+"[bright_blue b]Done![/bright_blue b]")
                 else:

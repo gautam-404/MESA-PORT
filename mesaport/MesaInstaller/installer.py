@@ -2,7 +2,7 @@ import os
 import shlex
 import subprocess
 
-from rich import console, print
+from rich import console, print, prompt
 
 from . import choice, downloader, extractor, mesaurls, prerequisites, syscheck
 
@@ -52,7 +52,20 @@ class Installer:
             logfile = open(f"install.log", "w+")
         
         ## to get sudo password prompt out of the way
-        subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()    
+        print("[blue b]Installing pre-requisites...\n")
+        sudo_privileges = prompt.Prompt.ask("[green b]Do you have sudo privileges?[/green b] (y/n): ", choices=["y", "n"])
+        if sudo_privileges == "y":
+            subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()
+        else:
+            print("[yellow b]WARNING: You do not have sudo privileges.[/yellow b]\n")
+            print("You can either install the pre-requisites manually, or try to skip the pre-requisites installation.\n\
+                  NOTE: Skipping pre-requisites installation may cause the Installer to fail.\n\n")
+            skip_prompt = prompt.Prompt.ask("[green b]Do you wish to continue this installation?[/green b] (y/n): ", choices=["y", "n"])
+            if skip_prompt == "y":
+                print("[yellow b]WARNING: Skipping pre-requisites installation.[/yellow b]\n")
+            else:
+                print("[red b]Exiting. Please install the pre-requisites manually and try again.\n[/red b]")
+                exit()
         with console.Console().status("[green b]Installing pre-requisites", spinner="moon"):
             prerequisites.install_prerequisites(directory, ostype, cleanAfter, logfile)
         print("[blue b]Pre-requisites installation complete.\n")
