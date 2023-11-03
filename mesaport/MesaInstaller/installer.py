@@ -53,14 +53,14 @@ class Installer:
         
         ## to get sudo password prompt out of the way
         print("[blue b]Installing pre-requisites...\n")
-        sudo_privileges = prompt.Prompt.ask("[green b]Do you have sudo privileges?[/green b] (y/n): ", choices=["y", "n"])
+        sudo_privileges = prompt.Prompt.ask("[green b]Do you have sudo privileges?[/green b]", choices=["y", "n"])
         if sudo_privileges == "y":
             subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()
         else:
             print("[yellow b]WARNING: You do not have sudo privileges.[/yellow b]\n")
             print("You can either install the pre-requisites manually, or try to skip the pre-requisites installation.\n\
                   NOTE: Skipping pre-requisites installation may cause the Installer to fail.\n\n")
-            skip_prompt = prompt.Prompt.ask("[green b]Do you wish to continue this installation?[/green b] (y/n): ", choices=["y", "n"])
+            skip_prompt = prompt.Prompt.ask("[green b]Do you wish to continue this installation?[/green b]", choices=["y", "n"])
             if skip_prompt == "y":
                 print("[yellow b]WARNING: Skipping pre-requisites installation.[/yellow b]\n")
             else:
