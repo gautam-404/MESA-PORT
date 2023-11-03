@@ -56,6 +56,9 @@ class Installer:
         sudo_privileges = prompt.Prompt.ask("[green b]Do you have sudo privileges?[/green b]", choices=["y", "n"])
         if sudo_privileges == "y":
             subprocess.Popen(shlex.split("sudo echo"), stdin=subprocess.PIPE, stdout=logfile, stderr=logfile).wait()
+            with console.Console().status("[green b]Installing pre-requisites", spinner="moon"):
+                prerequisites.install_prerequisites(directory, ostype, cleanAfter, logfile)
+            print("[blue b]Pre-requisites installation complete.\n")
         else:
             print("[yellow b]WARNING: You do not have sudo privileges.[/yellow b]\n")
             print("You can either install the pre-requisites manually, or try to skip the pre-requisites installation.\n\
@@ -66,11 +69,8 @@ class Installer:
             else:
                 print("[red b]Exiting. Please install the pre-requisites manually and try again.\n[/red b]")
                 exit()
-        with console.Console().status("[green b]Installing pre-requisites", spinner="moon"):
-            prerequisites.install_prerequisites(directory, ostype, cleanAfter, logfile)
-        print("[blue b]Pre-requisites installation complete.\n")
+        
         extractor.extract_mesa(directory, ostype, cleanAfter, sdk_download, mesa_zip, logfile)
-
         with console.Console().status("[green b]Installing MESA", spinner="moon"):
             if ostype == "Linux":
                 sdk_dir = os.path.join(directory, 'mesasdk')
