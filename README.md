@@ -50,9 +50,9 @@ pip install git+https://github.com/gautam-404/MESA-PORT.git
   ## CLI is shown for missing arguments.  
   ## version = "latest" will install the latest version available for your system.
   ## Available versions: 
-  #     Linux: "22.05.1", "15140" and "12778".
-  #     macOS-Intel: "22.05.1", "15140" and "12778".  
-  #     macOS-ARM: "22.05.1".
+  #     Linux: "23.05.1", "22.05.1", "15140" and "12778".
+  #     macOS-Intel: "23.05.1", "22.05.1", "15140" and "12778".  
+  #     macOS-ARM: "23.05.1", "22.05.1".
  
   
   ## cleanAfter=False by default to allow re-running installation without removing downloaded files, 
