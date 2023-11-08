@@ -305,7 +305,7 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, files='', data_format="GYRE", silent=True, target=None, logging=True, logdir="run.log", 
+    def runGyre(self, gyre_in, files='', data_format="GYRE", profiles_dir=None, silent=True, target=None, logging=True, logdir="run.log", 
                     parallel=False, n_cores=None, gyre_input_params=None, env=os.environ.copy()):
         """Runs GYRE.
 
@@ -338,14 +338,14 @@ class ProjectOps:
         gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
         if self.binary:
             if target == 'primary':
-                LOGS_dir = os.path.join(self.work_dir, "LOGS1")
+                LOGS_dir = os.path.join(self.work_dir, "LOGS1") if profiles_dir is None else profiles_dir
             elif target == 'secondary':
-                LOGS_dir = os.path.join(self.work_dir, "LOGS2")
+                LOGS_dir = os.path.join(self.work_dir, "LOGS2") if profiles_dir is None else profiles_dir
             else:
                 raise ValueError('''Invalid input for argument 'star'.  
                                 Please use 'primary' or 'secondary''')
         else:
-            LOGS_dir = os.path.join(self.work_dir, "LOGS")
+            LOGS_dir = os.path.join(self.work_dir, "LOGS") if profiles_dir is None else profiles_dir
 
         if logging:
             # runlog = os.path.join(self.work_dir, "run.log")
