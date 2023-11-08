@@ -2,7 +2,6 @@ from .support import *
 from .envhandler import MesaEnvironmentHandler
 from .access_helper import *
 from . import loader
-from pprint import pprint
 
 class MesaAccess:
     def __init__(self, project, astero=False, binary=False, target=''):

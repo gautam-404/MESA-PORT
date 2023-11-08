@@ -1,7 +1,6 @@
 import os
 import re
 from .support import *
-from pprint import pprint
 
 
 def readDefaults(filename, defaultsDir):
