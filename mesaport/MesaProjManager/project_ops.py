@@ -305,7 +305,7 @@ class ProjectOps:
 
 
 
-    def runGyre(self, gyre_in, files='', data_format="GYRE", profiles_dir=None, silent=True, target=None, logging=True, logdir="run.log", 
+    def runGyre(self, gyre_in, files='', data_format="GYRE", profiles_dir=None, silent=True, target=None, logging=True, logdir="gyre.log", 
                     parallel=False, n_cores=None, gyre_input_params=None, env=os.environ.copy()):
         """Runs GYRE.
 
