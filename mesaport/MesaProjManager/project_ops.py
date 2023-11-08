@@ -431,11 +431,13 @@ class ProjectOps:
 
             if not parallel:
                 if res is False:
-                        print("GYRE run failed! Check runlog.")
+                    print("GYRE run failed! Check runlog.")
                 else:
                     print("GYRE run complete!\n") 
             else:
                 print("GYRE run complete!\n")
+            return res
         else:
             print("Check if $GYRE_DIR is set in environment variables...could not run!")
             print("Run aborted!")
+        
