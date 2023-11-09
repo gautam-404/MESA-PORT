@@ -402,7 +402,9 @@ class ProjectOps:
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                             with Pool(n_processes) as pool:
                                 gyre_in = os.path.abspath(gyre_in)
-                                for _ in pool.istarmap(ops_helper.run_subprocess, args):
+                                results = []
+                                for result in pool.istarmap(ops_helper.run_subprocess, args):
+                                    results.append(result)
                                     progressbar.advance(task)
                     else:
                         try:
@@ -410,14 +412,16 @@ class ProjectOps:
                             n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                             with ThreadPoolExecutor(max_workers=n_processes) as executor:
                                 gyre_in = os.path.abspath(gyre_in)
-                                executor.map(ops_helper.run_subprocess, repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                                results = executor.map(ops_helper.run_subprocess, repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
                                                                                     repeat(silent), repeat(runlog),
                                                                                     repeat(None), repeat(True),
                                                                                     files, repeat(data_format),
                                                                                     repeat(True), repeat(gyre_in),
                                                                                     gyre_input_params, repeat(None), repeat(env))
+                                
                         except Exception as e:
                             raise e
+                    res = sum(results)
                         
                                     
                 else:
