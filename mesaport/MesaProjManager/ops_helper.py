@@ -60,7 +60,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 logfile.flush()
                 if silent is False:
                     sys.stdout.write(outline)
-                elif gyre_obj is not None:
+                elif gyre_in is not None:
                     if "terminated evolution:" in outline or "ERROR" in outline or "photo does not exist" in outline:
                         evo_terminated = True
                     if "termination code:" in outline:
@@ -95,7 +95,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 sys.stdout.write(errline)
             logfile.write( "\n\n"+("*"*100)+"\n\n" )
         _data, error = proc.communicate()
-    if gyre_obj is not None:
+    if gyre_in is not None:
         working_dir = wdir.replace("LOGS", "")
         with open(f'{working_dir}/gyre.log', 'a+') as f:
             f.write(f"Done with {filename}.\n")
@@ -107,7 +107,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     elif evo_terminated and termination_code == None:
         return False
     else:
-        if gyre_obj is not None:
+        if gyre_in is not None:
             age = 0
             with open(runlog, "r") as logfile:
                 for line in logfile.readlines():
