@@ -45,7 +45,8 @@ class MesaAccess:
         self.defaultsDict = {}
         for section in self.sections:
             self.defaultsDict[section] = readDefaults(self.defaultsFileNames[section], self.defaultsDir)
-        
+        self.history_columns = History_columns(self.projectDir, binary=binary, target=target)
+        # self.profile_columns = Profile_columns(self.project, binary=binary, target=target)
         
         
     def generateDicts(self):
@@ -317,3 +318,4 @@ class MesaAccess:
         """  
         self.check_exists()
         loader.load(extras_path, self.projectDir, "extras", binary=self.binary, target=self.target)
+

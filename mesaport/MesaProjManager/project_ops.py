@@ -12,7 +12,7 @@ progress_columns = (progress.SpinnerColumn(spinner_name="moon"),
                     progress.TimeElapsedColumn())
 import multiprocessing as mp
 
-from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
+from ..FileHandler import MesaAccess, MesaEnvironmentHandler
 from . import ops_helper
 from . import istarmap
 

@@ -265,8 +265,8 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
                     f.write(line)
                 
                 
-                
-    
+            
+        
 
 
 

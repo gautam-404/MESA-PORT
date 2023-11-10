@@ -4,9 +4,9 @@ import sys, os, glob
 import shutil
 from rich import print
 
-from ..MesaFileHandler.support import *
-from ..MesaFileHandler.access_helper import toFortranType, toPythonType
-from ..MesaFileHandler import MesaAccess
+from ..FileHandler.support import *
+from ..FileHandler.access_helper import toFortranType, toPythonType
+from ..FileHandler import MesaAccess
 
 def check_exists(exists, projName):
         """Checks if the project exists."""
