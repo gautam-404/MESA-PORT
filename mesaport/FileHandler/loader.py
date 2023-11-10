@@ -46,14 +46,6 @@ def load(infile, work_dir, typeof, astero=False, binary=False, target=''):
     elif typeof == "inlist_astero_search_controls":
         dest = os.path.join(work_dir, "inlist_astero_search_controls")
 
-    elif typeof == "gyre.in":
-        if not binary:
-            dest = os.path.join(work_dir, "LOGS", "gyre.in")
-        elif binary and target == "primary":
-            dest = os.path.join(work_dir, "LOGS1", "gyre.in")
-        elif binary and target == "secondary":
-            dest = os.path.join(work_dir, "LOGS2", "gyre.in")
-
     elif typeof == "history_columns":
         dest = os.path.join(work_dir, "history_columns.list")
         access = mesa_access.MesaAccess(work_dir, binary=binary, target=target)
@@ -70,7 +62,7 @@ def load(infile, work_dir, typeof, astero=False, binary=False, target=''):
     elif typeof == "extras" and binary==True:
         dest = os.path.join(work_dir, "src", "run_binary_extras.f90")
 
-#     with cd(work_dir):
+#     with cwd(work_dir):
     try:
         if os.path.exists(infile):
             shutil.copy(infile, dest)

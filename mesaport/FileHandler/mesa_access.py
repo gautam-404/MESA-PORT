@@ -45,8 +45,6 @@ class MesaAccess:
         self.defaultsDict = {}
         for section in self.sections:
             self.defaultsDict[section] = readDefaults(self.defaultsFileNames[section], self.defaultsDir)
-        self.history_columns = History_columns(self.projectDir, binary=binary, target=target)
-        # self.profile_columns = Profile_columns(self.project, binary=binary, target=target)
         
         
     def generateDicts(self):
@@ -116,13 +114,42 @@ class MesaAccess:
 
 
 
+    # def set(self, *arg, force=False):
+    #     """Sets a value in the full dictionary.
+
+    #     Args:
+    #         key (str): Key of the value to set.
+    #         value (str): Value to set.
+    #     Raises:
+    #         ValueError: Length of keys does not match length of values
+    #         TypeError: Input parameter name(s) must be of type string or list of strings.
+    #     """    
+    #     self.generateDicts() 
+    #     if len(arg) == 1:
+    #         if isinstance(arg[0], dict):
+    #             for key, value in arg[0].items():
+    #                 self.setitem(key, value, force=force)
+    #         else:
+    #             raise TypeError("Input parameter name(s) must be of type dict.")
+    #     elif len(arg) == 2:
+    #         keys, values = arg[0], arg[1]  
+    #         if isinstance(keys, list):
+    #             if len(keys) == len(values):
+    #                 for i in range(len(keys)):
+    #                     self.setitem(keys[i], values[i], force=force)
+    #             else:
+    #                 raise ValueError(f"Length of keys {keys} does not match length of {values}")
+    #         elif isinstance(keys, str):
+    #             self.setitem(keys, values, force=force)
+    #         else:
+    #             raise TypeError("Input parameter name(s) must be of type string or list of strings.")
+    #     else:
+    #         raise TypeError("Wrong number of arguments.")
     def set(self, *arg, force=False):
         """Sets a value in the full dictionary.
 
         Args:
-            keys (str or list): Key of the value to set.
-            values (str or list): Value to set.
-
+            arg (dict or list of dicts): A dict with the keys and values to set or a list of dicts with the keys and values to set.
         Raises:
             ValueError: Length of keys does not match length of values
             TypeError: Input parameter name(s) must be of type string or list of strings.
@@ -132,8 +159,12 @@ class MesaAccess:
             if isinstance(arg[0], dict):
                 for key, value in arg[0].items():
                     self.setitem(key, value, force=force)
+            elif isinstance(arg[0], list):
+                for dict_ in arg[0]:
+                    for key, value in dict_.items():
+                        self.setitem(key, value, force=force)
             else:
-                raise TypeError("Input parameter name(s) must be of type dict.")
+                raise TypeError("Input parameter name(s) must be of type dict or list of dicts.")
         elif len(arg) == 2:
             keys, values = arg[0], arg[1]  
             if isinstance(keys, list):
@@ -146,9 +177,6 @@ class MesaAccess:
                 self.setitem(keys, values, force=force)
             else:
                 raise TypeError("Input parameter name(s) must be of type string or list of strings.")
-        else:
-            raise TypeError("Wrong number of arguments.")
-
     
     def setDefault(self, keys):
         """Sets all values to default.
@@ -298,16 +326,6 @@ class MesaAccess:
         """  
         self.check_exists()      
         loader.load(ProfileColumns, self.projectDir, "profile_columns")
-
-
-    def load_GyreInput(self, gyre_in):
-        """Loads the GYRE input file.
-
-        Args:
-            gyre_in (str): Path to the GYRE input file.
-        """ 
-        self.check_exists()       
-        loader.load(gyre_in, self.projectDir, "gyre.in", binary=self.binary, target=self.target)
 
 
     def load_Extras(self, extras_path):
