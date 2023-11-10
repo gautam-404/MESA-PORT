@@ -107,7 +107,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     elif evo_terminated and termination_code == None:
         return False
     else:
-        if gyre_in is not None:
+        if gyre_in is None:
             age = 0
             with open(runlog, "r") as logfile:
                 for line in logfile.readlines():
