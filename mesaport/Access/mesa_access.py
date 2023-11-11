@@ -3,6 +3,29 @@ from .envhandler import MesaEnvironmentHandler
 from .access_helper import *
 from . import loader
 
+"""
+This module defines the `MesaAccess` class, which handles MESA project access.
+
+Attributes:
+    project (str): Name of the project.
+    binary (bool): True for a binary star system.
+    astero (bool): True for an asteroseismic project.
+    target (str): If the project is a binary system, specify the star or binary.
+
+Methods:
+    set(key, value, default=False, force=False): Sets a value in the full dictionary.
+    get(key): Gets a value from the full dictionary.
+    delete(key): Deletes a value from the full dictionary.
+    setDefault(keys): Sets all values to default.
+    getDefault(keys): Gets default value from the full dictionary.
+    load_InlistProject(inlistPath): Loads the inlist file.
+    load_InlistAsteroSearch(inlistPath): Loads the astero_search_controls inlist file.
+    load_InlistPG(inlistPath): Loads the inlist file.
+    load_HistoryColumns(HistoryColumns): Loads the history columns.
+    load_ProfileColumns(ProfileColumns): Loads the profile columns.
+    load_Extras(extras_path): Loads the run_star_extras file.
+"""
+
 class MesaAccess:
     def __init__(self, project, astero=False, binary=False, target=''):
         """Initializes the MesaAccess class.

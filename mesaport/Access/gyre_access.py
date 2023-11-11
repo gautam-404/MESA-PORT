@@ -5,6 +5,19 @@ import shutil
 from . import access_helper
 from .support.utils import cwd
 
+"""
+This module defines the `GyreAccess` class, which handles GYRE input file operations.
+
+Attributes:
+    path (str): The path to the GYRE input file.
+    binary (str): The name of the binary file to be used.
+    target (str): The target to be used.
+
+Methods:
+    load(gyre_in="gyre.in"): Loads the GYRE input file into the project directory.
+    set(arg, gyre_in="gyre.in"): Sets the value of a parameter in the inlist file.
+    modify_gyre_params(wdir, filename, data_format, gyre_in="gyre.in", diff_scheme='MAGNUS_GL2'): Modifies the GYRE input file parameters.
+"""
 
 class GyreAccess:
     def __init__(self, path, binary=False, target=''):
