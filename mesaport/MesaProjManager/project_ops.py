@@ -331,25 +331,26 @@ class ProjectOps:
             ValueError: If the input for argument 'silent' is invalid.
             ValueError: If the input for argument 'files' is invalid.
         """
-        if wdir is None:
-            wdir = self.work_dir
-            ops_helper.check_exists(self.exists, self.projName)
-        else:
+        if wdir is not None:
             wdir = os.path.abspath(wdir)
+
         if 'GYRE_DIR' in os.environ:
             gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
         else:
             raise FileNotFoundError("GYRE_DIR is not set in your enviroment. Be sure to set it properly!!")
         if self.binary:
             if target == 'primary':
-                LOGS_dir = os.path.join(wdir, "LOGS1") if wdir is None else wdir
+                LOGS_dir = os.path.join(self.work_dir, "LOGS1") if wdir is None else wdir
             elif target == 'secondary':
-                LOGS_dir = os.path.join(wdir, "LOGS2") if wdir is None else wdir
+                LOGS_dir = os.path.join(self.work_dir, "LOGS2") if wdir is None else wdir
             else:
                 raise ValueError('''Invalid input for argument 'star'.  
                                 Please use 'primary' or 'secondary''')
         else:
-            LOGS_dir = os.path.join(wdir, "LOGS") if wdir is None else wdir
+            LOGS_dir = os.path.join(self.work_dir, "LOGS") if wdir is None else wdir
+
+        if wdir is None:
+            wdir = self.work_dir
 
         if logging:
             runlog = os.path.join(wdir, logfile)
@@ -363,13 +364,12 @@ class ProjectOps:
         if files == 'all' or isinstance(files, list) or isinstance(files, str):
             ## ALL FILES
             if files == 'all':
+                files = []
                 try:
                     files = sorted(glob.glob(os.path.join(LOGS_dir, f"*.{data_format}")), 
                                 key=lambda x: int(os.path.basename(x).split('.')[0].split('profile')[1]))
                 except ValueError:
                     files = sorted(glob.glob(os.path.join(LOGS_dir, f"*.{data_format}")))
-                else:
-                    raise ValueError(f"No {data_format} files found in {LOGS_dir}.")
                 files = [file.split('/')[-1] for file in files]
                 if len(files) == 0:
                     raise ValueError(f"No {data_format} files found in LOGS directory.")
