@@ -194,7 +194,7 @@ def readFile(inlist, projectDir):
     Returns:
         dict : A dictionary with all the parameters and their values.
     """    
-    with cd(projectDir):
+    with cwd(projectDir):
         if not os.path.exists(inlist):
             raise FileNotFoundError(f"Inlist {inlist} does not exist.")
         else:
@@ -233,7 +233,7 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
     """    
     value = toFortranType(value)
     this_section = False
-    with cd(projectDir):
+    with cwd(projectDir):
         with open(filename, "r") as file:
             lines = file.readlines()
         with open(filename, "w+") as f:
@@ -265,8 +265,8 @@ def writetoFile(projectDir, filename, parameter, value, exists, default_section,
                     f.write(line)
                 
                 
-                
-    
+            
+        
 
 
 

@@ -11,8 +11,9 @@ work.make()
 work.load_ProjInlist("/path/to/inlist")
 work.load_PGstarInlist("/path/to/inlist")
 
-object = MesaAccess()
-object.set("initial_mass", 5)
+obj = MesaAccess()
+obj.set("initial_mass", 5)
+
 
 ## Use argument silent=True (False by default) for a silent run, terminal output is redirected to runlog
 work.run()              

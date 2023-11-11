@@ -12,7 +12,7 @@ progress_columns = (progress.SpinnerColumn(spinner_name="moon"),
                     progress.TimeElapsedColumn())
 import multiprocessing as mp
 
-from ..MesaFileHandler import MesaAccess, MesaEnvironmentHandler
+from ..FileHandler import MesaAccess, GyreAccess, MesaEnvironmentHandler
 from . import ops_helper
 from . import istarmap
 
@@ -301,18 +301,17 @@ class ProjectOps:
             print("Run successful.\n")
             return termination_code, age
 
-
-
-
-
-    def runGyre(self, gyre_in, files='', data_format="GYRE", profiles_dir=None, silent=True, target=None, logging=True, logdir="gyre.log", 
+        
+    def runGyre(self, gyre_in, files='all', wdir=None, data_format="GYRE", silent=True, target=None, logging=True, logfile="gyre.log", 
                     parallel=False, n_cores=None, gyre_input_params=None, env=os.environ.copy()):
-        """Runs GYRE.
+        """
+        Runs GYRE.
 
-        Args:
+        Arguments:
             gyre_in (str): GYRE input file.
             files (str or list of strings, optional): Profile files in the LOGS directory 
                                             to be processed by GYRE. Defaults to 'all'.
+            wdir (str, optional): Working directory. Defaults to None and uses the project directory.
             silent (bool, optional): Run the command silently. Defaults to True.
             target (str, optional): Target star. Defaults to None.
             logging (bool, optional): Log the output. Defaults to True.
@@ -327,117 +326,112 @@ class ProjectOps:
                                                                 list of profile files. len(list of dicts) must be
                                                                 equal to len(list of profile files). Defaults to None.
             env (dict, optional): Environment variables. Defaults to os.environ.copy().
-        Raises: 
+        Raises:
             FileNotFoundError: If the GYRE input file does not exist.
             ValueError: If the input for argument 'silent' is invalid.
             ValueError: If the input for argument 'files' is invalid.
-        """        
-        ops_helper.check_exists(self.exists, self.projName)
-        star = MesaAccess(self.projName, self.astero, self.binary, target)
-        star.load_GyreInput(gyre_in)
-        gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
+        """
+        if wdir is not None:
+            wdir = os.path.abspath(wdir)
+
+        if 'GYRE_DIR' in os.environ:
+            gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
+        else:
+            raise FileNotFoundError("GYRE_DIR is not set in your enviroment. Be sure to set it properly!!")
         if self.binary:
             if target == 'primary':
-                LOGS_dir = os.path.join(self.work_dir, "LOGS1") if profiles_dir is None else profiles_dir
+                LOGS_dir = os.path.join(self.work_dir, "LOGS1") if wdir is None else wdir
             elif target == 'secondary':
-                LOGS_dir = os.path.join(self.work_dir, "LOGS2") if profiles_dir is None else profiles_dir
+                LOGS_dir = os.path.join(self.work_dir, "LOGS2") if wdir is None else wdir
             else:
                 raise ValueError('''Invalid input for argument 'star'.  
                                 Please use 'primary' or 'secondary''')
         else:
-            LOGS_dir = os.path.join(self.work_dir, "LOGS") if profiles_dir is None else profiles_dir
+            LOGS_dir = os.path.join(self.work_dir, "LOGS") if wdir is None else wdir
+
+        if wdir is None:
+            wdir = self.work_dir
 
         if logging:
-            # runlog = os.path.join(self.work_dir, "run.log")
-            runlog = os.path.join(self.work_dir, logdir)
+            runlog = os.path.join(wdir, logfile)
         else:
             runlog = os.devnull
+        
+        
+        if not silent in [True, False]:
+            raise ValueError("Invalid input for argument 'silent'")
 
-
-        if os.environ['GYRE_DIR'] is not None:
-            if not silent in [True, False]:
-                raise ValueError("Invalid input for argument 'silent'")
-
-            ## NO FILES, i.e. file specified in gyre.in
-            if files == '':
-                with status.Status("[b i  cyan3]Running GYRE...", spinner="moon") as status_:
-                    res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
-                                    silent=silent, runlog=runlog, status=status_, gyre=True, gyre_input_params=gyre_input_params, env=env)
-            elif files == 'all' or type(files) == list or type(files) == str:
-                ## ALL FILES
-                if files == 'all':
+        if files == 'all' or isinstance(files, list) or isinstance(files, str):
+            ## ALL FILES
+            if files == 'all':
+                files = []
+                try:
                     files = sorted(glob.glob(os.path.join(LOGS_dir, f"*.{data_format}")), 
                                 key=lambda x: int(os.path.basename(x).split('.')[0].split('profile')[1]))
-                    if len(files) == 0:
-                        raise ValueError(f"No {data_format} files found in LOGS directory.")
-                    else:
-                        files = [file.split('/')[-1] for file in files]
-                ## SPECIFIC FILES
-                elif type(files) == list or type(files) == str:
-                    if type(files) == str:
-                        files = [files]
-                        gyre_input_params = [gyre_input_params]
-                    if len(files) == 0:
-                        raise ValueError("No files provided.")
-                    # else:
-                    #     for file in files:
-                    #         if not os.path.isfile(os.path.join(LOGS_dir, file)) and not os.path.isfile(file):
-                    #             raise FileNotFoundError(f"File '{file}' does not exist.")
-                            
-                with open(f'{self.work_dir}/gyre.log', 'a+') as f:
-                        f.write(f"Total {len(files)} profiles to be processed by GYRE.\n\n")
-                if parallel:
-                    gyre_input_params = gyre_input_params if gyre_input_params is not None else repeat(None)
-                    os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'   ## HDF5 parallelism, else GYRE fails in parallel
-                    if n_cores is None:
-                        n_cores = psutil.cpu_count(logical=True) 
-                        Pool = mp.Pool
-                        args = zip(repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
-                                repeat(silent), repeat(runlog),
-                                repeat(None), repeat(True),
-                                files, repeat(data_format),
-                                repeat(True), repeat(gyre_in), gyre_input_params, repeat(None), repeat(env))
-                        with progress.Progress(*progress_columns) as progressbar:
-                            task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
-                            n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
-                            with Pool(n_processes) as pool:
-                                gyre_in = os.path.abspath(gyre_in)
-                                for _ in pool.istarmap(ops_helper.run_subprocess, args):
-                                    progressbar.advance(task)
-                    else:
-                        try:
-                            from concurrent.futures import ThreadPoolExecutor
-                            n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
-                            with ThreadPoolExecutor(max_workers=n_processes) as executor:
-                                gyre_in = os.path.abspath(gyre_in)
-                                executor.map(ops_helper.run_subprocess, repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
-                                                                                    repeat(silent), repeat(runlog),
-                                                                                    repeat(None), repeat(True),
-                                                                                    files, repeat(data_format),
-                                                                                    repeat(True), repeat(gyre_in),
-                                                                                    gyre_input_params, repeat(None), repeat(env))
-                        except Exception as e:
-                            raise e
+                except ValueError:
+                    files = sorted(glob.glob(os.path.join(LOGS_dir, f"*.{data_format}")))
+                files = [file.split('/')[-1] for file in files]
+                if len(files) == 0:
+                    raise ValueError(f"No {data_format} files found in LOGS directory.")
+                    
+            ## SPECIFIC FILES
+            elif type(files) == list or type(files) == str:
+                if type(files) == str:
+                    files = [files]
+                    gyre_input_params = [gyre_input_params]
+                if len(files) == 0:
+                    raise ValueError("No files provided.")
+                # else:
+                #     for file in files:
+                #         if not os.path.isfile(os.path.join(LOGS_dir, file)) and not os.path.isfile(file):
+                #             raise FileNotFoundError(f"File '{file}' does not exist.")
                         
-                                    
+            with open(f'{wdir}/gyre.log', 'a+') as f:
+                    f.write(f"Total {len(files)} profiles to be processed by GYRE.\n\n")
+            if parallel:
+                gyre_input_params = gyre_input_params if gyre_input_params is not None else repeat(None)
+                os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'
+                # commands, wdir, 
+                # silent=True, runlog='', 
+                # status=None, filename="", 
+                # data_format="FGONG", parallel=False, gyre_in=None, 
+                # gyre_input_params=None, trace=None, env=None
+                args = (repeat(f'{gyre_ex} gyre.in'), repeat(LOGS_dir),
+                        repeat(silent), repeat(runlog),
+                        repeat(None), files, repeat(data_format),
+                        repeat(True), repeat(gyre_in),
+                        gyre_input_params, repeat(None), repeat(env))
+                if n_cores is None:
+                    n_cores = psutil.cpu_count(logical=True) 
+                    Pool = mp.Pool
+                    with progress.Progress(*progress_columns) as progressbar:
+                        task = progressbar.add_task("[b i cyan3]Running GYRE...", total=len(files))
+                        n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
+                        with Pool(n_processes) as pool:
+                            gyre_in = os.path.abspath(gyre_in)
+                            for _ in pool.istarmap(ops_helper.run_subprocess, zip(*args)):
+                                progressbar.advance(task)
                 else:
-                    for i, file in enumerate(files):
-                        gyre_input_params_i = gyre_input_params[i] if gyre_input_params is not None else None
-                        res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, 
-                            silent=silent, runlog=runlog, status=None, gyre=True, 
-                            filename=file, data_format=data_format, gyre_input_params=gyre_input_params_i)
+                    try:
+                        from concurrent.futures import ThreadPoolExecutor
+                        n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
+                        with ThreadPoolExecutor(max_workers=n_processes) as executor:
+                            gyre_in = os.path.abspath(gyre_in)
+                            executor.map(ops_helper.run_subprocess, *args)
+                            
+                    except Exception as e:
+                        raise e
+                res = True
             else:
-                raise ValueError("Invalid input for argument 'files'")
-
-            if not parallel:
-                if res is False:
-                    print("GYRE run failed! Check runlog.")
-                else:
-                    print("GYRE run complete!\n") 
-            else:
-                print("GYRE run complete!\n")
-            return res
+                for i, file in enumerate(files):
+                    gyre_input_params_i = gyre_input_params[i] if gyre_input_params is not None else None
+                    res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, filename=file,
+                        silent=silent, runlog=runlog, status=None, gyre_in=gyre_in, 
+                        data_format=data_format, gyre_input_params=gyre_input_params_i)
         else:
-            print("Check if $GYRE_DIR is set in environment variables...could not run!")
-            print("Run aborted!")
-        
+            raise ValueError("Invalid input for argument 'files'")
+        if res is False:
+            print("GYRE run failed! Check runlog.")
+        else:
+            print("GYRE run complete!\n")
+        return res

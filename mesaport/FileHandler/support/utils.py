@@ -1,11 +1,11 @@
 import os
 
-class cd:
+class cwd:
     """
     Directory changer. can change the directory using the 'with' context manager, and returns to the previous path
     after leaving intendation. Example:
 
-    with cd("some/path/to/go"): # changing dir
+    with cwd("some/path/to/go"): # changing dir
         foo()
         ...
         bar()
