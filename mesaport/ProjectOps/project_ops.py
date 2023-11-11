@@ -12,30 +12,10 @@ progress_columns = (progress.SpinnerColumn(spinner_name="moon"),
                     progress.TimeElapsedColumn())
 import multiprocessing as mp
 
-from ..FileHandler import MesaAccess, GyreAccess, MesaEnvironmentHandler
+from ..Access import MesaAccess, GyreAccess, MesaEnvironmentHandler
 from . import ops_helper
 from . import istarmap
 
-
-"""
-This module defines the `ProjectOps` class, which handles MESA project operations.
-
-Attributes:
-    projName (str): Name of the project.
-    binary (bool): True for a binary star system.
-    astero (bool): True for an astrophysical system.
-    envObject (MesaEnvironmentHandler): An instance of the `MesaEnvironmentHandler` class.
-    defaultWork (str): The default work directory for the project.
-    exists (bool): Flag indicating whether the project already exists.
-    work_dir (str): The working directory for the project.
-
-Methods:
-    __init__(self, name='work', astero=False, binary=False): Constructor for ProjectOps class.
-    create(self, overwrite=None, clean=None): Creates a new MESA project.
-    delete(self): Deletes the project.
-    clean(self): Cleans the project.
-    make(self, silent=False): Makes the project.
-"""
 class ProjectOps:
     """This class handles MESA project operations.
     """    

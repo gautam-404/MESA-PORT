@@ -1,6 +1,6 @@
 """
 .. include:: ../README.md
 """
-from .FileHandler import MesaAccess, GyreAccess
-from .MesaProjManager import ProjectOps
-from .MesaInstaller import Installer
+from .Access import MesaAccess, GyreAccess
+from .ProjectOps import ProjectOps
+from .Installer import Installer
