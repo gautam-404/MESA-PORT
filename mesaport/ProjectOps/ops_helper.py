@@ -66,7 +66,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                     if "termination code:" in outline:
                         evo_terminated = True
                         termination_code = outline.split()[-1]
-                    if "specified photo" in outline and "does not exist" in outline:
+                    if "photo" in outline and "does not exist" in outline:
                         evo_terminated = True
                         termination_code = "photo does not exist"
                     if not parallel:
