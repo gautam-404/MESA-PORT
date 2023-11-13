@@ -135,39 +135,6 @@ class MesaAccess:
         else:
             raise KeyError(f"Parameter {key} does not exist in {filename}")
 
-
-
-    # def set(self, *arg, force=False):
-    #     """Sets a value in the full dictionary.
-
-    #     Args:
-    #         key (str): Key of the value to set.
-    #         value (str): Value to set.
-    #     Raises:
-    #         ValueError: Length of keys does not match length of values
-    #         TypeError: Input parameter name(s) must be of type string or list of strings.
-    #     """    
-    #     self.generateDicts() 
-    #     if len(arg) == 1:
-    #         if isinstance(arg[0], dict):
-    #             for key, value in arg[0].items():
-    #                 self.setitem(key, value, force=force)
-    #         else:
-    #             raise TypeError("Input parameter name(s) must be of type dict.")
-    #     elif len(arg) == 2:
-    #         keys, values = arg[0], arg[1]  
-    #         if isinstance(keys, list):
-    #             if len(keys) == len(values):
-    #                 for i in range(len(keys)):
-    #                     self.setitem(keys[i], values[i], force=force)
-    #             else:
-    #                 raise ValueError(f"Length of keys {keys} does not match length of {values}")
-    #         elif isinstance(keys, str):
-    #             self.setitem(keys, values, force=force)
-    #         else:
-    #             raise TypeError("Input parameter name(s) must be of type string or list of strings.")
-    #     else:
-    #         raise TypeError("Wrong number of arguments.")
     def set(self, *arg, force=False):
         """Sets a value in the full dictionary.
 
