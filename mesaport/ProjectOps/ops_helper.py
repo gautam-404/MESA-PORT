@@ -63,6 +63,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 elif gyre_in is not None:
                     if "terminated evolution:" in outline or "ERROR" in outline:
                         evo_terminated = True
+                        termination_code = outline.split()[-1]
                     if "termination code:" in outline:
                         evo_terminated = True
                         termination_code = outline.split()[-1]
