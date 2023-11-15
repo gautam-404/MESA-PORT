@@ -48,6 +48,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             commands = commands.replace("gyre.in", f"gyre{num}.in")
         else:
             shutil.copy(gyre_in, os.path.join(wdir, f"gyre.in"))
+            gyre_in = os.path.join(wdir, f"gyre.in")
         gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
         gyre_obj.set(gyre_input_params)
 
