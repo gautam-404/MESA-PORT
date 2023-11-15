@@ -32,7 +32,6 @@ class GyreAccess:
         self.binary = binary
         self.target = target
         self.projectDir = os.path.abspath(path)
-        self.gyre_in = None
 
     def check_env(self):
         """

@@ -120,6 +120,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                         age = age_
             return termination_code, age
         else:
+            del gyre_obj
             working_dir = wdir.replace("LOGS", "")
             with open(f'{working_dir}/gyre.log', 'a+') as f:
                 f.write(f"Done with {filename}.\n")
