@@ -5,6 +5,9 @@ import shutil
 from . import access_helper
 from .support.utils import cwd
 
+from threading import Lock
+file_operation_lock = Lock()
+
 """
 This module defines the `GyreAccess` class, which handles GYRE input file operations.
 
@@ -20,7 +23,7 @@ Methods:
 """
 
 class GyreAccess:
-    def __init__(self, path, binary=False, target=''):
+    def __init__(self):
         """
         Args:
             path (str): The path to the GYRE input file.
@@ -28,11 +31,7 @@ class GyreAccess:
             target (str): The target to be used.
         """
         self.check_env()
-        self.path = path
-        self.binary = binary
-        self.target = target
-        self.projectDir = os.path.abspath(path)
-        self.gyre_in = None
+        self.default_sections = self.gyreDefaults()
 
     def check_env(self):
         """
@@ -89,35 +88,36 @@ class GyreAccess:
             sections (list): A list with the sections of the inlist file.
         """   
         if default_section is None:
-            for section, values in self.gyreDefaults().items():
+            for section, values in self.default_sections.items():
                 if parameter in values:
                     default_section = section
             if default_section is None:
                 raise(f"Parameter {parameter} not found in any GYRE input files.")
         this_section = False
         with cwd(wdir):
-            with open(gyre_in, "r") as file:
-                lines = file.readlines()
-            with open(gyre_in, "w+") as f:
-                indent = "    "
-                for line in lines:
-                    edited = False
-                    if default_section in line:
-                        this_section = True
-                    if this_section:
-                        if parameter in line:
-                            if parameter == line.split("=")[0].strip():
-                                f.write(line.replace(line.split("=")[1], f" {value}    ! Changed\n"))
+            with file_operation_lock:
+                with open(gyre_in, "r") as file:
+                    lines = file.readlines()
+                with open(gyre_in, "w+") as f:
+                    indent = "    "
+                    for line in lines:
+                        edited = False
+                        if default_section in line:
+                            this_section = True
+                        if this_section:
+                            if parameter in line:
+                                if parameter == line.split("=")[0].strip():
+                                    f.write(line.replace(line.split("=")[1], f" {value}    ! Changed\n"))
+                                    edited = True
+                                    this_section = False
+                            elif line[0] == "/":
+                                f.write(indent)
+                                f.write(f"{parameter} = {value}    ! Added\n")
+                                f.write("/")
                                 edited = True
                                 this_section = False
-                        elif line[0] == "/":
-                            f.write(indent)
-                            f.write(f"{parameter} = {value}    ! Added\n")
-                            f.write("/")
-                            edited = True
-                            this_section = False
-                    if not edited:
-                        f.write(line)
+                        if not edited:
+                            f.write(line)
 
    
 
@@ -135,7 +135,7 @@ class GyreAccess:
         self.writetoGyreFile(wdir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs-nad.dat'", default_section="&nad_output", gyre_in=gyre_in)
 
 
-    def set(self, arg, gyre_in="gyre.in"):
+    def set(self, arg, wdir, gyre_in="gyre.in"):
         """Sets the value of a parameter in the inlist file.
 
         Args:
@@ -143,11 +143,11 @@ class GyreAccess:
         """    
         if isinstance(arg, dict):
             for key, value in arg.items():
-                self.writetoGyreFile(self.projectDir, key, access_helper.toFortranType(value), gyre_in=gyre_in)
+                self.writetoGyreFile(wdir, key, access_helper.toFortranType(value), gyre_in=gyre_in)
         elif isinstance(arg, list):
             for item in arg:
                 for key, value in item.items():
-                    self.writetoGyreFile(self.projectDir, key, access_helper.toFortranType(value), gyre_in=gyre_in)
+                    self.writetoGyreFile(wdir, key, access_helper.toFortranType(value), gyre_in=gyre_in)
         elif arg is None:
             pass
         else:

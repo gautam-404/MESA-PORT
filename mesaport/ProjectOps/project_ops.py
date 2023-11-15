@@ -372,6 +372,11 @@ class ProjectOps:
             if parallel:
                 gyre_input_params = gyre_input_params if gyre_input_params is not None else repeat(None)
                 os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'
+                ## copy gyre.in to gyre1.in, gyre2.in, etc. for parallel runs
+                for i, file in enumerate(files):
+                    num = file.split(".")[0]
+                    new_gyre_in = os.path.join(wdir, f"gyre{num}.in")
+                    shutil.copyfile(gyre_in, new_gyre_in)
                 # commands, wdir, 
                 # silent=True, runlog='', 
                 # status=None, filename="", 
@@ -381,7 +386,7 @@ class ProjectOps:
                         repeat(silent), repeat(runlog),
                         repeat(None), files, repeat(data_format),
                         repeat(True), repeat(gyre_in),
-                        gyre_input_params, repeat(None), repeat(env))
+                        gyre_input_params, repeat(None), repeat(os.environ.copy()))
                 if n_cores is None:
                     n_cores = psutil.cpu_count(logical=True) 
                     Pool = mp.Pool
@@ -401,7 +406,21 @@ class ProjectOps:
                             executor.map(ops_helper.run_subprocess, *args)
                             
                     except Exception as e:
+                        filenames = glob.glob(os.path.join(LOGS_dir, f"gyre*.log"))
+                        with open(runlog, 'a+') as outfile:
+                            for fname in filenames:
+                                with open(fname) as infile:
+                                    for line in infile:
+                                        outfile.write(line)
+                                os.remove(fname)
                         raise e
+                filenames = glob.glob(os.path.join(LOGS_dir, f"gyre*.log"))
+                with open(runlog, 'a+') as outfile:
+                    for fname in filenames:
+                        with open(fname) as infile:
+                            for line in infile:
+                                outfile.write(line)
+                        os.remove(fname)
                 res = True
             else:
                 for i, file in enumerate(files):

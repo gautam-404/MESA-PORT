@@ -1,6 +1,7 @@
 import subprocess
 import shlex
-import sys, os, glob
+import sys, os, glob, time
+import numpy as np
 import shutil
 from rich import print
 
@@ -38,16 +39,26 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 Pass os.environ.copy() to use the current environment. Or pass a dictionary with the environment variables to be used.
     """   
     if gyre_in is not None:
-        gyre_obj = GyreAccess(wdir)
-        if not os.path.exists(os.join(wdir, "gyre.in")):
-            gyre_obj.load(gyre_in=gyre_in, dest=wdir)
+        gyre_obj = GyreAccess()
         if parallel:
             num = filename.split(".")[0]
-            shutil.copy(gyre_in, os.path.join(wdir, f"gyre{num}.in"))
-            gyre_in = os.path.join(wdir, f"gyre{num}.in")
+            new_gyre_in = os.path.join(wdir, f"gyre{num}.in")
+            gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
+            gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
+            time.sleep(1)
+
+            # Update gyre_in to the new file
+            gyre_in = new_gyre_in
             commands = commands.replace("gyre.in", f"gyre{num}.in")
-        gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
-        gyre_obj.set(gyre_input_params)
+            runlog = runlog.replace("gyre.log", f"gyre{num}.log")
+        else:
+            new_gyre_in = os.path.join(wdir, "gyre.in")
+            shutil.copyfile(gyre_in, new_gyre_in)
+            gyre_in = new_gyre_in
+            gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
+            gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
+
+        
 
     evo_terminated = False
     termination_code = None
@@ -100,12 +111,6 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 sys.stdout.write(errline)
             logfile.write( "\n\n"+("*"*100)+"\n\n" )
         _data, error = proc.communicate()
-    if gyre_in is not None:
-        working_dir = wdir.replace("LOGS", "")
-        with open(f'{working_dir}/gyre.log', 'a+') as f:
-            f.write(f"Done with {filename}.\n")
-        if parallel:
-            os.remove(gyre_in)
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
         return False
@@ -121,6 +126,11 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                         age = age_
             return termination_code, age
         else:
+            working_dir = wdir.replace("LOGS", "")
+            with open(f'{working_dir}/gyre.log', 'a+') as f:
+                f.write(f"Done with {filename}.\n")
+            if parallel:
+                os.remove(gyre_in)
             return True
 
 def process_outline(outline):
