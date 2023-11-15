@@ -53,9 +53,9 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             # shutil.copy2(gyre_in, os.path.join(wdir, f"gyre.in"))
             shutil.copyfile(gyre_in, os.path.join(wdir, f"gyre.in"))
             gyre_in = os.path.join(wdir, f"gyre.in")
-        # gyre_obj = GyreAccess(wdir)
-        # gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
-        # gyre_obj.set(arg=gyre_input_params, gyre_in=gyre_in)
+        gyre_obj = GyreAccess(wdir)
+        gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
+        gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
 
     evo_terminated = False
     termination_code = None

@@ -134,7 +134,7 @@ class GyreAccess:
         self.writetoGyreFile(wdir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs-nad.dat'", default_section="&nad_output", gyre_in=gyre_in)
 
 
-    def set(self, arg, gyre_in="gyre.in"):
+    def set(self, arg, wdir, gyre_in="gyre.in"):
         """Sets the value of a parameter in the inlist file.
 
         Args:
@@ -142,11 +142,11 @@ class GyreAccess:
         """    
         if isinstance(arg, dict):
             for key, value in arg.items():
-                self.writetoGyreFile(self.projectDir, key, access_helper.toFortranType(value), gyre_in=gyre_in)
+                self.writetoGyreFile(wdir, key, access_helper.toFortranType(value), gyre_in=gyre_in)
         elif isinstance(arg, list):
             for item in arg:
                 for key, value in item.items():
-                    self.writetoGyreFile(self.projectDir, key, access_helper.toFortranType(value), gyre_in=gyre_in)
+                    self.writetoGyreFile(wdir, key, access_helper.toFortranType(value), gyre_in=gyre_in)
         elif arg is None:
             pass
         else:
