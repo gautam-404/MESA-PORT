@@ -104,12 +104,6 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 sys.stdout.write(errline)
             logfile.write( "\n\n"+("*"*100)+"\n\n" )
         _data, error = proc.communicate()
-    if gyre_in is not None:
-        working_dir = wdir.replace("LOGS", "")
-        with open(f'{working_dir}/gyre.log', 'a+') as f:
-            f.write(f"Done with {filename}.\n")
-        if parallel:
-            os.remove(gyre_in)
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
         return False
@@ -125,6 +119,11 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                         age = age_
             return termination_code, age
         else:
+            working_dir = wdir.replace("LOGS", "")
+            with open(f'{working_dir}/gyre.log', 'a+') as f:
+                f.write(f"Done with {filename}.\n")
+            if parallel:
+                os.remove(gyre_in)
             return True
 
 def process_outline(outline):
