@@ -39,7 +39,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     """   
     if gyre_in is not None:
         gyre_obj = GyreAccess(wdir)
-        if not os.path.exists(os.join(wdir, "gyre.in")):
+        if not os.path.exists(os.path.join(wdir, "gyre.in")):
             gyre_obj.load(gyre_in=gyre_in, dest=wdir)
         if parallel:
             num = filename.split(".")[0]
