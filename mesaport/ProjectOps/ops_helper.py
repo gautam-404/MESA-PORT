@@ -50,7 +50,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             shutil.copy(gyre_in, os.path.join(wdir, f"gyre.in"))
             gyre_in = os.path.join(wdir, f"gyre.in")
         gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
-        gyre_obj.set(gyre_input_params)
+        gyre_obj.set(arg=gyre_input_params, gyre_in=gyre_in)
 
     evo_terminated = False
     termination_code = None
