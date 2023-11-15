@@ -1,6 +1,6 @@
 import subprocess
 import shlex
-import sys, os, glob
+import sys, os, glob, time
 import shutil
 from rich import print
 
@@ -46,6 +46,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             shutil.copy(gyre_in, os.path.join(wdir, f"gyre{num}.in"))
             gyre_in = os.path.join(wdir, f"gyre{num}.in")
             commands = commands.replace("gyre.in", f"gyre{num}.in")
+            time.sleep(1)
         else:
             shutil.copy(gyre_in, os.path.join(wdir, f"gyre.in"))
             gyre_in = os.path.join(wdir, f"gyre.in")
