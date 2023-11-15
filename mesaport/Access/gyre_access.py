@@ -20,7 +20,7 @@ Methods:
 """
 
 class GyreAccess:
-    def __init__(self, path, binary=False, target=''):
+    def __init__(self):
         """
         Args:
             path (str): The path to the GYRE input file.
@@ -28,10 +28,6 @@ class GyreAccess:
             target (str): The target to be used.
         """
         self.check_env()
-        self.path = path
-        self.binary = binary
-        self.target = target
-        self.projectDir = os.path.abspath(path)
 
     def check_env(self):
         """
