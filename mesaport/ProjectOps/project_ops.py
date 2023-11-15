@@ -374,10 +374,10 @@ class ProjectOps:
                 os.environ['HDF5_USE_FILE_LOCKING'] = 'FALSE'
                 ## copy gyre.in to gyre1.in, gyre2.in, etc. for parallel runs
                 from threading import Lock
-                with Lock():
-                    for i, file in enumerate(files):
-                        num = file.split(".")[0]
-                        new_gyre_in = os.path.join(wdir, f"gyre{num}.in")
+                for i, file in enumerate(files):
+                    num = file.split(".")[0]
+                    new_gyre_in = os.path.join(wdir, f"gyre{num}.in")
+                    with Lock():
                         shutil.copyfile(gyre_in, new_gyre_in)
                 # commands, wdir, 
                 # silent=True, runlog='', 
