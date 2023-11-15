@@ -43,8 +43,11 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
         #     gyre_obj.load(gyre_in=gyre_in, dest=wdir)
         if parallel:
             num = filename.split(".")[0]
-            shutil.copy2(gyre_in, os.path.join(wdir, f"gyre{num}.in"))
-            gyre_in = os.path.join(wdir, f"gyre{num}.in")
+            new_gyre_in = os.path.join(wdir, f"gyre{num}.in")
+            if os.path.exists(new_gyre_in):
+                os.remove(new_gyre_in)
+            shutil.copy2(gyre_in, new_gyre_in)
+            gyre_in = new_gyre_in
             commands = commands.replace("gyre.in", f"gyre{num}.in")
         else:
             shutil.copy2(gyre_in, os.path.join(wdir, f"gyre.in"))
