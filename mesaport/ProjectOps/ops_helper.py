@@ -52,18 +52,13 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 if os.path.exists(new_gyre_in):
                     os.remove(new_gyre_in)
                 shutil.copyfile(gyre_in, new_gyre_in)
+                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
+                gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
 
             # Update gyre_in to the new file
             gyre_in = new_gyre_in
             commands = commands.replace("gyre.in", f"gyre{num}.in")
             runlog = runlog.replace("gyre.log", f"gyre{num}.log")
-
-            time.sleep(np.random.random() * 10)
-
-            gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
-            gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
-
-            time.sleep(np.random.random() * 10)
         else:
             with file_operation_lock:
                 new_gyre_in = os.path.join(wdir, "gyre.in")

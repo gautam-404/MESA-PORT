@@ -415,7 +415,7 @@ class ProjectOps:
                         with open(fname) as infile:
                             for line in infile:
                                 outfile.write(line)
-                        shutil.rmtree(fname)
+                        os.remove(fname)
                 res = True
             else:
                 for i, file in enumerate(files):
