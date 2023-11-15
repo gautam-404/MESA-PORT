@@ -41,22 +41,13 @@ class GyreAccess:
         if "GYRE_DIR" not in os.environ:
             raise EnvironmentError("GYRE_DIR is not set in your enviroment. Be sure to set it properly!!")
 
-    def load(self, gyre_in="gyre.in"):
+    def load(self, gyre_in="gyre.in", dest=None):
         """
         Loads the GYRE input file into the project directory.
         """
-        dest = os.path.join(self.projectDir, 'gyre.in')
-        if os.path.exists(gyre_in):
-            shutil.copy(gyre_in, dest)
-        elif os.path.exists(os.path.join(self.projectDir, gyre_in)):
-            gyre_in = os.path.join(self.projectDir, gyre_in)
-            shutil.copy(gyre_in, dest)
-        elif os.path.exists(os.path.join("LOGS", gyre_in)):
-                gyre_in = os.path.join("LOGS", gyre_in)
-                shutil.copy(gyre_in, dest)
-        else:
-            raise FileNotFoundError(f"Could not find the your specified GYRE input file, '{gyre_in}'. Aborting...")
-        self.gyre_in = os.path.join(self.projectDir, gyre_in)
+        if dest is None:
+            dest = os.path.join(self.projectDir, "LOGS", 'gyre.in')
+        shutil.copy(gyre_in, dest)
         
     def gyreDefaults(self):
         """Reads the defaults files and returns a dictionary with all the parameters and their values.
