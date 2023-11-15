@@ -31,6 +31,7 @@ class GyreAccess:
             target (str): The target to be used.
         """
         self.check_env()
+        self.default_sections = self.gyreDefaults()
 
     def check_env(self):
         """
@@ -87,7 +88,7 @@ class GyreAccess:
             sections (list): A list with the sections of the inlist file.
         """   
         if default_section is None:
-            for section, values in self.gyreDefaults().items():
+            for section, values in self.default_sections.items():
                 if parameter in values:
                     default_section = section
             if default_section is None:
