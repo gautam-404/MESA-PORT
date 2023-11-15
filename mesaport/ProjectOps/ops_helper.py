@@ -5,9 +5,6 @@ import numpy as np
 import shutil
 from rich import print
 
-from threading import Lock
-file_operation_lock = Lock()
-
 from ..Access.support import *
 from ..Access.access_helper import toFortranType, toPythonType
 from ..Access import MesaAccess, GyreAccess
@@ -44,6 +41,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     if gyre_in is not None:
         gyre_obj = GyreAccess()
         if parallel:
+            from threading import Lock
             num = filename.split(".")[0]
             new_gyre_in = os.path.join(wdir, f"gyre{num}.in")
 
@@ -52,7 +50,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             #     if os.path.exists(new_gyre_in):
             #         os.remove(new_gyre_in)
             #     shutil.copyfile(gyre_in, new_gyre_in)
-            with file_operation_lock:
+            with Lock():
                 gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
                 gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
 
@@ -61,9 +59,8 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             commands = commands.replace("gyre.in", f"gyre{num}.in")
             runlog = runlog.replace("gyre.log", f"gyre{num}.log")
         else:
-            with file_operation_lock:
-                new_gyre_in = os.path.join(wdir, "gyre.in")
-                shutil.copyfile(gyre_in, new_gyre_in)
+            new_gyre_in = os.path.join(wdir, "gyre.in")
+            shutil.copyfile(gyre_in, new_gyre_in)
             gyre_in = new_gyre_in
             gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
             gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
