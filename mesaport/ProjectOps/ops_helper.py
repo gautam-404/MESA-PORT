@@ -47,15 +47,13 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             num = filename.split(".")[0]
             new_gyre_in = os.path.join(wdir, f"gyre{num}.in")
 
-            with file_operation_lock:
-                # Ensure thread-safe file operations
-                if os.path.exists(new_gyre_in):
-                    os.remove(new_gyre_in)
-            with file_operation_lock:
-                shutil.copyfile(gyre_in, new_gyre_in)
+            # with file_operation_lock:
+            #     # Ensure thread-safe file operations
+            #     if os.path.exists(new_gyre_in):
+            #         os.remove(new_gyre_in)
+            #     shutil.copyfile(gyre_in, new_gyre_in)
             with file_operation_lock:
                 gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
-            with file_operation_lock:
                 gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
 
             # Update gyre_in to the new file
