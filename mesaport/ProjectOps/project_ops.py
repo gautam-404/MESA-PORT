@@ -401,7 +401,21 @@ class ProjectOps:
                             executor.map(ops_helper.run_subprocess, *args)
                             
                     except Exception as e:
+                        filenames = glob.glob(os.path.join(LOGS_dir, f"gyre*.log"))
+                        with open(runlog, 'a+') as outfile:
+                            for fname in filenames:
+                                with open(fname) as infile:
+                                    for line in infile:
+                                        outfile.write(line)
+                                shutil.rmtree(fname)
                         raise e
+                filenames = glob.glob(os.path.join(LOGS_dir, f"gyre*.log"))
+                with open(runlog, 'a+') as outfile:
+                    for fname in filenames:
+                        with open(fname) as infile:
+                            for line in infile:
+                                outfile.write(line)
+                        shutil.rmtree(fname)
                 res = True
             else:
                 for i, file in enumerate(files):
