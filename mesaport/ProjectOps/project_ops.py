@@ -407,7 +407,7 @@ class ProjectOps:
                                 with open(fname) as infile:
                                     for line in infile:
                                         outfile.write(line)
-                                shutil.rmtree(fname)
+                                os.remove(fname)
                         raise e
                 filenames = glob.glob(os.path.join(LOGS_dir, f"gyre*.log"))
                 with open(runlog, 'a+') as outfile:

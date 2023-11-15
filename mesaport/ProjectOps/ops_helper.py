@@ -5,6 +5,9 @@ import numpy as np
 import shutil
 from rich import print
 
+from threading import Lock
+file_operation_lock = Lock()
+
 from ..Access.support import *
 from ..Access.access_helper import toFortranType, toPythonType
 from ..Access import MesaAccess, GyreAccess
@@ -39,26 +42,37 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 Pass os.environ.copy() to use the current environment. Or pass a dictionary with the environment variables to be used.
     """   
     if gyre_in is not None:
-        # if not os.path.exists(os.path.join(wdir, "gyre.in")):
-        #     gyre_obj.load(gyre_in=gyre_in, dest=wdir)
+        gyre_obj = GyreAccess()
         if parallel:
             num = filename.split(".")[0]
             new_gyre_in = os.path.join(wdir, f"gyre{num}.in")
-            if os.path.exists(new_gyre_in):
-                os.remove(new_gyre_in)
-            shutil.copyfile(gyre_in, new_gyre_in)
+
+            with file_operation_lock:
+                # Ensure thread-safe file operations
+                if os.path.exists(new_gyre_in):
+                    os.remove(new_gyre_in)
+                shutil.copyfile(gyre_in, new_gyre_in)
+
+            # Update gyre_in to the new file
             gyre_in = new_gyre_in
             commands = commands.replace("gyre.in", f"gyre{num}.in")
             runlog = runlog.replace("gyre.log", f"gyre{num}.log")
+
+            time.sleep(np.random.random() * 10)
+
+            gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
+            gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
+
+            time.sleep(np.random.random() * 10)
         else:
-            shutil.copyfile(gyre_in, os.path.join(wdir, f"gyre.in"))
-            gyre_in = os.path.join(wdir, f"gyre.in")
-        time.sleep(np.random.random()*5)
-        gyre_obj = GyreAccess()
-        gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
-        time.sleep(np.random.random()*5)
-        gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
-        time.sleep(np.random.random()*5)
+            with file_operation_lock:
+                new_gyre_in = os.path.join(wdir, "gyre.in")
+                shutil.copyfile(gyre_in, new_gyre_in)
+            gyre_in = new_gyre_in
+            gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
+            gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
+
+        
 
     evo_terminated = False
     termination_code = None
