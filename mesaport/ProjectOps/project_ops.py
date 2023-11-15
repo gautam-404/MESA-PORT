@@ -313,6 +313,7 @@ class ProjectOps:
         """
         if wdir is not None:
             wdir = os.path.abspath(wdir)
+        gyre_in = os.path.abspath(gyre_in)
 
         if 'GYRE_DIR' in os.environ:
             gyre_ex = os.path.join(os.environ['GYRE_DIR'], "bin", "gyre")
