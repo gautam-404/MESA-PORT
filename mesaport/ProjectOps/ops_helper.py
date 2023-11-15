@@ -38,7 +38,6 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 Pass os.environ.copy() to use the current environment. Or pass a dictionary with the environment variables to be used.
     """   
     if gyre_in is not None:
-        gyre_obj = GyreAccess(wdir)
         # if not os.path.exists(os.path.join(wdir, "gyre.in")):
         #     gyre_obj.load(gyre_in=gyre_in, dest=wdir)
         if parallel:
@@ -52,6 +51,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
         else:
             shutil.copy2(gyre_in, os.path.join(wdir, f"gyre.in"))
             gyre_in = os.path.join(wdir, f"gyre.in")
+        gyre_obj = GyreAccess(wdir)
         gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
         gyre_obj.set(arg=gyre_input_params, gyre_in=gyre_in)
 
