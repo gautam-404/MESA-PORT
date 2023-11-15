@@ -47,7 +47,7 @@ class GyreAccess:
         """
         if dest is None:
             dest = os.path.join(self.projectDir, "LOGS", 'gyre.in')
-        shutil.copy(gyre_in, dest)
+        shutil.copy(gyre_in, os.path.join(dest, 'gyre.in'))
         
     def gyreDefaults(self):
         """Reads the defaults files and returns a dictionary with all the parameters and their values.
