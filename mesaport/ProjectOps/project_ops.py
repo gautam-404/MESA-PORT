@@ -406,7 +406,7 @@ class ProjectOps:
                             executor.map(ops_helper.run_subprocess, *args)
                             
                     except Exception as e:
-                        filenames = glob.glob(os.path.join(LOGS_dir, f"gyre*.log"))
+                        filenames = glob.glob(os.path.join(LOGS_dir, f"gyreprofile*.log"))
                         with open(runlog, 'a+') as outfile:
                             for fname in filenames:
                                 with open(fname) as infile:
@@ -414,7 +414,7 @@ class ProjectOps:
                                         outfile.write(line)
                                 os.remove(fname)
                         raise e
-                filenames = glob.glob(os.path.join(LOGS_dir, f"gyre*.log"))
+                filenames = glob.glob(os.path.join(LOGS_dir, f"gyreprofile*.log"))
                 with open(runlog, 'a+') as outfile:
                     for fname in filenames:
                         with open(fname) as infile:
