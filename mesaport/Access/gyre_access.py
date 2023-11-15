@@ -5,6 +5,9 @@ import shutil
 from . import access_helper
 from .support.utils import cwd
 
+from threading import Lock
+file_operation_lock = Lock()
+
 """
 This module defines the `GyreAccess` class, which handles GYRE input file operations.
 
@@ -91,28 +94,29 @@ class GyreAccess:
                 raise(f"Parameter {parameter} not found in any GYRE input files.")
         this_section = False
         with cwd(wdir):
-            with open(gyre_in, "r") as file:
-                lines = file.readlines()
-            with open(gyre_in, "w+") as f:
-                indent = "    "
-                for line in lines:
-                    edited = False
-                    if default_section in line:
-                        this_section = True
-                    if this_section:
-                        if parameter in line:
-                            if parameter == line.split("=")[0].strip():
-                                f.write(line.replace(line.split("=")[1], f" {value}    ! Changed\n"))
+            with file_operation_lock:
+                with open(gyre_in, "r") as file:
+                    lines = file.readlines()
+                with open(gyre_in, "w+") as f:
+                    indent = "    "
+                    for line in lines:
+                        edited = False
+                        if default_section in line:
+                            this_section = True
+                        if this_section:
+                            if parameter in line:
+                                if parameter == line.split("=")[0].strip():
+                                    f.write(line.replace(line.split("=")[1], f" {value}    ! Changed\n"))
+                                    edited = True
+                                    this_section = False
+                            elif line[0] == "/":
+                                f.write(indent)
+                                f.write(f"{parameter} = {value}    ! Added\n")
+                                f.write("/")
                                 edited = True
                                 this_section = False
-                        elif line[0] == "/":
-                            f.write(indent)
-                            f.write(f"{parameter} = {value}    ! Added\n")
-                            f.write("/")
-                            edited = True
-                            this_section = False
-                    if not edited:
-                        f.write(line)
+                        if not edited:
+                            f.write(line)
 
    
 

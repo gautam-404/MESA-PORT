@@ -5,9 +5,6 @@ import numpy as np
 import shutil
 from rich import print
 
-from threading import Lock
-file_operation_lock = Lock()
-
 from ..Access.support import *
 from ..Access.access_helper import toFortranType, toPythonType
 from ..Access import MesaAccess, GyreAccess
@@ -52,10 +49,9 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             #     if os.path.exists(new_gyre_in):
             #         os.remove(new_gyre_in)
             #     shutil.copyfile(gyre_in, new_gyre_in)
-            with file_operation_lock:
-                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
-            with file_operation_lock:
-                gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
+            
+            gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
+            gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
 
             # Update gyre_in to the new file
             gyre_in = new_gyre_in
