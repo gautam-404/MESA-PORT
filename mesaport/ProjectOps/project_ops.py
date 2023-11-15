@@ -381,7 +381,7 @@ class ProjectOps:
                         repeat(silent), repeat(runlog),
                         repeat(None), files, repeat(data_format),
                         repeat(True), repeat(gyre_in),
-                        gyre_input_params, repeat(None), repeat(env))
+                        gyre_input_params, repeat(None), repeat(os.environ.copy()))
                 if n_cores is None:
                     n_cores = psutil.cpu_count(logical=True) 
                     Pool = mp.Pool
