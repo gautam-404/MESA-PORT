@@ -49,7 +49,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             shutil.copyfile(gyre_in, new_gyre_in)
             gyre_in = new_gyre_in
             commands = commands.replace("gyre.in", f"gyre{num}.in")
-            runlog = runlog.replace("runlog", f"runlog{num}")
+            runlog = runlog.replace("gyre.log", f"gyre{num}.log")
         else:
             shutil.copyfile(gyre_in, os.path.join(wdir, f"gyre.in"))
             gyre_in = os.path.join(wdir, f"gyre.in")
