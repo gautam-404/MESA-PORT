@@ -60,7 +60,7 @@ class Installer:
                 prerequisites.install_prerequisites(directory, ostype, cleanAfter, logfile)
             print("[blue b]Pre-requisites installation complete.\n")
         else:
-            print("[yellow b]WARNING: You do not have sudo privileges.[/yellow b]\n")
+            print("[yellow b]WARNING: You do not have sudo privileges.[/yellow b]")
             print("You can either install the pre-requisites manually, or try to skip the pre-requisites installation.\n\
                   NOTE: Skipping pre-requisites installation may cause the Installer to fail.\n\n")
             skip_prompt = prompt.Prompt.ask("[green b]Do you wish to continue this installation?[/green b]", choices=["y", "n"])
@@ -83,7 +83,7 @@ class Installer:
                 proc.wait()
                 if proc.returncode != 0:
                     raise Exception("MESA SDK initialization failed. \
-                        Please check the install_log.txt file for details.")
+                        Please check the install.log file for details.")
 
             run_in_shell = f'''
             /bin/bash -c \"
