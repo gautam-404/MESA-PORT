@@ -10,8 +10,8 @@ mesa_urls = {"latest": "https://zenodo.org/record/7983526/files/mesa-r23.05.1.zi
             "r15140": "https://zenodo.org/record/4311514/files/mesa-r15140.zip",
             "r12778": "https://zenodo.org/record/7319739/files/mesa-r12778.zip"}
 
-linux_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz",
-            "r23.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz",
+linux_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-23.7.3.tar.gz",
+            "r23.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-23.7.3.tar.gz",
             "r22.11.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz",
             "r22.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-22.6.1.tar.gz",
             "r21.12.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-linux-21.4.1.tar.gz",
@@ -26,8 +26,8 @@ mac_intel_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/d
             "r15140": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-macos-21.11.1.pkg",
             "r12778": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-x86_64-macos-20.11.1.pkg"}
 
-mac_arm_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-aarch64-macos-22.10.1.pkg",
-                    "r23.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-aarch64-macos-22.10.1.pkg",
+mac_arm_sdk_urls = {"latest": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-aarch64-macos-23.10.1.pkg",
+                    "r23.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-aarch64-macos-23.10.1.pkg",
                     "r22.11.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-aarch64-macos-22.10.1.pkg",
                     "r22.05.1": "http://user.astro.wisc.edu/~townsend/resource/download/mesasdk/mesasdk-aarch64-macos-22.10.1.pkg"}
 

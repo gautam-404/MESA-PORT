@@ -79,7 +79,7 @@ class Installer:
 
             with subprocess.Popen(f"/bin/bash -c \"export MESASDK_ROOT={sdk_dir} && \
                         source {sdk_dir}/bin/mesasdk_init.sh && gfortran --version\"",
-                        shell=True, stdout=logfile, stderr=logfile) as proc:
+                        shell=True, stdout=logfile, stderr=logfile, env=os.environ.copy()) as proc:
                 proc.wait()
                 if proc.returncode != 0:
                     raise Exception("MESA SDK initialization failed. \
@@ -96,7 +96,7 @@ class Installer:
             && make -C {mesa_dir}/gyre/gyre \\
             && export GYRE_DIR={mesa_dir}/gyre/gyre \"
             '''
-            with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile) as proc:
+            with subprocess.Popen(run_in_shell, shell=True, stdout=logfile, stderr=logfile, env=os.environ.copy()) as proc:
                 proc.wait()
                 if proc.returncode != 0:
                     raise Exception("MESA installation failed. \
