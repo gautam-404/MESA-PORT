@@ -7,10 +7,8 @@ def readDefaults(filename, defaultsDir):
     """Reads the defaults files and returns a dictionary with all the parameters and their values.
 
     Args:
-        section (str): The section of the defaults file to be read (e.g. "star_job", "controls", "pgstar")
-        defaultsDir (str): The path to the defaults directory
-        defaultsFileNames (dict): A dictionary with the names of the defaults files of each section
-
+        filename (str): The name of the defaults file.
+        defaultsDir (str): The path to the defaults directory.
     Raises:
         FileNotFoundError: If the defaults files do not exist.
 
@@ -200,6 +198,7 @@ def readFile(inlist, projectDir):
         else:
             inlistParameters = {}
             inlistSections = []
+            section = ""
             with open(inlist) as file:
                 for line in file:
                     line = line.strip().replace(" ", "")
@@ -212,7 +211,10 @@ def readFile(inlist, projectDir):
                         if "!" in line:
                             line = line.split("!")[0]
                         name, _, value = line.partition("=")
-                        inlistParameters[section][name] = value
+                        if section != "":
+                            inlistParameters[section][name] = value
+                        else:
+                            print("Something went wrong, section not found!")
         # pprint(inlistParameters)
         return inlistSections, inlistParameters
 
