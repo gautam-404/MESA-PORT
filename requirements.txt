@@ -3,3 +3,4 @@ requests
 py-cpuinfo
 psutil
 pdoc
+numpy
