@@ -23,7 +23,8 @@ class Download:
         self.directory = directory
         sdk_url, mesa_url = self.prep_urls(version)
         self.sdk_download, self.mesa_zip = self.download(sdk_url, mesa_url)
-        if self.ostype == "macOS-Intel":
+        # if self.ostype == "macOS-Intel":
+        if 'macOS' in self.ostype:
             xquartz = os.path.join(directory, mesaurls.url_xquartz.split('/')[-1])
             self.check_n_download(xquartz, mesaurls.url_xquartz, "[green b]Downloading XQuartz...")
 
