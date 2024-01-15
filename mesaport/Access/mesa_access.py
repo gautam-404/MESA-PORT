@@ -1,5 +1,6 @@
 from .support import *
 from .envhandler import MesaEnvironmentHandler
+from ..ProjectOps import ProjectOps
 from .access_helper import *
 from . import loader
 
@@ -326,4 +327,7 @@ class MesaAccess:
         """  
         self.check_exists()
         loader.load(extras_path, self.projectDir, "extras", binary=self.binary, target=self.target)
+        proj = ProjectOps(self.project)
+        proj.clean()
+        proj.make(silent=True)
 
