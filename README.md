@@ -133,6 +133,7 @@ pip install git+https://github.com/gautam-404/MESA-PORT.git
   ### Path arguments can be a path or the name of a file in 'my_project' directory ###
 
   star.load_Extras("path/to/custom/run_star_extras_file")          ## Load custom run_star_extras.f90
+  ## run proj.make() after loading extras. this allows the compiler to compile with the run_star_extras file
   star.load_InlistProject("/path/to/custom/inlist")                ## Load custom inlist_project 
   star.load_InlistPG("/path/to/custom/inlist")                     ## Load custom inlist_pgstar    
   star.load_HistoryColumns("path/to/custom/history_columns_file")  ## Load custom history_columns

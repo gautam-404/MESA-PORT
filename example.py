@@ -5,7 +5,7 @@ work = ProjectOps()
 
 
 work.create()   ## Use boolean arguments 'overwrite' and 'clean' to work on existing projects
-work.load_Extras("path/to/custom/run_star_extras_file")
+work.load_Extras("path/to/custom/run_star_extras_file")     ## make after loading extras. this allows the compiler to find the extras file
 work.make()           
 
 work.load_ProjInlist("/path/to/inlist")
