@@ -325,8 +325,8 @@ class ProjectOps:
             elif target == 'secondary':
                 LOGS_dir = os.path.join(self.work_dir, "LOGS2") if wdir is None else wdir
             else:
-                raise ValueError('''Invalid input for argument 'star'.  
-                                Please use 'primary' or 'secondary''')
+                raise ValueError("""Invalid input for argument 'star'.  
+                                Please use primary or secondary""")
         else:
             LOGS_dir = os.path.join(self.work_dir, "LOGS") if wdir is None else wdir
 
@@ -395,16 +395,23 @@ class ProjectOps:
                         n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                         with Pool(n_processes) as pool:
                             gyre_in = os.path.abspath(gyre_in)
-                            for _ in pool.istarmap(ops_helper.run_subprocess, zip(*args)):
-                                progressbar.advance(task)
+                            try:
+                                for _ in pool.istarmap(ops_helper.run_subprocess, zip(*args)):
+                                    progressbar.advance(task)
+                            except Exception as e:
+                                print(e)
+                                pool.terminate()
                 else:
                     try:
                         from concurrent.futures import ThreadPoolExecutor
                         n_processes = (n_cores//int(os.environ['OMP_NUM_THREADS']))
                         with ThreadPoolExecutor(max_workers=n_processes) as executor:
                             gyre_in = os.path.abspath(gyre_in)
-                            executor.map(ops_helper.run_subprocess, *args)
-                            
+                            try:
+                                executor.map(ops_helper.run_subprocess, *args)
+                            except Exception as e:
+                                print(e)
+                                executor.shutdown(wait=False)
                     except Exception as e:
                         filenames = glob.glob(os.path.join(LOGS_dir, f"gyreprofile*.log"))
                         with open(runlog, 'a+') as outfile:
