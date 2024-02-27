@@ -9,82 +9,63 @@
 
 ### Features:
 
+  * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
+
+  * **MESA-PORT** can be used to create, clean, make, run, resume and delete your MESA project.
+
+  * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. 
+  
+  * **Single star** as well as **binary system** evolution supported.
+
   * ***Install MESA*** on ***Linux*** and ***macOS*** (ARM/M-series and Intel) with just this python package!
     <details>
     <summary><b><i>CLI example</b></i></summary>
     <img src="imgs/installer.png">
     </details>
 
-  * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
-  
-  * **Single star** as well as **binary system** evolution supported.
-
-  * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. 
-
-  * MESA-PORT can also run [GYRE](https://github.com/rhdtownsend/gyre) stellar oscillation code! See Usage.
-
-  * For advanced usage, see the [MESA-tests repository](https://github.com/gautam-404/MESA-tests). 
+  * MESA-PORT can also run [GYRE](https://github.com/rhdtownsend/gyre) stellar oscillation code! See [Usage](#usage).
 
 
 
 <br>
 
 ## Installation
-```
-pip install git+https://github.com/gautam-404/MESA-PORT.git
-```
+
+`pip install git+https://github.com/gautam-404/MESA-PORT.git`
 
 ## Usage
 
-### ***Importing:***
-  ```python
-  from mesaport import  ProjectOps, MesaAccess, Installer
-  ```
-  
-  
-### ***Using the built-in MESA `Installer`:***
-  ```python
-  ## Installer for Linux and macOS (ARM/M-series and Intel) systems
-  
-  Installer(version="latest", parentDir='where/to/install', cleanAfter=False )     
-  ## CLI is shown for missing arguments.  
-  ## version = "latest" will install the latest version available for your system.
-  ## Available versions: 
-  #     Linux: "23.05.1", "22.05.1", "15140" and "12778".
-  #     macOS-Intel: "23.05.1", "22.05.1", "15140" and "12778".  
-  #     macOS-ARM: "23.05.1", "22.05.1".
- 
-  
-  ## cleanAfter=False by default to allow re-running installation without removing downloaded files, 
-  ## this saves time when debugging a failed MESA build.
-  ```
-  
-### ***Using a `ProjectOps` class object:***
+#### ***The `ProjectOps` class:***
+This class handle MESA operations. An object of this class allows you to create, clea, make, run, resume and delete your MESA project.
   * Creating a new MESA work directory:
     ```python
-    proj = ProjectOps(name='work', astero=False, binary=False)   ## Default project name is 'work'. 
-                                                     ## Default is single star evolution.
+    from mesaport import  ProjectOps
+
+    ## Initialize a new project
+    proj = ProjectOps(name='work')   
+    ## Default project name is 'work'. 
 
     ## Create a new project
-    proj.create(overwrite=False, clean=False)    ## CLI is shown if no arguments are passed                       
+    proj.create(overwrite=False, clean=False)    
+    ## CLI is shown if no arguments are passed
     ```
-    For a custom name or to use an existing MESA work directory, pass its name as a string argument.
-    ```python
-    proj = ProjectOps("my_project")
-    ```
+> [!NOTE]  
+> * Instead of single-star evolution, you can create a binary system or an astero project. This is done by passing boolean True for binary or astero arguments while initializing the ProjectOps class.
     
   * Take control of your project; make, clean, run, resume and delete.
     ```python
     proj.clean()
     proj.make()
-    proj.run(silent=True, trace=None)                                    ## Run MESA model
-    ## Silent=True by default, whch writes MESA output to a run log while the console shows the star's age as it evolves.
-    ## Pass a list of MESA parameters as an argument to trace their evolution in terminal along with age. Eg, trace=["log_L", "log_Teff"]
-    proj.resume("photo_name", silent=True)
-    proj.delete()                                             ## Deletes the project directory
+    proj.run(silent=True, trace=None)                                    
+    proj.resume("photo_name", silent=True, trace=None)
+    proj.delete()                                             
+    ## Deletes the project directory
     ```
+> [!NOTE]  
+> A list of MESA parameters can be passed to the `trace` argument to print their evolution in terminal along with age. Eg, trace=["log_L", "log_Teff"]
     
-  * Run GYRE:
+  Please see the [docs](https://gautam-404.github.io/MESA-PORT/mesaport/Access/access_helper.html#toFortranType) for more details on these methods and more.
+  <!-- * Run GYRE:
     ```python
     proj.runGyre("gyre/input")  
     ## "gyre/input" can either be a path to your GYRE input file
@@ -100,15 +81,18 @@ pip install git+https://github.com/gautam-404/MESA-PORT.git
     GYRE can also be run for the primary or the secondary star in a binary system.
     ```python
     proj.runGyre("gyre_input.in", target="primary")  ## Target can be "primary" or "secondary"
-    ```
+    ``` -->
 
-### ***Using a `MesaAccess` class object:***
+#### ***The `MesaAccess` class:***
+This class gives you access to the parameters in your inlist files. You can write, read, remove and set default values for inlist parameters. 
   ```python
+  from mesaport import  MesaAccess
+
   star = MesaAccess("your_project")
 
   ## Write
   star.set(parameters, values)              
-  ## Inputs paramets can be a string or a list of strings
+  ## Inputs parameters can be a string or a list of strings
   ## Input values can be a single value or a list of values
   ## If a list of values is passed, the length of the list must be equal to the length of the parameters list.
 
@@ -117,17 +101,17 @@ pip install git+https://github.com/gautam-404/MESA-PORT.git
   
   ## Read
   value = star.get(parameters)   
-  ## Inputs paramets can be a string or a list of strings
+  ## Inputs parameters can be a string or a list of strings
 
   ## Delete
   star.delete(parameters)
-  ## Inputs paramets can be a string or a list of strings
+  ## Inputs parameters can be a string or a list of strings
 
   ## Set to default
   star.setDefualt(parameters)
   ```
 
-  In addition to the above, you can also use the `MesaAccess` class to load your customised pre-prepared input files.
+  In addition to the above, you can also use the `MesaAccess` class object to load your custom inlists and other input files such as history_columns, profile_columns, run_star_extras, run_binary_extras, inlist_astero_search_controls and inlist_pgstar files.
   
   ```python
   ### Path arguments can be a path or the name of a file in 'my_project' directory ###
@@ -140,9 +124,9 @@ pip install git+https://github.com/gautam-404/MESA-PORT.git
   star.load_ProfileColumns("path/to/custom/profile_columns_file")  ## Load custom profile_columns
   star.load_InlistAsteroSearch("path/to/inlist")                   ## Load custom inlist_astero_search_controls
   ```
-  Use `star = MesaAccess("your_project", astero=True)` when working with an astero project.
 
-  When working with a binary system, you can create multiple `MesaAccess` objects for each star and the binary system.
+  * Use `star = MesaAccess("your_project", astero=True)` when working with an astero project.
+  * When working with a binary system, you can create multiple `MesaAccess` objects for each star and the binary system.
   ```python
   binary = MesaAccess("your_project", binary=True, target='binary')        ## For the binary system
   primary = MesaAccess("your_project", binary=True, target='primary')      ## For the primary star
