@@ -11,11 +11,9 @@
 
   * With Python and MESA installed, anyone can run your MESA model using this module. You only need to share your python project.
 
-  * **MESA-PORT** can be used to create, clean, make, run, resume and delete your MESA project.
+  * **MESA-PORT** can be used to create, clean, make, run and resume your MESA project.
 
   * This module also allows you to manipulate parameters in your inlist files. Your inputs will automatically be converted to the right data type and format for fortran. 
-  
-  * **Single star** as well as **binary system** evolution supported.
 
   * ***Install MESA*** on ***Linux*** and ***macOS*** (ARM/M-series and Intel) with just this python package!
     <details>
@@ -24,8 +22,6 @@
     </details>
 
   * MESA-PORT can also run [GYRE](https://github.com/rhdtownsend/gyre) stellar oscillation code! See [Usage](#usage).
-
-
 
 <br>
 
@@ -49,8 +45,8 @@ This class handle MESA operations. An object of this class allows you to create,
     proj.create(overwrite=False, clean=False)    
     ## CLI is shown if no arguments are passed
     ```
-> [!NOTE]  
-> * Instead of single-star evolution, you can create a binary system or an astero project. This is done by passing boolean True for binary or astero arguments while initializing the ProjectOps class.
+> [!TIP]  
+> Instead of single-star evolution, you can create a binary system or an astero project. This is done by passing boolean True for **binary** or **astero** arguments while initializing the ProjectOps class.
     
   * Take control of your project; make, clean, run, resume and delete.
     ```python
@@ -61,8 +57,8 @@ This class handle MESA operations. An object of this class allows you to create,
     proj.delete()                                             
     ## Deletes the project directory
     ```
-> [!NOTE]  
-> A list of MESA parameters can be passed to the `trace` argument to print their evolution in terminal along with age. Eg, trace=["log_L", "log_Teff"]
+> [!TIP]  
+> A list of MESA parameters can be passed to the `trace` argument to print their evolution in terminal along with age. Eg., trace=["log_L", "log_Teff"]
     
   Please see the [docs](https://gautam-404.github.io/MESA-PORT/mesaport/Access/access_helper.html#toFortranType) for more details on these methods and more.
   <!-- * Run GYRE:
@@ -125,8 +121,7 @@ This class gives you access to the parameters in your inlist files. You can writ
   star.load_InlistAsteroSearch("path/to/inlist")                   ## Load custom inlist_astero_search_controls
   ```
 
-  * Use `star = MesaAccess("your_project", astero=True)` when working with an astero project.
-  * When working with a binary system, you can create multiple `MesaAccess` objects for each star and the binary system.
+  When working with a binary project, `MesaAccess` class object can be initialized for the primary star, secondary star and the binary system. This allows you to manipulate input parameters for each star and the binary system separately.
   ```python
   binary = MesaAccess("your_project", binary=True, target='binary')        ## For the binary system
   primary = MesaAccess("your_project", binary=True, target='primary')      ## For the primary star
@@ -145,3 +140,5 @@ This class gives you access to the parameters in your inlist files. You can writ
   binary.load_Extras("path/to/custom/run_binary_extras_file")   ## Load custom run_binary_extras.f90
   ```
  
+> [!WARNING]
+> This module is a work in progress. Please report any issues or bugs you encounter. 
