@@ -30,6 +30,8 @@
 `pip install git+https://github.com/gautam-404/MESA-PORT.git`
 
 ## Usage
+> [!NOTE]
+> The complete module and submodules are documented [here](https://gautam-404.github.io/MESA-PORT/mesaport.html). Below are some examples to get you started.
 
 #### ***The `ProjectOps` class:***
 This class handle MESA operations. An object of this class allows you to create, clea, make, run, resume and delete your MESA project.
@@ -46,7 +48,7 @@ This class handle MESA operations. An object of this class allows you to create,
     ## CLI is shown if no arguments are passed
     ```
 > [!TIP]  
-> Instead of single-star evolution, you can create a binary system or an astero project. This is done by passing boolean True for **binary** or **astero** arguments while initializing the ProjectOps class.
+> Instead of single-star evolution, you can create a binary system or an astero project. This is done by passing boolean True for *binary* or *astero* arguments while initializing the ProjectOps class.
     
   * Take control of your project; make, clean, run, resume and delete.
     ```python
@@ -80,7 +82,7 @@ This class handle MESA operations. An object of this class allows you to create,
     ``` -->
 
 #### ***The `MesaAccess` class:***
-This class gives you access to the parameters in your inlist files. You can write, read, remove and set default values for inlist parameters. 
+  * This class gives you access to the parameters in your inlist files. You can write, read, remove and set default values for inlist parameters. 
   ```python
   from mesaport import  MesaAccess
 
@@ -107,7 +109,7 @@ This class gives you access to the parameters in your inlist files. You can writ
   star.setDefualt(parameters)
   ```
 
-  In addition to the above, you can also use the `MesaAccess` class object to load your custom inlists and other input files such as history_columns, profile_columns, run_star_extras, run_binary_extras, inlist_astero_search_controls and inlist_pgstar files.
+  * In addition to the above, you can also use the `MesaAccess` class object to load your custom inlists and other input files such as history_columns, profile_columns, run_star_extras, run_binary_extras, inlist_astero_search_controls and inlist_pgstar files.
   
   ```python
   ### Path arguments can be a path or the name of a file in 'my_project' directory ###
@@ -121,7 +123,7 @@ This class gives you access to the parameters in your inlist files. You can writ
   star.load_InlistAsteroSearch("path/to/inlist")                   ## Load custom inlist_astero_search_controls
   ```
 
-  When working with a binary project, `MesaAccess` class object can be initialized for the primary star, secondary star and the binary system. This allows you to manipulate input parameters for each star and the binary system separately.
+  * When working with a binary project, `MesaAccess` class object can be initialized for the primary star, secondary star and the binary system. This allows you to manipulate input parameters for each star and the binary system separately.
   ```python
   binary = MesaAccess("your_project", binary=True, target='binary')        ## For the binary system
   primary = MesaAccess("your_project", binary=True, target='primary')      ## For the primary star
@@ -141,4 +143,4 @@ This class gives you access to the parameters in your inlist files. You can writ
   ```
  
 > [!WARNING]
-> This module is a work in progress. Please report any issues or bugs you encounter. 
+> MESA-PORT is a work in progress. Please report any issues or bugs you encounter. 
