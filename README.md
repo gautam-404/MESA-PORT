@@ -61,8 +61,7 @@ This class handle MESA operations. An object of this class allows you to create,
     ```
 > [!TIP]  
 > A list of MESA parameters can be passed to the `trace` argument to print their evolution in terminal along with age. Eg., trace=["log_L", "log_Teff"]
-    
-  Please see the [docs](https://gautam-404.github.io/MESA-PORT/mesaport/Access/access_helper.html#toFortranType) for more details on these methods and more.
+
   <!-- * Run GYRE:
     ```python
     proj.runGyre("gyre/input")  
