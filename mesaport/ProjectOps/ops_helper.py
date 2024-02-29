@@ -72,7 +72,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 logfile.flush()
                 if silent is False:
                     sys.stdout.write(outline)
-                elif gyre_in is not None:
+                elif gyre_in is None:
                     if "terminated evolution:" in outline or "ERROR" in outline:
                         evo_terminated = True
                         termination_code = outline.split()[-1]
