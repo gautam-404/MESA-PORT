@@ -1,7 +1,7 @@
 import subprocess
 import shlex
-import sys, os, glob, time
-import numpy as np
+import sys, os, time
+from pathlib import Path
 import shutil
 from rich import print
 
@@ -41,16 +41,17 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     if gyre_in is not None:
         gyre_obj = GyreAccess()
         if parallel:
-            profile_num = filename.split('/')[-1].split(f".{data_format}")[0]
-            new_gyre_in = os.path.join(wdir, f"gyre{profile_num}.in")
+            # profile_num = filename.split('/')[-1].split(f".{data_format}")[0]
+            profile_stem = Path(filename).stem
+            new_gyre_in = os.path.join(wdir, f"gyre{profile_stem}.in")
             gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
             gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
             time.sleep(1)
 
             # Update gyre_in to the new file
             gyre_in = new_gyre_in
-            commands = commands.replace("gyre.in", f"gyre{profile_num}.in")
-            runlog = runlog.replace("gyre.log", f"gyre{profile_num}.log")
+            commands = commands.replace("gyre.in", f"gyre{profile_stem}.in")
+            runlog = runlog.replace("gyre.log", f"gyre{profile_stem}.log")
         else:
             new_gyre_in = os.path.join(wdir, "gyre.in")
             shutil.copyfile(gyre_in, new_gyre_in)
