@@ -421,7 +421,7 @@ class ProjectOps:
                                     for line in infile:
                                         outfile.write(line)
                                 os.remove(fname)
-                        raise e
+                        traceback.print_exc()
                 filenames = glob.glob(os.path.join(LOGS_dir, f"gyreprofile*.log"))
                 with open(runlog, 'a+') as outfile:
                     for fname in filenames:

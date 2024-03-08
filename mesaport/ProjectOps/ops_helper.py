@@ -51,7 +51,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             # Update gyre_in to the new file
             gyre_in = new_gyre_in
             commands = commands.replace("gyre.in", f"gyre{profile_stem}.in")
-            runlog = runlog.replace("gyre.log", f"gyre{profile_stem}.log")
+            runlog = os.path.join(wdir, f"gyre{profile_stem}.log")
         else:
             new_gyre_in = os.path.join(wdir, "gyre.in")
             shutil.copyfile(gyre_in, new_gyre_in)
