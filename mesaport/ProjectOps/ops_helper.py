@@ -44,6 +44,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             # profile_num = filename.split('/')[-1].split(f".{data_format}")[0]
             profile_stem = Path(filename).stem
             new_gyre_in = os.path.join(wdir, f"gyre{profile_stem}.in")
+            print(new_gyre_in)
             gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
             gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
             time.sleep(1)
@@ -52,6 +53,8 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             gyre_in = new_gyre_in
             commands = commands.replace("gyre.in", f"gyre{profile_stem}.in")
             runlog = os.path.join(wdir, f"gyre{profile_stem}.log")
+            print(runlog)
+
         else:
             new_gyre_in = os.path.join(wdir, "gyre.in")
             shutil.copyfile(gyre_in, new_gyre_in)
