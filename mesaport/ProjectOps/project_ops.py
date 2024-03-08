@@ -4,6 +4,7 @@ import psutil
 import subprocess
 import glob
 from itertools import repeat
+import traceback
 
 from rich import print, progress, prompt, status
 progress_columns = (progress.SpinnerColumn(spinner_name="moon"),
@@ -399,7 +400,7 @@ class ProjectOps:
                                 for _ in pool.istarmap(ops_helper.run_subprocess, zip(*args)):
                                     progressbar.advance(task)
                             except Exception as e:
-                                print(e)
+                                traceback.print_exc()
                                 pool.terminate()
                 else:
                     try:
@@ -410,7 +411,7 @@ class ProjectOps:
                             try:
                                 executor.map(ops_helper.run_subprocess, *args)
                             except Exception as e:
-                                print(e)
+                                traceback.print_exc()
                                 executor.shutdown(wait=False)
                     except Exception as e:
                         filenames = glob.glob(os.path.join(LOGS_dir, f"gyreprofile*.log"))
