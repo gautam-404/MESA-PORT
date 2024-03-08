@@ -400,7 +400,8 @@ class ProjectOps:
                                 for _ in pool.istarmap(ops_helper.run_subprocess, zip(*args)):
                                     progressbar.advance(task)
                             except Exception as e:
-                                traceback.print_exc()
+                                print(traceback.format_exc())
+                                print(f"Error: {e}")
                                 pool.terminate()
                 else:
                     try:
@@ -411,7 +412,8 @@ class ProjectOps:
                             try:
                                 executor.map(ops_helper.run_subprocess, *args)
                             except Exception as e:
-                                traceback.print_exc()
+                                print(traceback.format_exc())
+                                print(f"Error: {e}")
                                 executor.shutdown(wait=False)
                     except Exception as e:
                         filenames = glob.glob(os.path.join(LOGS_dir, f"gyreprofile*.log"))
@@ -421,7 +423,8 @@ class ProjectOps:
                                     for line in infile:
                                         outfile.write(line)
                                 os.remove(fname)
-                        traceback.print_exc()
+                        print(traceback.format_exc())
+                        print(f"Error: {e}")
                 filenames = glob.glob(os.path.join(LOGS_dir, f"gyreprofile*.log"))
                 with open(runlog, 'a+') as outfile:
                     for fname in filenames:

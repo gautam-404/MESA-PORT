@@ -4,6 +4,7 @@ import sys, os, time
 from pathlib import Path
 import shutil
 from rich import print
+import traceback
 
 from ..Access.support import *
 from ..Access.access_helper import toFortranType, toPythonType
@@ -39,29 +40,31 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 Pass os.environ.copy() to use the current environment. Or pass a dictionary with the environment variables to be used.
     """   
     if gyre_in is not None:
-        gyre_obj = GyreAccess()
-        if parallel:
-            # profile_num = filename.split('/')[-1].split(f".{data_format}")[0]
-            profile_stem = Path(filename).stem
-            new_gyre_in = os.path.join(wdir, f"gyre{profile_stem}.in")
-            print(new_gyre_in)
-            gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
-            gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
-            time.sleep(1)
+        try:
+            gyre_obj = GyreAccess()
+            if parallel:
+                # profile_num = filename.split('/')[-1].split(f".{data_format}")[0]
+                profile_stem = Path(filename).stem
+                new_gyre_in = os.path.join(wdir, f"gyre{profile_stem}.in")
+                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
+                gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
+                time.sleep(1)
 
-            # Update gyre_in to the new file
-            gyre_in = new_gyre_in
-            commands = commands.replace("gyre.in", f"gyre{profile_stem}.in")
-            runlog = os.path.join(wdir, f"gyre{profile_stem}.log")
-            print(runlog)
-
-        else:
-            new_gyre_in = os.path.join(wdir, "gyre.in")
-            shutil.copyfile(gyre_in, new_gyre_in)
-            gyre_in = new_gyre_in
-            gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
-            gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
-
+                # Update gyre_in to the new file
+                gyre_in = new_gyre_in
+                commands = commands.replace("gyre.in", f"gyre{profile_stem}.in")
+                runlog = os.path.join(wdir, f"gyre{profile_stem}.log")
+                print(runlog)
+            else:
+                new_gyre_in = os.path.join(wdir, "gyre.in")
+                shutil.copyfile(gyre_in, new_gyre_in)
+                gyre_in = new_gyre_in
+                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
+                gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
+        except Exception as e:
+            print(traceback.format_exc())
+            print(f"Error: {e}")
+            return False
         
 
     evo_terminated = False
