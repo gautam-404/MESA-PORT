@@ -2,7 +2,7 @@
 
 <!-- <a href="https://zenodo.org/badge/latestdoi/589065195"><img src="https://zenodo.org/badge/589065195.svg" alt="DOI" width=150></a> -->
 
-#### A Python package to control [MESA](https://github.com/MESAHub/mesa) stellar evolution code
+#### A Python interface for the [MESA](https://github.com/MESAHub/mesa) stellar evolution code
 
 
 ### Create, modify, run and share your MESA projects!  
