@@ -18,6 +18,7 @@ class Download:
         Args:
             ver (str): Version of MESA to install. 
             directory (str): Path to the directory where the MESA SDK and MESA zip files will be downloaded.
+            ostype (str): Operating system type.
         """        
         self.ostype = ostype
         self.directory = directory
@@ -56,13 +57,15 @@ class Download:
         Args:
             filepath (str): Path to the file to be downloaded. 
             url (str): URL of the file to be downloaded.
+            text (str, optional): Text to be displayed while downloading the file. Defaults to "Downloading...".
         """    
         headers = {
                         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
                     }
         response = requests.get(url, headers=headers, stream=True)
         response.raise_for_status()
-        total = float(response.headers.get('content-length', 0))    
+        # total = float(response.headers.get('content-length', 0))    
+        total = float(response.headers.get('content-length', 0)) if response.headers.get('content-length') else 0
         if os.path.exists(filepath) and total == os.path.getsize(filepath):
             print(text)
             print("[blue]File already downloaded. Skipping download.[/blue]\n")

@@ -2,13 +2,18 @@ linux_versions = ["latest", "r23.05.1", "r22.11.1", "r22.05.1", "r21.12.1", "r15
 mac_intel_versions = ["latest", "r23.05.1", "r22.11.1", "r22.05.1", "r21.12.1", "r15140", "r12778"]
 mac_arm_versions = ["latest", "r23.05.1", "r22.11.1", "r22.05.1"]
 
-mesa_urls = {"latest": "https://github.com/MESAHub/mesa/archive/refs/tags/r24.03.1.zip",
-            "r24.03.1": "https://github.com/MESAHub/mesa/archive/refs/tags/r24.03.1.zip",
-            "r23.05.1": "https://github.com/MESAHub/mesa/archive/refs/tags/r23.05.1.zip",
-            "r22.11.1": "https://github.com/MESAHub/mesa/archive/refs/tags/r22.11.1.zip",
-            "r22.05.1": "https://github.com/MESAHub/mesa/archive/refs/tags/r22.05.1.zip",
-            "r21.12.1": "https://github.com/MESAHub/mesa/archive/refs/tags/r21.12.1.zip",
-            "r15140": "https://github.com/MESAHub/mesa/archive/refs/tags/r15140.zip",
+mesa_urls = {"latest": "https://codeload.github.com/MESAHub/mesa/zip/refs/tags/r24.03.1",
+            "r24.03.1": "https://codeload.github.com/MESAHub/mesa/zip/refs/tags/r24.03.1",
+            "r23.05.1": "https://codeload.github.com/MESAHub/mesa/zip/refs/tags/r23.05.1",
+            "r22.11.1": "https://codeload.github.com/MESAHub/mesa/zip/refs/tags/r22.11.1",
+            "r22.05.1": "https://codeload.github.com/MESAHub/mesa/zip/refs/tags/r22.05.1",
+            "r21.12.1": "https://codeload.github.com/MESAHub/mesa/zip/refs/tags/r21.12.1",
+            "r15140": "https://codeload.github.com/MESAHub/mesa/zip/refs/tags/r15140",
+            # "r23.05.1": "https://github.com/MESAHub/mesa/archive/refs/tags/r23.05.1.zip",
+            # "r22.11.1": "https://github.com/MESAHub/mesa/archive/refs/tags/r22.11.1.zip",
+            # "r22.05.1": "https://github.com/MESAHub/mesa/archive/refs/tags/r22.05.1.zip",
+            # "r21.12.1": "https://github.com/MESAHub/mesa/archive/refs/tags/r21.12.1.zip",
+            # "r15140": "https://github.com/MESAHub/mesa/archive/refs/tags/r15140.zip",
             "r12778": "https://zenodo.org/record/7319739/files/mesa-r12778.zip"}
             
 
