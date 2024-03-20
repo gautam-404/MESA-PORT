@@ -54,13 +54,11 @@ def choose_ver(ostype, ver=''):
 
     if ostype == "Linux":
         sdk = mesaurls.linux_sdk_urls.get(ver).split('-')[-1][:-7]
-        mesa = mesaurls.mesa_urls.get(ver).split('-')[-1][:-4]
     elif ostype == "macOS-Intel":
         sdk = mesaurls.mac_intel_sdk_urls.get(ver).split('-')[-1][:-4]
-        mesa = mesaurls.mesa_urls.get(ver).split('-')[-1][:-4]
     elif ostype == "macOS-ARM":
         sdk = mesaurls.mac_arm_sdk_urls.get(ver).split('-')[-1][:-4]
-        mesa = mesaurls.mesa_urls.get(ver).split('-')[-1][:-4]
+    mesa = mesaurls.mesa_urls.get(ver).split('/')[-1].split('r')[-1][:-4]
     print("The following will be installed:")
     print(f"MESA SDK version: [green b]{sdk}[/green b]")
     print(f"MESA version: [green b]{mesa}[/green b]\n")

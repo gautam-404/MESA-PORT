@@ -60,7 +60,7 @@ class Download:
         headers = {
                         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
                     }
-        response = requests.get(url, headers=headers, stream=True, timeout=10)
+        response = requests.get(url, headers=headers, stream=True)
         response.raise_for_status()
         total = float(response.headers.get('content-length', 0))    
         if os.path.exists(filepath) and total == os.path.getsize(filepath):
