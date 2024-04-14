@@ -1,6 +1,6 @@
-linux_versions = ["latest", "r23.05.1", "r22.11.1", "r22.05.1", "r21.12.1", "r15140", "r12778"]
-mac_intel_versions = ["latest", "r23.05.1", "r22.11.1", "r22.05.1", "r21.12.1", "r15140", "r12778"]
-mac_arm_versions = ["latest", "r23.05.1", "r22.11.1", "r22.05.1"]
+linux_versions = ["latest", "r24.03.1", "r23.05.1", "r22.11.1", "r22.05.1", "r21.12.1", "r15140", "r12778"]
+mac_intel_versions = ["latest", "r24.03.1", "r23.05.1", "r22.11.1", "r22.05.1", "r21.12.1", "r15140", "r12778"]
+mac_arm_versions = ["latest", "r24.03.1", "r23.05.1", "r22.11.1", "r22.05.1"]
 
 mesa_urls = {"latest": "https://zenodo.org/records/10783349/files/mesa-r24.03.1.zip",
             "r24.03.1": "https://zenodo.org/records/10783349/files/mesa-r24.03.1.zip",
