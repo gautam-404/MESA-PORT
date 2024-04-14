@@ -62,8 +62,14 @@ class Download:
         headers = {
                         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
                     }
-        response = requests.get(url, headers=headers, stream=True)
-        response.raise_for_status()
+        session = requests.Session()
+        retry = requests.packages.urllib3.util.retry.Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
+        adapter = requests.adapters.HTTPAdapter(max_retries=retry)
+        session.mount("http://", adapter)
+        session.mount("https://", adapter)
+        response = session.get(url, headers=headers, stream=True)
+        # response = requests.get(url, headers=headers, stream=True)
+        # response.raise_for_status()
         # total = float(response.headers.get('content-length', 0))    
         total = float(response.headers.get('content-length', 0)) if response.headers.get('content-length') else 0
         if os.path.exists(filepath) and total == os.path.getsize(filepath):
