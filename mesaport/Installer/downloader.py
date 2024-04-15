@@ -62,38 +62,28 @@ class Download:
         headers = {
                         "User-Agent": "Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:88.0) Gecko/20100101 Firefox/88.0",
                     }
-        session = requests.Session()
-        retry = requests.packages.urllib3.util.retry.Retry(total=5, backoff_factor=0.1, status_forcelist=[500, 502, 503, 504])
-        adapter = requests.adapters.HTTPAdapter(max_retries=retry)
-        session.mount("http://", adapter)
-        session.mount("https://", adapter)
-        response = session.get(url, headers=headers, stream=True)
-        # response = requests.get(url, headers=headers, stream=True)
-        # response.raise_for_status()
-        # total = float(response.headers.get('content-length', 0))    
-        total = float(response.headers.get('content-length', 0)) if response.headers.get('content-length') else 0
+        response = requests.get(url, headers=headers, stream=True)
+        response.raise_for_status()
+        total = float(response.headers.get('content-length', 0))  
         if os.path.exists(filepath) and total == os.path.getsize(filepath):
             print(text)
             print("[blue]File already downloaded. Skipping download.[/blue]\n")
         else:
             chunk_size = 1024*1024
+            size_done = 0
             with open(filepath, 'wb') as file, progress.Progress(*progress_columns) as progressbar:
                 task = progressbar.add_task(text, total=int(total))
                 for chunk in response.raw.stream(chunk_size, decode_content=False):
                     if chunk:
                         size_ = file.write(chunk)
                         progressbar.update(task_id=task, advance=size_)
+                        size_done += size_
                 time.sleep(5)
-                if task.as_integer_ratio() == (1, 1):
+                if total == size_done:
                     progressbar.update(task, description=text+"[bright_blue b]Done![/bright_blue b]")
                 else:
                     progressbar.update(task, description=text+"[red b]Failed![/red b]")
                     raise Exception("Download failed.")
-                # if total == os.path.getsize(filepath):
-                #     progressbar.update(task, description=text+"[bright_blue b]Done![/bright_blue b]")
-                # else:
-                #     progressbar.update(task, description=text+"[red b]Failed![/red b]")
-                #     raise Exception("Download failed.")
             print("\n", end="")
             
 
