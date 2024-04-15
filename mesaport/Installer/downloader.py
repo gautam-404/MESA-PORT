@@ -84,11 +84,16 @@ class Download:
                         size_ = file.write(chunk)
                         progressbar.update(task_id=task, advance=size_)
                 time.sleep(5)
-                if total == os.path.getsize(filepath):
+                if task.as_integer_ratio() == (1, 1):
                     progressbar.update(task, description=text+"[bright_blue b]Done![/bright_blue b]")
                 else:
                     progressbar.update(task, description=text+"[red b]Failed![/red b]")
                     raise Exception("Download failed.")
+                # if total == os.path.getsize(filepath):
+                #     progressbar.update(task, description=text+"[bright_blue b]Done![/bright_blue b]")
+                # else:
+                #     progressbar.update(task, description=text+"[red b]Failed![/red b]")
+                #     raise Exception("Download failed.")
             print("\n", end="")
             
 
