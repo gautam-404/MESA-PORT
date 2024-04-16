@@ -56,7 +56,7 @@ This class handle MESA operations. An object of this class allows you to create,
     ```
 > [!TIP]  
 > If the 
-A list of MESA parameters can be passed to the `trace` argument to print their evolution in terminal along with age. Eg., trace=["log_L", "log_Teff"]
+A list of MESA parameters can be passed to the `trace` argument to print their evolution in terminal along with age. Eg., `trace=["log_L", "log_Teff"]`
 
 #### **The `MesaAccess` class:**
   * This class gives you access to the parameters in your inlist files. You can write, read, remove and set default values for inlist parameters. 
