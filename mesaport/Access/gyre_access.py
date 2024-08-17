@@ -54,7 +54,10 @@ class GyreAccess:
             dict: A dictionary with all the parameters and their values.
         """    
         gyre_dir = os.path.abspath(os.environ["GYRE_DIR"])
-        gyre_defaults_dir = os.path.join(gyre_dir, "doc/source/ref-guide/input-files/*")
+        gyre_defaults_dir = os.path.join(gyre_dir, "docs/source/ref-guide/input-files")
+        if not os.path.exists(gyre_defaults_dir):
+            gyre_defaults_dir = os.path.join(gyre_dir, "doc/source/ref-guide/input-files")
+        gyre_defaults_dir = os.path.join(gyre_defaults_dir, "*")
         defaultsFiles = glob.glob(gyre_defaults_dir)
         # sections = ["&"+name.split("/")[-1].split('.')[0].split('-')[0] for name in defaultsFiles]
         # print(sections)
