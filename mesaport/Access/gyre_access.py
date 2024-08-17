@@ -92,7 +92,7 @@ class GyreAccess:
                 if parameter in values:
                     default_section = section
             if default_section is None:
-                raise(f"Parameter {parameter} not found in any GYRE input files.")
+                raise TypeError(f"Parameter {parameter} not found in any GYRE input files.")
         this_section = False
         with cwd(wdir):
             with file_operation_lock:
