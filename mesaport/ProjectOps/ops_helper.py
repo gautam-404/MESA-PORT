@@ -85,6 +85,9 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                     if "termination code:" in outline:
                         evo_terminated = True
                         termination_code = outline.split()[-1]
+                        if "cannot find acceptable model" in outline:
+                            termination_code = 'cannot find acceptable model'
+                            evo_terminated = False
                     if "photo" in outline and "does not exist" in outline:
                         evo_terminated = True
                         termination_code = "photo does not exist"
@@ -120,7 +123,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
         return False
-    elif evo_terminated and termination_code == None:
+    elif evo_terminated and termination_code != None:
         return False
     else:
         if gyre_in is None:
