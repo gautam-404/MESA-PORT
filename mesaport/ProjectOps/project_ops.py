@@ -207,9 +207,12 @@ class ProjectOps:
                 raise Exception("Run failed! Check runlog.")
             else:
                 termination_code, age = res
-                print("Run successful.\n")
-                return termination_code, age
-        
+                if age is not None:
+                    print("Run successful.\n")
+                    return termination_code, age
+                else:
+                    print("Run unsuccessful.\n")
+                    return termination_code, None    
 
         
     
@@ -279,8 +282,12 @@ class ProjectOps:
             raise Exception("Resume from photo failed! Check runlog.")
         else:
             termination_code, age = res
-            print("Run successful.\n")
-            return termination_code, age
+            if age is not None:
+                print("Run successful.\n")
+                return termination_code, age
+            else:
+                print("Run unsuccessful.\n")
+                return termination_code, None
 
         
     def runGyre(self, gyre_in, files='all', wdir=None, data_format="GYRE", silent=True, target=None, logging=True, logfile="gyre.log", 

@@ -66,7 +66,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             return False
         
 
-    evo_terminated = False
+    evo_terminated = None
     termination_code = None
     if trace is not None:
         trace_values = [None for i in range(len(trace))]
@@ -80,13 +80,15 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                     sys.stdout.write(outline)
                 elif gyre_in is None:
                     if "terminated evolution:" in outline or "ERROR" in outline:
-                        evo_terminated = True
+                        evo_terminated = 1
                         termination_code = outline.split()[-1]
+                        if "cannot find acceptable model" in outline:
+                            termination_code = 'cannot find acceptable model'
                     if "termination code:" in outline:
-                        evo_terminated = True
+                        evo_terminated = 0
                         termination_code = outline.split()[-1]
                     if "photo" in outline and "does not exist" in outline:
-                        evo_terminated = True
+                        evo_terminated = 1
                         termination_code = "photo does not exist"
                     if not parallel:
                         age = process_outline(outline)
@@ -120,8 +122,8 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
         return False
-    elif evo_terminated and termination_code == None:
-        return False
+    elif evo_terminated == 1:
+        return termination_code, None
     else:
         if gyre_in is None:
             age = 0
