@@ -123,7 +123,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
         print('The process raised an error:', proc.returncode, error)
         return False
     elif evo_terminated == 1:
-        return False
+        return termination_code, None
     else:
         if gyre_in is None:
             age = 0
