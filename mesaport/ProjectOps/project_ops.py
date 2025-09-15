@@ -291,7 +291,7 @@ class ProjectOps:
 
         
     def runGyre(self, gyre_in, files='all', wdir=None, data_format="GYRE", silent=True, target=None, logging=True, logfile="gyre.log", 
-                    parallel=False, n_cores=None, gyre_input_params=None, env=os.environ.copy()):
+                    parallel=False, n_cores=None, gyre_input_params=None, env=os.environ.copy(), write_detail_output=False):
         """
         Runs GYRE.
 
@@ -394,7 +394,8 @@ class ProjectOps:
                         repeat(silent), repeat(runlog),
                         repeat(None), files, repeat(data_format),
                         repeat(True), repeat(gyre_in),
-                        gyre_input_params, repeat(None), repeat(os.environ.copy()))
+                        gyre_input_params, repeat(None), 
+                        repeat(os.environ.copy()), repeat(write_detail_output))
                 if n_cores is None:
                     n_cores = psutil.cpu_count(logical=True) 
                     Pool = mp.Pool
@@ -445,7 +446,8 @@ class ProjectOps:
                     gyre_input_params_i = gyre_input_params[i] if gyre_input_params is not None else None
                     res = ops_helper.run_subprocess(f'{gyre_ex} gyre.in', wdir=LOGS_dir, filename=file,
                         silent=silent, runlog=runlog, status=None, gyre_in=gyre_in, 
-                        data_format=data_format, gyre_input_params=gyre_input_params_i)
+                        data_format=data_format, gyre_input_params=gyre_input_params_i, 
+                        write_detail_output=write_detail_output)
         else:
             raise ValueError("Invalid input for argument 'files'")
         if res is False:

@@ -124,7 +124,7 @@ class GyreAccess:
 
    
 
-    def modify_gyre_params(self, wdir, filename, data_format, gyre_in="gyre.in", diff_scheme='MAGNUS_GL2'):
+    def modify_gyre_params(self, wdir, filename, data_format, gyre_in="gyre.in", diff_scheme='MAGNUS_GL2', write_detail_output=False):
         if data_format == "GYRE":
             file_format = "MESA"
         elif data_format == "FGONG":
@@ -136,6 +136,9 @@ class GyreAccess:
         self.writetoGyreFile(wdir, parameter="file", value=f"'{filename}'", default_section="&model", gyre_in=gyre_in)
         self.writetoGyreFile(wdir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output", gyre_in=gyre_in)
         self.writetoGyreFile(wdir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs-nad.dat'", default_section="&nad_output", gyre_in=gyre_in)
+        if write_detail_output:
+            self.writetoGyreFile(wdir, parameter="detail_template", value=f"'{filename.split('.')[0]}ad_%n_%l_%m.dat'", default_section="&ad_output", gyre_in=gyre_in)
+            self.writetoGyreFile(wdir, parameter="detail_template", value=f"'{filename.split('.')[0]}nad_%n_%l_%m.dat'", default_section="&nad_output", gyre_in=gyre_in)
 
 
     def set(self, arg, wdir, gyre_in="gyre.in"):
