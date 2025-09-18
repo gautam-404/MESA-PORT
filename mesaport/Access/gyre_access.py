@@ -137,8 +137,8 @@ class GyreAccess:
         self.writetoGyreFile(wdir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs.dat'", default_section="&ad_output", gyre_in=gyre_in)
         self.writetoGyreFile(wdir, parameter="summary_file", value=f"'{filename.split('.')[0]}-freqs-nad.dat'", default_section="&nad_output", gyre_in=gyre_in)
         if write_detail_output:
-            self.writetoGyreFile(wdir, parameter="detail_template", value=f"'{filename.split('.')[0]}ad_%n_%l_%m.dat'", default_section="&ad_output", gyre_in=gyre_in)
-            self.writetoGyreFile(wdir, parameter="detail_template", value=f"'{filename.split('.')[0]}nad_%n_%l_%m.dat'", default_section="&nad_output", gyre_in=gyre_in)
+            self.writetoGyreFile(wdir, parameter="detail_template", value=f"'{filename.split('.')[0]}ad_n%n_l%l_m%m_p%p_g%g.dat'", default_section="&ad_output", gyre_in=gyre_in)
+            self.writetoGyreFile(wdir, parameter="detail_template", value=f"'{filename.split('.')[0]}nad_n%n_l%l_m%m_p%p_g%g.dat'", default_section="&nad_output", gyre_in=gyre_in)
 
 
     def set(self, arg, wdir, gyre_in="gyre.in"):
