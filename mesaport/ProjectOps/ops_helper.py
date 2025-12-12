@@ -18,7 +18,7 @@ def check_exists(exists, projName):
 
 def run_subprocess(commands, wdir, silent=True, runlog='', status=None, 
                     filename="", data_format="FGONG", parallel=False, 
-                    gyre_in=None, gyre_input_params=None, trace=None, env=None, write_detail_output=False):
+                    gyre_in=None, gyre_input_params=None, trace=None, env=None):
     
     """
     Runs a subprocess with the given commands.
@@ -46,7 +46,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 # profile_num = filename.split('/')[-1].split(f".{data_format}")[0]
                 profile_stem = Path(filename).stem.split(".data")[0]
                 new_gyre_in = os.path.join(wdir, f"gyre{profile_stem}.in")
-                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in, write_detail_output=write_detail_output)
+                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
                 gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
                 time.sleep(1)
 
@@ -58,7 +58,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 new_gyre_in = os.path.join(wdir, "gyre.in")
                 shutil.copyfile(gyre_in, new_gyre_in)
                 gyre_in = new_gyre_in
-                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in, write_detail_output=write_detail_output)
+                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
                 gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
         except Exception as e:
             print(traceback.format_exc())
@@ -66,7 +66,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
             return False
         
 
-    evo_terminated = None
+    evo_terminated = False
     termination_code = None
     if trace is not None:
         trace_values = [None for i in range(len(trace))]
@@ -80,15 +80,13 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                     sys.stdout.write(outline)
                 elif gyre_in is None:
                     if "terminated evolution:" in outline or "ERROR" in outline:
-                        evo_terminated = 1
+                        evo_terminated = True
                         termination_code = outline.split()[-1]
-                        if "cannot find acceptable model" in outline:
-                            termination_code = 'cannot find acceptable model'
                     if "termination code:" in outline:
-                        evo_terminated = 0
+                        evo_terminated = True
                         termination_code = outline.split()[-1]
                     if "photo" in outline and "does not exist" in outline:
-                        evo_terminated = 1
+                        evo_terminated = True
                         termination_code = "photo does not exist"
                     if not parallel:
                         age = process_outline(outline)
@@ -124,8 +122,8 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
     if proc.returncode or error:
         print('The process raised an error:', proc.returncode, error)
         return False
-    elif evo_terminated == 1:
-        return termination_code, None
+    elif evo_terminated and termination_code == None:
+        return False
     else:
         if gyre_in is None:
             age = 0
@@ -198,3 +196,13 @@ dt_limit_values = ['burn steps', 'Lnuc', 'Lnuc_cat', 'Lnuc_H', 'Lnuc_He', 'lgL_p
                   'lg_XHe_cntr', 'lg_XNe_cntr', 'lg_XO_cntr', 'lg_XSi_cntr', 'XC_cntr', 'XH_cntr', 'XHe_cntr', 'XNe_cntr',
                   'XO_cntr', 'XSi_cntr', 'log_eps_nuc', 'max_dt', 'neg_mass_frac', 'adjust_J_q', 'solver iters', 'rel_E_err',
                   'varcontrol', 'max increase', 'max decrease', 'retry', 'b_****']
+
+## from 24.03.1, is a subset of the dt_limit_values
+# dt_limit_values = ['burn steps','Lnuc', 'Lnuc_cat', 'Lnuc_H', 'Lnuc_He', 'lgL_power_phot', 'Lnuc_z', 'bad_X_sum', 'dL/L', 
+#                 'dX', 'dX/X', 'dX_nuc_drop', 'delta mdot', 'delta total J', 'delta_HR', 'delta_mstar', 
+#                 'diff iters', 'diff steps', 'min_dr_div_cs', 'dt_collapse', 'eps_nuc_cntr', 'error rate', 'highT del Ye', 'hold', 
+#                 'lgL', 'lgP', 'lgP_cntr', 'lgR', 'lgRho', 'lgRho_cntr', 'lgT', 'lgT_cntr', 'lgT_max', 'lgT_max_hi_T', 'lgTeff', 
+#                 'dX_div_X_cntr', 'lg_XC_cntr', 'lg_XH_cntr', 'lg_XHe_cntr', 'lg_XNe_cntr', 'lg_XO_cntr', 'lg_XSi_cntr', 'XC_cntr', 
+#                 'XH_cntr', 'XHe_cntr', 'XNe_cntr', 'XO_cntr', 'XSi_cntr', 'log_eps_nuc', 'max_dt', 'neg_mass_frac', 'adjust_J_q', 'solver iters', 'rel_E_err', 'varcontrol', 
+#                 'max increase', 'max decrease', 'retry', 'b_****']
+  
