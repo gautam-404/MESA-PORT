@@ -101,11 +101,13 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                                 age_str = f"[b]Age: [cyan]{age:.3f}[/cyan] years"
                             else:
                                 age_str = f"[b]Age: [cyan]{age:.3e}[/cyan] years"
+                        else:
+                            age_str = "N/A"
                         if trace is not None:
                             trace_values = process_trace(trace, outline, trace_values)
                             trace_ = [trace[i] for i in range(len(trace)) if trace_values[i] is not None]
                             values = [val for val in trace_values if val is not None]
-                            if len(values) > 0 and parallel is False:
+                            if len(values) > 0:
                                 trace_str = ""
                                 for i in range(len(trace_)):
                                     trace_str += f"[b]{trace_[i]}[/b]: [cyan]{values[i]:.5f}[/cyan]\n"
