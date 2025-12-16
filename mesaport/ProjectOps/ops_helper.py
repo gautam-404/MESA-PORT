@@ -18,7 +18,7 @@ def check_exists(exists, projName):
 
 def run_subprocess(commands, wdir, silent=True, runlog='', status=None, 
                     filename="", data_format="FGONG", parallel=False, 
-                    gyre_in=None, gyre_input_params=None, trace=None, env=None):
+                    gyre_in=None, gyre_input_params=None, trace=None, env=None, write_detail_output=False):
     
     """
     Runs a subprocess with the given commands.
@@ -46,7 +46,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 # profile_num = filename.split('/')[-1].split(f".{data_format}")[0]
                 profile_stem = Path(filename).stem.split(".data")[0]
                 new_gyre_in = os.path.join(wdir, f"gyre{profile_stem}.in")
-                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in)
+                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=new_gyre_in, write_detail_output=write_detail_output)
                 gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=new_gyre_in)
                 time.sleep(1)
 
@@ -58,7 +58,7 @@ def run_subprocess(commands, wdir, silent=True, runlog='', status=None,
                 new_gyre_in = os.path.join(wdir, "gyre.in")
                 shutil.copyfile(gyre_in, new_gyre_in)
                 gyre_in = new_gyre_in
-                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in)
+                gyre_obj.modify_gyre_params(wdir, filename, data_format, gyre_in=gyre_in, write_detail_output=write_detail_output)
                 gyre_obj.set(arg=gyre_input_params, wdir=wdir, gyre_in=gyre_in)
         except Exception as e:
             print(traceback.format_exc())
