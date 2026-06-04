@@ -149,9 +149,9 @@ This class handle MESA operations. An object of this class allows you to create,
     Installer(version="latest", parentDir='where/to/install', cleanAfter=False )     
     ## version = "latest" will install the latest version available for your system.
     ## Available versions: 
-    #     Linux: "23.05.1", "22.05.1", "15140" and "12778".
-    #     macOS-Intel: "23.05.1", "22.05.1", "15140" and "12778".  
-    #     macOS-ARM: "23.05.1", "22.05.1".
+    #     Linux: "r26.04.1", "r25.12.1", "r24.08.1", "r24.03.1", "r23.05.1", "r22.11.1", "r22.05.1", "r21.12.1", "r15140", "r12778".
+    #     macOS-Intel: "r26.04.1", "r25.12.1", "r24.08.1", "r24.03.1", "r23.05.1", "r22.11.1", "r22.05.1", "r21.12.1", "r15140", "r12778".  
+    #     macOS-ARM: "r26.04.1", "r25.12.1", "r24.08.1", "r24.03.1", "r23.05.1", "r22.11.1", "r22.05.1".
 
     ## The `cleanAfter` argument is set to False by default to allow re-running installation without removing downloaded files, this saves time when debugging a failed MESA build.
     ```
